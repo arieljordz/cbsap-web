@@ -1,0 +1,71 @@
+<p-table
+  [value]="invoiceActivityLogs"
+  sortField="actionName"
+  sortMode="single"
+  dataKey="actionName"
+  rowGroupMode="subheader"
+  groupRowsBy="actionName"
+  [tableStyle]="{ 'min-width': '50rem' }"
+>
+  <ng-template #header>
+    <tr>
+      <th style="width: 20%">Previous Status</th>
+      <th style="width: 20%">Current Status</th>
+      <th style="width: 20%">Reason</th>
+      <th style="width: 20%">Created By</th>
+      <th style="width: 20%">Created Date</th>
+    </tr>
+  </ng-template>
+  <ng-template
+    #groupheader
+    let-invActivityLogEntries
+    let-rowIndex="rowIndex"
+    let-expanded="expanded"
+  >
+    <tr>
+      <td colspan="5">
+        <button
+          type="button"
+          pButton
+          pRipple
+          [pRowToggler]="invActivityLogEntries"
+          text
+          rounded
+          plain
+          class="mr-2"
+          [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+        ></button>
+
+        <span class="font-bold ml-2">{{
+          invActivityLogEntries.actionName
+        }}</span>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template #expandedrow let-invoiceActivityLogs>
+    <tr
+      *ngFor="
+        let activitylog of invoiceActivityLogs.invActivityLogEntries;
+        let i = index;
+        trackBy: trackByValue
+      "
+    >
+      <td>
+        <span>{{ activitylog.previousStatus }}</span>
+      </td>
+      <td>
+        {{ activitylog.currentStatus }}
+      </td>
+      <td>
+        {{ activitylog.reason }}
+      </td>
+      <td>
+        {{ activitylog.createdBy }}
+      </td>
+      <td>
+        {{ activitylog.createdDate }}
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

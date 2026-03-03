@@ -1,0 +1,1 @@
+export const ROLE_MANAGEMENT ='v1/rolemanagement/roles';

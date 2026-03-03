@@ -1,0 +1,96 @@
+<div class="formgrid grid mt-2">
+  <div class="field col">
+    <label for="Name">Role Name</label>
+    <input
+      id="roleName"
+      pInputText
+      type="text"
+      [(ngModel)]="filterByRoleName"
+      class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+    />
+    <small id="username-help">Roles to be assigned : Search or select from below.</small>
+  </div>
+  <div class="field col  mt-4 pt-1 md-6 lg-4 xl-3">
+    <button
+            type="button"
+            pButton
+            label="Search"
+            class="p-button-secondary mr-2"
+            (click) ="searchRole()"
+          ></button>
+  </div>
+</div>
+<div>
+  <div class="card user-card">
+    <p-table
+    #dtRoles
+    styleClass="p-datatable-striped"
+    [value]="roles"
+    [(selection)]="selectedRoles"
+    [tableStyle]="{ 'min-width': '25rem' }"
+    [paginator]="true"
+    [showCurrentPageReport]="true"
+    [columns]="columns"
+    [rowHover]="true"
+    [rows]="5"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [globalFilterFields]="['roleName']"
+    [rowsPerPageOptions]="[10]"
+    styleClass="p-datatable-sm p-datatable-striped p-datatable-header-bgwhite">
+  
+    <ng-template pTemplate="header">
+       <tr>
+        <th style="width: 4rem">
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th
+        *ngFor="let col of columns"
+        [pSortableColumn]="col.field"
+        [pSortableColumnDisabled]="!col.sort ? true : false"
+        >
+        {{ col.header }}
+        <p-sortIcon
+          [field]="col.field"
+          [ngClass]="{ hidden: !col.sort }"
+           pTooltip="Sort by {{ col.header }}"
+           tooltipPosition="top"
+        ></p-sortIcon>
+      </th>
+       </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-role let-rowData let-columns="columns">
+        <tr [pSelectableRow]="rowData">
+          <td>
+            <p-tableCheckbox [value]="role"></p-tableCheckbox>
+          </td>
+          <td *ngFor="let col of columns">
+              <ng-container>
+                {{ rowData[col.field]}}
+              </ng-container>
+          </td>
+        </tr>
+    </ng-template>
+  </p-table>
+  </div>
+</div>
+<p-divider></p-divider>
+<div class="flex justify-content-end mb-3">
+  <button
+    pButton
+    pRipple
+    label="Cancel"
+    type="button"
+    icon="pi pi-times"
+    class="p-button-secondary mr-2"
+    (click)="closeDialog()"
+  ></button>
+  <button
+    pButton
+    pRipple
+    label="Assign"
+    icon="pi pi-check"
+    class="p-button"
+    (click)="assignRoles()"
+  ></button>
+</div>

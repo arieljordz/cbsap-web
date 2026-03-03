@@ -1,0 +1,28 @@
+<!-- TODO design  -->
+<ul class="layout-menu">
+  <ng-container *ngFor="let item of model; let i = index;">
+    <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li>
+    <li *ngIf="item.separator" class="menu-separator"></li>
+</ng-container>
+</ul>
+
+<!-- <ul class="layout-menu">
+  <ng-container *ngFor="let item of model; let i = index;">
+    <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li>
+    <li *ngIf="item.separator" class="menu-separator"></li>
+</ng-container>
+</ul> -->
+<!-- 
+<ul class="layout-menu">
+  <ng-container *ngFor="let item of model; let i = index;">
+    <li *ngIf="!item.separator" app-menuitem [item]="item" [index]="i" [root]="true">
+      <ul *ngIf="item.menuItems && item.menuItems.length > 0">
+        <ng-container *ngFor="let menuItem of item.menuItems">
+          <li app-menuitem [item]="menuItem"></li>
+        </ng-container>
+      </ul>
+    </li>
+    <li *ngIf="item.separator" class="menu-separator"></li>
+  </ng-container>
+</ul>
+  -->

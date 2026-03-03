@@ -1,0 +1,57 @@
+<div class="pl-2">
+<div class="flex items-center">
+    <h5 class="flex gap-2 items-center mb-1"><i class="pi pi-book text-xl"></i>Assigned Invoice</h5>
+</div>
+<div class="text-gray-500 mb-5">
+    Quick view of the invoices assigned to you.
+</div>
+</div>
+<div>
+    <div class="flex gap-6 mb-4 pl-2 border-b-2 border-gray-200 pb-2">
+        <a href="#" (click)="filterType = 'all'; getAssignedInvoice(); $event.preventDefault()" 
+           [ngClass]="{'text-red-600 pb-1 font-semibold': filterType === 'all', 'text-gray-500 hover:text-gray-800': filterType !== 'all'}">
+            All ({{allCount}})
+        </a>
+        <a href="#" (click)="filterType = 'overdue'; getAssignedInvoice(); $event.preventDefault()" 
+           [ngClass]="{'text-red-600 pb-1 font-semibold': filterType === 'overdue', 'text-gray-500 hover:text-gray-800': filterType !== 'overdue'}">
+            Overdue ({{overdueCount}})
+        </a>        
+    </div>
+    <p-table id="dtAssigned" #dtAssigned [value]="assignedInvoices" [paginator]="true" [showCurrentPageReport]="true"
+        [columns]="columns" [rowHover]="true" [rows]="pageSize" selectionMode="single" [(first)]="first"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [loading]="loading"
+        (onRowSelect)="onRowSelect($event)" [rowsPerPageOptions]="[5, 10, 25]" [tableStyle]="{ 'min-width': '50rem' }"
+        styleClass="p-datatable-striped p-datatable-header-bgwhite">
+        <ng-template pTemplate="header">
+            <tr>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field"
+                    [pSortableColumnDisabled]="!col.sort ? true : false">
+                    {{ col.header }}
+                    <p-sortIcon [field]="col.field" [ngClass]="{ hidden: !col.sort }"
+                        pTooltip="Sort by {{ col.header }}" tooltipPosition="top"></p-sortIcon>
+                </th>
+            </tr>
+
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-columns="columns">
+            <tr [pSelectableRow]="rowData">
+                <td *ngFor="let col of columns" [ngSwitch]="col.dataType">
+                    <ng-container *ngSwitchCase="'date'">
+                        {{ rowData[col.field] | dateformat }}
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'decimal'">
+                        {{ rowData[col.field] | currency:'':'':'1.2-2' }}
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>
+                        {{ rowData[col.field] }}
+                    </ng-container>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td colspan="6" class="text-center font-bold">No invoices assigned to you.</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

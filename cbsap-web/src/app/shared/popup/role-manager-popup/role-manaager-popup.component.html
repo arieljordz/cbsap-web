@@ -1,0 +1,106 @@
+<div class="p-4 space-y-4">
+  <!-- Search Card -->
+  <div class="bg-white rounded-xl shadow-md p-4">
+    <h6 class="text-lg font-semibold mb-4">Search</h6>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+      <!-- User ID Field -->
+      <div>
+        <label for="UserID" class="block mb-1 text-sm font-medium text-gray-700">User ID</label>
+        <input
+          pInputText
+          id="UserID"
+          type="text"
+          [(ngModel)]="filterByUserID"
+          class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+      </div>
+
+      <!-- Name Field -->
+      <div>
+        <label for="Name" class="block mb-1 text-sm font-medium text-gray-700">Name</label>
+        <input
+          pInputText
+          id="Name"
+          type="text"
+          [(ngModel)]="filterByName"
+          class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+      </div>
+
+      <!-- Search Button -->
+      <div class="md:mt-0">
+        <p-button
+          [raised]="true"
+          label="Search"
+          icon="pi pi-search"
+          [rounded]="true"
+          (click)="searchRoleManager()"
+          class="w-full md:w-auto"
+        ></p-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Table -->
+  <div class="bg-white rounded-xl shadow-md p-4" *ngIf="isShowSearchRole">
+    <p-table
+      #dtRoleManager
+      [value]="roleManagerOptions"
+      [(selection)]="selectedRoleManager"
+      selectionMode="single"
+      [paginator]="true"
+      [showCurrentPageReport]="true"
+      [columns]="columns"
+      [rowHover]="true"
+      [rows]="5"
+      [rowsPerPageOptions]="[5]"
+      [tableStyle]="{ 'min-width': '25rem' }"
+      styleClass="p-datatable-sm p-datatable-striped"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    >
+      <!-- Table Header -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th *ngFor="let col of columns" [pSortableColumn]="col.field" [pSortableColumnDisabled]="!col.sort">
+            {{ col.header }}
+            <p-sortIcon
+              [field]="col.field"
+              class="ml-1"
+              *ngIf="col.sort"
+              pTooltip="Sort by {{ col.header }}"
+              tooltipPosition="top"
+            ></p-sortIcon>
+          </th>
+        </tr>
+      </ng-template>
+
+      <!-- Table Body -->
+      <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr (click)="selectRoleManager(rowData)" class="cursor-pointer hover:bg-gray-100">
+          <td
+            *ngFor="let col of columns; trackBy: trackByFn"
+            [ngSwitch]="col.field"
+            [style.width.px]="getColumnWidth(col.field)"
+          >
+            <ng-container *ngSwitchCase="'users'">
+              <span class="text-xs"> {{ rowData[col.field] }} </span>
+            </ng-container>
+            <ng-container *ngSwitchCase="'roleName'">
+              <span> {{ rowData[col.field] }} </span>
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+              <span> {{ rowData[col.field] }} </span>
+            </ng-container>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- Empty Message -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center font-semibold py-4">No roles found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

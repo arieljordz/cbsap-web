@@ -1,0 +1,82 @@
+<form [formGroup]="roleDetailForm" (ngSubmit)="onSave()">
+  <p-confirmDialog
+    [style]="{ width: '20vw', height: '200px' }"
+  ></p-confirmDialog>
+
+  <div class="card flex flex-col gap-6 p-6 bg-white rounded shadow-md">
+    <div class="flex justify-between items-center">
+      <h5 class="font-semibold text-xl">{{ pageLabel }}</h5>
+
+      <div class="flex gap-3">
+        <p-button
+          label="Save"
+          icon="pi pi-check"
+          [raised]="true"
+          [rounded]="true"
+          [disabled]="!roleDetailForm.valid"
+          [severity]="!roleDetailForm.valid ? 'secondary' : 'primary'"
+          type="submit"
+        ></p-button>
+
+        <p-button
+          label="Delete"
+          *ngIf="roleId !== 0"
+          icon="pi pi-trash"
+          [raised]="true"
+          [rounded]="true"
+          severity="contrast"
+          (click)="confirmDelete()"
+        ></p-button>
+
+        <p-button
+          label="Cancel"
+          icon="pi pi-times"
+          [raised]="true"
+          [rounded]="true"
+          severity="contrast"
+          (click)="cancel()"
+        ></p-button>
+      </div>
+    </div>
+
+    <p-tabs value="0" scrollable>
+      <p-tablist class="border-b border-gray-300 flex space-x-4">
+        <p-tab value="0"> <i class="pi pi-info"></i> Basic Information</p-tab>
+        <p-tab value="1"> <i class="pi pi-bell"></i> Reminder Notification</p-tab>
+        <p-tab value="2"> <i class="pi pi-users"></i> Role Entity</p-tab>
+        <p-tab value="3"><i class="pi pi-lock"></i>Role Permissions</p-tab>
+        <p-tab value="4"><i class="pi pi-user"></i>Users</p-tab>
+      </p-tablist>
+
+      <p-tabpanels
+        class="p-4 bg-white"
+      >
+        <p-tabpanel value="0">
+          <app-basic-info 
+            [formGroup]="basicInfoGroup"
+          ></app-basic-info>
+        </p-tabpanel>
+        <p-tabpanel value="1">
+          <app-reminder-notification
+            [formGroup]="reminderNotificationGroup"
+          ></app-reminder-notification>
+        </p-tabpanel>
+        <p-tabpanel value="2">
+          <app-role-entities
+            [formGroup]="roleEntitiesGroup"
+          ></app-role-entities>
+        </p-tabpanel>
+        <p-tabpanel value="3">
+          <app-role-permissions
+            [formGroup]="rolePermissionsGroup"
+          ></app-role-permissions>
+        </p-tabpanel>
+        <p-tabpanel value="4">
+          <app-role-users
+            [formGroup]="userRolesGroup"
+          ></app-role-users>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+</form>

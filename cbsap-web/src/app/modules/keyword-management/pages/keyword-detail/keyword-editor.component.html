@@ -1,0 +1,108 @@
+<form [formGroup]="keywordForm" (ngSubmit)="onSubmit()">
+  <p-confirmDialog [style]="{ width: '20vw', height: '200px' }" />
+  
+  <div class="card p-8 shadow-md rounded-2xl space-y-8 bg-white">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <h2 class="text-2xl font-bold text-gray-800">{{ pagelabel }}</h2>
+      <div class="flex gap-3">
+        <p-button
+          label="Save"
+          icon="pi pi-check"
+          [raised]="true"
+          [rounded]="true"
+          [severity]="!keywordForm.valid ? 'secondary' : 'primary'"
+          type="submit"
+        ></p-button>
+        <p-button 
+                  label="Delete"  
+                  *ngIf="this.keywordId !== 0" 
+                  icon="pi pi-trash"
+                  [raised]="true"
+                  [rounded]="true" 
+                  severity="contrast"
+                  (click) ="deleteConfirmation()" />
+        <p-button
+          label="Cancel"
+          icon="pi pi-times"
+          [raised]="true"
+          [rounded]="true"
+          severity="contrast"
+          (click)="cancel($event)"
+        ></p-button>
+      </div>
+    </div>
+
+    <p-divider></p-divider>
+
+    <!-- Vertical Form Fields -->
+    <div class="space-y-6 sm:w-full md:w-2/3 xl:w-1/2">
+      <!-- Keyword Name -->
+      <div>
+        <label for="keywordName" class="block mb-2 font-medium text-gray-700">Keyword</label>
+        <input
+          type="text"
+          pInputText
+          id="keywordName"
+          formControlName="keywordName"
+          [autofocus]="true"
+          autocomplete="off"
+          maxlength="40"
+          class="w-full"
+          appCharacterFocusTracker
+          (focusChange)="onFocusChange('keywordName', $any($event))"
+        />
+        <div class="mt-1 flex justify-between items-center text-xs text-gray-500">
+          <small *ngIf="f['keywordName'].invalid && f['keywordName'].touched" class="text-red-500">
+            {{ getErrorMessage(f['keywordName'], 'Keyword') }}
+          </small>
+          <small *ngIf="focusStates['keywordName'] && f?.['keywordName']?.value">
+            <span *ngIf="(f['keywordName'].value! | characterLength: 80).approachingLimit" class="text-red-400">
+              Approaching limit!
+            </span>
+            {{ (f['keywordName'].value! | characterLength: 100).length }}/40
+          </small>
+        </div>
+      </div>
+
+      <!-- Entity -->
+      <div>
+        <label class="block mb-2 font-medium text-gray-700">Entity</label>
+        <p-select
+          class="w-full"
+          formControlName="entityProfileID"
+          (onChange)="entityChange($event)"
+          [options]="entityOptions"
+          [filter]="true"
+          filterBy="label"
+          [showClear]="false"
+        ></p-select>         
+      </div>
+      <!-- Invoice routing flow -->
+      <div>
+        <label class="block mb-2 font-medium text-gray-700">Invoice Routing Flow</label>
+        <p-select
+          class="w-full"
+          formControlName="invoiceRoutingFlowID"
+          [options]="invoiceRoutingFlowOptions"
+          [filter]="true"
+          filterBy="label"
+          emptyMessage="No results found."
+          [showClear]="false"
+        ></p-select>
+         <div class="mt-1 flex justify-between items-center text-xs text-gray-500">
+          <small *ngIf="f['invoiceRoutingFlowID'].invalid && f['invoiceRoutingFlowID'].touched" class="text-red-500">
+            {{ getErrorMessage(f['invoiceRoutingFlowID'], 'Invoice Routing Flow') }}
+          </small>
+         
+        </div>
+      </div>
+      <div class="flex space-x-6 items-center">
+    <div class="flex items-center space-x-2">
+      <p-toggleswitch formControlName="isActive" />
+      <label for="isActive">Active</label>
+    </div>   
+  </div>
+    </div>
+  </div>
+</form>

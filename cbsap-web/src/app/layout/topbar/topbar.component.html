@@ -1,0 +1,77 @@
+<div class="layout-topbar">
+  <div class="layout-topbar-logo-container">
+    <button
+      *ngIf="hasSideMenu"
+      class="layout-menu-button layout-topbar-action"
+      (click)="layoutService.onMenuToggle()"
+    >
+      <i class="pi pi-bars"></i>
+    </button>
+    <a class="layout-topbar-logo" routerLink="/">
+      <img
+        src="assets/images/cbsap-white.png"
+        alt="logo"
+        width="42"
+        height="32"
+      />
+    </a>
+  </div>
+
+  <div class="layout-topbar-actions">
+    <div
+      #topbarmenu
+      class="layout-config-menu grid grid-cols-2 items-center gap-4 p-4"
+    >
+      <!-- Left Column (User Info & Role) -->
+      <div class="font-medium text-gray-200 gap-2">
+        <span class="p-1">Welcome !</span>
+        <span class="text-sm p-1">
+          <i class="pi pi-user"></i> {{ userName }}</span
+        >
+      </div>
+      <div class="flex flex-col">
+        <!-- Role Dropdown -->
+
+        <app-role-selector
+          [roles]="userRoles"
+          [selectedRole]="selectedUserRoles"
+          (selectedRoleChange)="onRoleChange($event)"
+        ></app-role-selector>
+      </div>
+
+      <!-- Right Column (Avatar) -->
+      <div class="flex justify-end">
+        <p-avatar
+          [style]="{
+            'background-color': '#CC0000',
+            color: '#ffffff',
+            width: '2.5rem',
+            height: '2.5rem',
+            'font-size': '1.2rem'
+          }"
+          shape="circle"
+          [label]="thumbnailName || '?'"
+          class="cursor-pointer"
+          (click)="menu.toggle($event)"
+        >
+        </p-avatar>
+        <p-menu #menu [popup]="true" [model]="menuItems">
+          <ng-template #item let-item>
+            <ng-container *ngIf="item.route; else elseBlock">
+              <a [routerLink]="item.route" class="p-menu-item-link">
+                <span [class]="item.icon"></span>
+                <span class="ml-2">{{ item.label }}</span>
+              </a>
+            </ng-container>
+            <ng-template #elseBlock>
+              <a [href]="item.url" class="p-menu-item-link">
+                <span [class]="item.icon"></span>
+                <span class="ml-2">{{ item.label }}</span>
+              </a>
+            </ng-template>
+          </ng-template>
+        </p-menu>
+      </div>
+    </div>
+  </div>
+</div>

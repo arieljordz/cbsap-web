@@ -1,0 +1,153 @@
+<div class="p-4 space-y-4">
+  <!-- Search Filters -->
+  <div class="card rounded-xl">
+    <h6 class="text-lg font-semibold mb-4">Search</h6>
+    <div class="flex flex-wrap gap-4">
+      <div
+        *ngFor="let filter of filters"
+        class="w-full sm:w-1/2 md:w-1/3 flex-grow"
+      >
+        <div [ngSwitch]="filter.type || 'text'">
+          <!-- Text -->
+          <ng-container *ngSwitchCase="'text'">
+            <label
+              [for]="filter.key"
+              class="block mb-1 text-sm font-medium text-gray-700"
+            >
+              {{ filter.label }}
+            </label>
+            <input
+              pInputText
+              [id]="filter.key"
+              [(ngModel)]="filterValues[filter.key]"
+              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </ng-container>
+
+          <!-- Boolean -->
+          <ng-container *ngSwitchCase="'boolean'">
+            <label
+              [for]="filter.key"
+              class="block mb-1 text-sm font-medium text-gray-700"
+            >
+              {{ filter.label }}
+            </label>
+            <select
+              [id]="filter.key"
+              [(ngModel)]="filterValues[filter.key]"
+              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option [ngValue]="null">All</option>
+              <option [ngValue]="true">Yes</option>
+              <option [ngValue]="false">No</option>
+            </select>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Search Button -->
+      <div class="w-full">
+        <div class="flex justify-end">
+          <p-button
+            [raised]="true"
+            label="Search"
+            [rounded]="true"
+            icon="pi pi-search "
+            (click)="handleSearch()"
+            class="w-full md:w-auto"
+          ></p-button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card rounded-xl">
+    <div *ngIf="multiple" class="flex justify-between items-center gap-4">
+      <span class="text-sm text-gray-600 leading-none mt-1">
+        Selected Items: {{ selectedRows.length || 0 }}
+      </span>
+      <p-button
+        type="button"
+        [raised]="true"
+        [rounded]="true"
+        [label]="selectBtnLabel"
+        severity="contrast"
+        icon="pi pi-check"
+        [disabled]="multiple && selectedRows.length === 0"
+        (click)="confirmSelection()"
+      ></p-button>
+    </div>
+
+    <div class="bg-white rounded-xl shadow p-4">
+      <p-table
+        [value]="data"
+        [(selection)]="selectedRows"
+        (onRowSelect)="handleRowSelection($event)"
+        [selectionMode]="selectionMode"
+        (selectionChange)="onSelectionChange($event)"
+        [lazy]="true"
+        (onLazyLoad)="onLazyLoad($event)"
+        [sortField]="sortField"
+        [sortOrder]="sortOrder"
+        [paginator]="true"
+        [rowHover]="true"
+        [rows]="pagination.pageSize"
+        [totalRecords]="totalRecords"
+        [first]="pagination.pageNumber * pagination.pageSize"
+        [columns]="columns"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        styleClass="p-datatable-sm p-datatable-striped"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th
+              *ngFor="let col of columns"
+              [pSortableColumn]="col.sortField || col.field"
+              [pSortableColumnDisabled]="!col.sort"
+            >
+              {{ col.header }}
+              <p-sortIcon *ngIf="col.sort" [field]="col.field"></p-sortIcon>
+            </th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-rowData let-columns="columns">
+          <tr
+            [pSelectableRow]="rowData"
+            [pSelectableRowDisabled]="isRowDisabled(rowData)"
+            [ngClass]="{
+              'bg-red-400': multiple ? selectedRows.includes(rowData) : false,
+              'cursor-pointer': !isRowDisabled(rowData),
+              'opacity-60 cursor-not-allowed': isRowDisabled(rowData)
+            }"
+          >
+            <td *ngFor="let col of columns; trackBy: trackByFn" [ngSwitch]="col.type">
+              <ng-container *ngSwitchCase="'tag'">
+                <p-tag
+                  [value]="rowData[col.field] | yesno"
+                  [severity]="rowData[col.field] ? 'success' : 'danger'"
+                ></p-tag>
+              </ng-container>
+              <ng-container *ngSwitchCase="'boolean'">
+                {{ rowData[col.field] | yesno }}
+              </ng-container>
+              <ng-container *ngSwitchDefault>
+                {{ rowData[col.field] }}
+              </ng-container>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td
+              [attr.colspan]="columns.length"
+              class="text-center font-semibold py-4"
+            >
+              No results found.
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>

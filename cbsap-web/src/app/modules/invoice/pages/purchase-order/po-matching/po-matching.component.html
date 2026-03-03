@@ -1,0 +1,201 @@
+<div class="w-full flex flex-col">
+  <div class="mb-6">
+    <div class="flex items-center justify-between mb-2">
+      <div class="pr-5">
+        <h2 class="text-xl font-semibold mb-2 gap-2">
+          <p-tag [value]="'Invoice No: ' + invNo"></p-tag>
+        </h2>
+      </div>
+      <div class="flex gap-2">
+        <p-button label="Save" icon="pi pi-check" [raised]="true" [rounded]="true" severity="primary"
+          (click)="savePO()" />
+        <p-button label="Cancel" icon="pi pi-times" [raised]="true" [rounded]="true" severity="contrast"
+          (click)="cancel()" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-splitter styleClass="w-full h-[85vh]" layout="horizontal" [panelSizes]="[40,60]" >
+  <ng-template pTemplate>
+    <div class="h-full w-full mt-4 flex flex-col">
+      <div class="mb-6 flex-1 flex flex-col">
+        <div class="w-full flex-1 bg-white p-4 flex flex-col">
+          <app-invoice-image-viewer [invoiceId]="invoiceID" class="flex-1 pomatch block"></app-invoice-image-viewer>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate>
+    <p-splitter layout="vertical">
+      <ng-template pTemplate>
+        <div class="panel-scroll w-full p-4">
+          <!--  Row 2: Unmatched Invoice Lines Grid -->
+
+          <p-fieldset legend="Matching lines" [toggleable]="true">
+            <div class="flex items-center justify-start m-2 gap-x-2">
+              <div class="flex gap-2">
+                <p-button label="Unmatch All Lines" rounded="true" severity="info" raised="true" size="small"
+                  icon="pi pi-check" (click)="unmatchAll()" />
+
+                <p-button label="Unmatch Selected Lines" rounded="true" severity="secondary" raised="true" size="small"
+                  icon="pi pi-times" (click)="unmatchSelected()" />
+              </div>
+            </div>
+            <div class="overflow-auto border rounded shadow bg-white">
+              <p-table #tableMatchingPO [value]="matchingPOs" [columns]="matchingLinesColumns"
+                [(selection)]="targetMatchPoLines" dataKey="purchaseOrderLineID" selectionMode="multiple"
+                (onRowSelect)="onRowSelected($event)" editable="true" size="small" [paginator]="true" [rows]="5"
+                [rowsPerPageOptions]="[5, 10]" [scrollable]="true" scrollHeight="400px"
+                [paginatorDropdownAppendTo]="'body'">
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th *ngFor="let col of columns; trackBy: trackByValue">
+                      {{ col.header }}
+                    </th>
+                    <th><p-tableHeaderCheckbox /></th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-rowData let-columns="columns" let-editing="editing">
+                  <tr>
+                    <td *ngFor="let col of columns; trackBy: trackByValue">
+                      <ng-container>
+                    <td *ngIf="col.editable; else nonEditableCell" [pEditableColumn]="rowData[col.field]"
+                      [pEditableColumnField]="col.field">
+                      <p-cellEditor>
+                        <ng-template pTemplate="input">
+                          <p-inputNumber [(ngModel)]="rowData[col.field]" [useGrouping]="false"></p-inputNumber>
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                          {{ rowData[col.field] }}
+                        </ng-template>
+                      </p-cellEditor>
+                    </td>
+                    </ng-container>
+                    <ng-template #nonEditableCell>
+                      <td>
+                        <ng-container *ngIf="col.field === 'status'; else statusCell">
+                          <p-tag *ngIf="rowData.status != null" [value]="StatusDescriptions[rowData.status]"
+                            [severity]="getStatusSeverity(rowData.status)"></p-tag>
+                        </ng-container>
+                        <ng-template #statusCell>
+                          {{
+                          col.field === "amount"
+                          ? (rowData[col.field] | number : "1.2-2")
+                          : rowData[col.field]
+                          }}
+                        </ng-template>
+                      </td>
+                    </ng-template>
+                    </td>
+
+                    <td>
+                      <p-tableCheckbox [value]="rowData" />
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td [attr.colspan]="matchingLinesColumns.length + 1">
+                      <div class="flex justify-center items-center text-gray-500 font-semibold">
+                        No record found.
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </p-fieldset>
+
+          <!--Row 3: Search PO + Match Grid -->
+
+          <div></div>
+        </div>
+      </ng-template>
+      <ng-template pTemplate>
+        <div class="panel-scroll w-full p-4">
+          <p-fieldset legend="Search Purchase Order" [toggleable]="true">
+            <div class="flex items-center justify-start m-2">
+              <div class="flex gap-2">
+                <p-button label="Search PO" rounded="true" raised="true" size="small" icon="pi pi-table"
+                  (click)="SearchPO()" />
+
+                <p-button label="Match All Lines" rounded="true" severity="success" raised="true" size="small"
+                  icon="pi pi-check" [disabled]="!hasVisibleCheckbox" (click)="matchAll()" />
+                <p-button label="Match Selected Lines" rounded="true" severity="contrast" raised="true" size="small"
+                  icon="pi pi-times" (click)="matchSelected()" />
+              </div>
+            </div>
+
+            <!-- PO Grid -->
+
+            <p-table #tablePO [value]="availablesPOs" [columns]="availablePOcolumns" [(selection)]="srcSelectedPOline"
+              dataKey="purchaseOrderLineID" selectionMode="multiple" (onRowSelect)="onRowSelected($event)" size="small"
+              [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10]" [scrollable]="true" scrollHeight="400px"
+              [paginatorDropdownAppendTo]="'body'">
+              <ng-template pTemplate="header" let-columns>
+                <tr>
+                  <th *ngFor="let col of columns; trackBy: trackByValue">
+                    {{ col.header }}
+                  </th>
+                  <th>
+                    <p-tableHeaderCheckbox />
+                  </th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-rowData let-columns="columns" let-editing="editing">
+                <tr>
+                  <td *ngFor="let col of columns; trackBy: trackByValue">
+                    <ng-container>
+                  <td *ngIf="col.editable; else nonEditableCell" [pEditableColumn]="rowData[col.field]"
+                    [pEditableColumnField]="col.field">
+                    <p-cellEditor>
+                      <ng-template pTemplate="output">
+                        {{ rowData[col.field] }}
+                      </ng-template>
+                      <ng-template pTemplate="input">
+                        <p-inputNumber [(ngModel)]="rowData[col.field]" [min]="0"
+                          [max]="getMaxValue(rowData, col.field)" [useGrouping]="false"
+                          (keydown.enter)="onQtyChange(rowData)" (keydown.tab)="onQtyChange(rowData)"
+                          (onInput)="handleZeroInput(rowData, col.field)"></p-inputNumber>
+                      </ng-template>
+                    </p-cellEditor>
+                  </td>
+                  </ng-container>
+                  <ng-template #nonEditableCell>
+                    <td>
+                      {{
+                      col.field === "amount"
+                      ? (rowData[col.field] | number : "1.2-2")
+                      : rowData[col.field]
+                      }}
+                    </td>
+                  </ng-template>
+                  </td>
+
+                  <td>
+                    <p-tableCheckbox #chkBoxAvailablePO [value]="rowData" *ngIf="isInTarget(rowData)" />
+                    <ng-container> </ng-container>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td [attr.colspan]="availablePOcolumns.length + 1">
+                    <div class="flex justify-center items-center text-gray-500 font-semibold">
+                      No record found.
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </p-fieldset>
+        </div>
+      </ng-template>
+    </p-splitter>
+  </ng-template>
+
+
+</p-splitter>

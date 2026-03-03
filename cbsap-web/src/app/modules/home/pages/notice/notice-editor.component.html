@@ -1,0 +1,73 @@
+
+<form [formGroup]="noticeForm" (ngSubmit)="onSubmit(noticeForm)">
+  <!-- Vertical Grid Layout -->
+  <div class="pt-3 mb-3 grid grid-cols-1 gap-4">
+    <!-- Heading Field -->
+    <div>
+      <label for="heading" class="block font-medium mb-1">Subject</label>
+      <input
+        type="text"
+        pInputText
+        #heading
+        id="heading"
+        formControlName="heading"
+        autocomplete="off"
+        [autofocus]="true"
+        [maxLength]="50"
+        class="w-full p-2 border border-gray-300 rounded"
+      />
+      <small class="text-red-500" *ngIf="formSubmitted && noticeForm.get('heading')?.value==''">
+        Subject is required.
+      </small>
+    </div>
+
+    <!-- Message Field -->
+    <div>
+      <label for="message" class="block font-medium mb-1">Message</label>
+     
+      <textarea rows="7"
+        pInputTextarea
+        #message
+        id="message"
+        formControlName="message"
+        autocomplete="off"
+        [maxLength]="255"
+        class="w-full p-2 border  rounded"
+      ></textarea>
+      <div class="flex justify-between">
+        <div class="flex-1">
+          <small class="text-red-500" *ngIf="formSubmitted && noticeForm.get('message')?.value==''">
+            Message is required.
+          </small>
+          
+        </div>
+        <div class="flex-1 text-right">
+          <small *ngIf="noticeForm.get('message')?.value?.length > 0" class="text-gray-500 text-xs">
+            {{ noticeForm.get('message')?.value?.length || 0 }}/255 
+          </small>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Checkbox Field -->
+    <div class="flex items-center">
+      <p-checkbox
+        class="mr-2"
+        [binary]="true"
+        formControlName="sendEmail"
+        value="{{ sendEmail }}"
+        inputId="sendEmail"
+      ></p-checkbox>
+      <label for="sendEmail" class="m-0 text-gray-500 text-sm ">Send email to all users</label>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex justify-end  gap-2 mb-3">
+
+    <p-button label="Cancel" severity="contrast"  rounded="true"  icon="pi pi-times"  (click)="closeDialog(false)" />
+    <p-button label="Save" [rounded]="true"  icon="pi pi-check" rounded="true" type="submit" />
+     </div>
+</form>

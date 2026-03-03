@@ -1,0 +1,9 @@
+<app-loader></app-loader>
+<div class="h-screen flex flex-col">
+  <app-topbar [hasSideMenu]="false" class="h-16"></app-topbar>
+  <!-- Tailwind h-16 = 64px -->  
+  <div class="flex-1 overflow-hidden p-0">
+    <p-toast position="top-right" key="tc"></p-toast>
+    <app-invoice-main class="h-full"></app-invoice-main>
+  </div>
+</div>

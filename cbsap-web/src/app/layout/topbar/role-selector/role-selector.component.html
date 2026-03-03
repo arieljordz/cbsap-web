@@ -1,0 +1,8 @@
+<div class="role mt-1">
+    <!-- <p-menu #roles [model]="userRoles" [popup]="true"></p-menu> -->
+   <p-select [options]="roles" [(ngModel)]="selectedRole"
+   (onChange)="roleChanged($event)"
+   optionLabel="roleName"  size="small" class="w-full md:w-56"
+   [virtualScroll]="true" [virtualScrollItemSize]="20"  />
+ 
+</div>

@@ -1,0 +1,182 @@
+<p-confirmDialog [style]="{ width: '20vw', height: '200px' }" />
+
+
+<p-splitter styleClass="w-full h-full mb-8" [panelSizes]="[40, 60]">
+  <ng-template pTemplate>
+    <div class="w-full bg-white p-4 h-full">      
+      <app-invoice-image-viewer
+        [invoiceId]="invoiceID"
+      ></app-invoice-image-viewer>
+    </div>
+  </ng-template>
+  <ng-template pTemplate>
+    <div class="w-full h-full">
+ <app-invoice-actions
+  [currentStatus]="invoiceStatus"
+  [currentQueue]="queueroute"
+  [permissions]="permissions"
+></app-invoice-actions>
+    <div class="p-4 w-full overflow-auto invoice-details-container" >
+     
+      <!-- Button Above Tabs -->
+      <div class="mb-4 flex justify-between items-center">
+        <div class="flex gap-2">
+          <p-button
+            [raised]="true"
+            *ngIf="isVisibleFor(InvoiceActionButton.Approve)"
+            label="Approve"
+            icon="pi pi-check"
+            [rounded]="true"
+            severity="success"
+            size="small"
+            (click)="onApprove()"
+          />
+          <p-button
+            [raised]="true"
+            *ngIf="isVisibleFor(InvoiceActionButton.Hold)"
+            label="Hold"
+            icon="pi pi-pause"
+            [rounded]="true"
+            severity="warn"
+            size="small"
+            (click)="onHold()"
+          />
+          <p-button
+            [raised]="true"
+            *ngIf="isVisibleFor(InvoiceActionButton.RouteToException)"
+            label="Route to Exception"
+            icon="pi pi-directions"
+            [rounded]="true"
+            severity="contrast"
+            size="small"
+            (click)="onRouteToException()"
+          />
+          <p-button
+            [raised]="true"
+            *ngIf="isVisibleFor(InvoiceActionButton.Reject)"
+            label="Reject"
+            icon="pi pi-thumbs-down"
+            [rounded]="true"
+            severity="danger"
+            size="small"
+            (click)="onReject()"
+          />
+          <p-button
+            [raised]="true"
+            *ngIf="isVisibleFor(InvoiceActionButton.Reactivate)"
+            label="Reactivate"
+            icon="pi pi-refresh"
+            [rounded]="true"
+            severity="contrast"
+            size="small"
+            (click)="onReactivate()"
+          />
+        </div>
+
+        <div class="text-gray-700 font-medium">
+          <span
+            class="p-button p-button-rounded p-button-sm p-button-outlined pointer-events-none select-none font-semibold"
+            [ngClass]="changeColor"
+          >
+            Processing Status: {{ status }}
+          </span>
+        </div>
+      </div>
+      <p-tabs value="0" scrollable (valueChange)="onTabSelect($event)">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <p-tablist class="flex-1 min-w-0">
+          <ng-template #previcon>
+            <i class="pi pi-minus"></i>
+          </ng-template>
+          <p-tab value="0" class="flex items-center !gap-2">
+            <i class="pi pi-info-circle"></i>
+            <span class="font-bold whitespace-nowrap">Invoice Information</span>
+          </p-tab>
+          <p-tab value="1" class="flex items-center !gap-2">
+            <i class="pi pi-list"></i>
+            <span class="font-bold whitespace-nowrap"
+              >Invoice Line Allocation</span
+            >
+          </p-tab>
+          <p-tab value="2" class="flex items-center !gap-2">
+            <i class="pi pi pi-sync"></i>
+            <span class="font-bold whitespace-nowrap">Routing Flow</span>
+          </p-tab>
+          </p-tablist>
+          <div class="flex items-center gap-2 self-end lg:self-auto">
+            <p-button
+              icon="pi pi-chevron-left"
+              aria-label="Previous invoice"
+              size="large"
+              severity="secondary"
+              variant="outlined"
+              pTooltip="Previous invoice in same status & queue"
+              tooltipPosition="top"
+              [loading]="isPreviousInvoiceLoading"
+              [disabled]="isPreviousInvoiceLoading || hasPreviousInvoice === false"
+              (click)="loadPrevious()"
+            ></p-button>
+            <p-button
+              icon="pi pi-chevron-right"
+              aria-label="Next invoice"
+              size="large"
+              severity="secondary"
+              variant="outlined"
+              pTooltip="Next invoice in same status & queue"
+              tooltipPosition="top"
+              [loading]="isNextInvoiceLoading"
+              [disabled]="isNextInvoiceLoading || hasNextInvoice === false"
+              (click)="loadNext()"
+            ></p-button>
+          </div>
+        </div>
+        <p-tabpanels>
+          <p-tabpanel value="0">
+            <div class="h-full w-full">
+              <div class="grid grid-cols-1 gap-4 w-full h-full">
+                <!-- Invoice info component -->
+                <app-invoice-info
+                  [invoiceId]="invoiceID"
+                  (invoiceDataLoaded)="invoiceDataLoaded($event)"
+                  [messages]="invValidationMessages"
+                  [invoiceValidationHeader]="invoiceValidationHeader"
+                  (amounts)="handleAmountsChange($event)"
+                >
+                </app-invoice-info>
+              </div>
+            </div>
+          </p-tabpanel>
+          <p-tabpanel value="1">
+            <div class="h-full w-full">
+              <div class="grid grid-cols-1 gap-4 w-full h-full">
+                <app-invoice-lines
+                  [invoiceId]="invoiceID"
+                  [invoiceAllocationItems]="invoiceAllocationItems"
+                  [amounts]="currentAmounts"
+                  (itemsChange)="onItemsChange($event)"
+                ></app-invoice-lines>
+              </div>
+            </div>
+          </p-tabpanel>
+          <p-tabpanel value="2">
+            <div class="h-full w-full">
+              <div class="grid grid-cols-1 gap-4 w-full h-full">
+                <p class="m-0">
+                
+                <app-invoice-routing-flow #invroutingFlowComp
+                      [invoiceID]="invoiceID"
+                      [keywordID]="keywordID"
+                      [supplierInfoID]="supplierInfoID"
+                    ></app-invoice-routing-flow>
+                 
+                </p>
+              </div>
+            </div>
+          </p-tabpanel>
+        </p-tabpanels>
+      </p-tabs>
+    </div>
+    </div>
+
+  </ng-template>
+</p-splitter>

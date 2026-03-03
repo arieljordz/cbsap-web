@@ -1,0 +1,12 @@
+/*custom cbsap table*/
+.p-datatable {
+
+    .p-datatable-header-bgwhite {
+        background:$primaryTextColor;
+        color: $tableHeaderTextColor;
+        border: $tableHeaderBorder;
+        border-width: $tableHeaderBorderWidth;
+        padding: $tableHeaderPadding;
+        font-weight: $tableHeaderFontWeight;
+    }
+}

@@ -1,0 +1,65 @@
+
+<div class="flex justify-center">
+  <img
+    src="assets/images/cbsap-grey.png"
+    alt="Image"
+    class="cbsap-login-logo mb-3"
+  />
+</div>
+
+<div class="text-900 text-3xl text-left font-medium mb-3">Log in</div>
+<div class="text-600 text-left font-medium mb-3">
+  Welcome back! Please enter your details.
+</div>
+<section>
+  <label for="emailAdress" class="block text-900 text-xl font-medium mb-2"
+    >Username</label
+  >
+  <input
+    id="emailAdress"
+    type="text"
+    pInputText
+    class="w-full mb-5"
+    (keydown.enter)="login()"
+    [(ngModel)]="loginRequest.Username"
+  />
+
+  <label for="password" class="block text-900 font-medium text-xl mb-2"
+    >Password</label
+  >
+  <p-password
+    id="password"
+    [feedback]="false"
+    [(ngModel)]="loginRequest.Password"
+    styleClass="w-full"
+    (keydown.enter)="login()"
+    [toggleMask]="true"
+  ></p-password>  
+  
+  <div class="pt-5 mb-5 text-right">
+    <a
+      class="font-medium no-underline ml-2 text-right cursor-pointer"
+      routerLink="/auth/forgotpassword"
+      style="color: var(--primary-color)"
+      >Forgot password?</a
+    >
+  </div>
+  <div class="text-xs mb-3" *ngIf="isShowErrorMessage">
+    
+   <p-message icon="pi pi-exclamation-triangle" severity="error"> {{messages2 }}</p-message>
+  </div>
+
+  <button
+    pButton
+    pRipple
+    label="Sign In"
+    class="w-full p-3 text-xl p-button-primary"
+    (click)="login()"
+    
+    type="submit"
+  ></button>
+</section>
+
+<div class="flex justify-center">
+  <img src="assets/images/image13051-mw2l-200h.png" alt="Image" class="pt-7" />
+</div>

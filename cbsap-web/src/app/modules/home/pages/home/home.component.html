@@ -1,0 +1,52 @@
+<div
+  class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-3"
+  *ngIf="!hideQueues"
+>
+  <!-- Exceptions Card -->
+  <div class="bg-stone-50 border border-amber-500 rounded-lg shadow-md p-4">
+    <div class="flex justify-between items-center">
+      <div class="font-medium text-lg text-amber-700">Exceptions</div>
+      <i class="pi pi-exclamation-circle text-amber-800 text-8xl"></i>
+    </div>
+    <h4 class="text-3xl font-bold text-amber-800 mt-2">30</h4>
+  </div>
+
+  <!-- Rejected Card -->
+  <div class="bg-stone-50 border border-rose-700 rounded-lg shadow-md p-4">
+    <div class="flex justify-between items-center">
+      <div class="font-medium text-lg text-rose-700">Rejected</div>
+      <i class="pi pi-thumbs-down text-rose-600 text-6xl"></i>
+    </div>
+    <h4 class="text-3xl font-bold text-rose-800 mt-2">20</h4>
+  </div>
+
+  <!-- Approver Queue Card -->
+  <div class="bg-stone-50 border border-green-300 rounded-lg shadow-md p-4">
+    <div class="flex justify-between items-center">
+      <div class="font-medium text-lg text-green-700">Approver Queue</div>
+      <i class="pi pi-check-circle text-green-600"></i>
+    </div>
+    <h4 class="text-3xl font-bold text-green-800 mt-2">201</h4>
+  </div>
+
+  <!-- Archived Card -->
+  <div class="bg-stone-50 border border-blue-300 rounded-lg shadow-md p-4">
+    <div class="flex justify-between items-center">
+      <div class="font-medium text-lg text-blue-700">Archived</div>
+      <i class="pi pi-folder text-blue-600"></i>
+    </div>
+    <h4 class="text-3xl font-bold text-blue-800 mt-2">2000</h4>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-1 gap-6">
+  <!-- Notice Card -->
+  <div class="bg-white border border-gray-300 rounded-lg shadow-md p-4">
+    <app-notice></app-notice>
+  </div>
+
+  <!-- Assigned Invoice Card -->
+  <div class="bg-white border border-gray-300 rounded-lg shadow-md p-4">
+    <app-assigned-invoice></app-assigned-invoice>
+  </div>
+</div>

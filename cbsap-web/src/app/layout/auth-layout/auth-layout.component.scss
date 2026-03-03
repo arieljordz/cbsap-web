@@ -1,0 +1,20 @@
+.login-bg {
+  background-image: url("../../../assets/images/rectangle13017-n32i-800w.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+.card {
+  background: #1f2937;
+  border: 1px solid #1f2937;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--card-shadow);
+  border-radius: 10px;
+
+  &:last-child {
+      margin-bottom: 0;
+  }
+}
+
+

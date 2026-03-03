@@ -1,0 +1,112 @@
+<p-panel
+  header=" Invoice Routing Flow"
+  [toggleable]="true"
+  styleClass="mb-2 panel-items"
+>
+  <!-- <div class="grid grid-cols-12 mt-6">
+    <div class="col-span-12 md:col-span-6">
+      <div class="grid grid-cols-12 items-center">
+        <label
+          for="routingFlowName"
+          class="col-span-12 md:col-span-4 font-medium"
+        >
+          Flow Name
+        </label>
+        <div class="col-span-12 md:col-span-8">
+          <p-inputgroup class="!h-9">
+            <input
+              id="routingFlowName"
+              type="text"
+              readonly
+              pInputText
+              [value]="selectedRoutingFlow?.InvRoutingFlowName"
+              size="small"
+              class="w-full"
+            />
+            <p-inputgroup-addon>
+              <p-button
+                variant="text"
+                severity="secondary"
+                icon="pi pi-search"
+                size="small"
+                (click)="assignRoutingFlow()"
+              />
+            </p-inputgroup-addon>
+          </p-inputgroup>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-4">
+    <span class="font-bold"> Add Role </span>
+    <p-button
+      type="button"
+      [rounded]="true"
+      icon="pi pi-plus"
+      class="p-button-sm"
+    />
+  </div> -->
+
+  <form [formGroup]="invInfoRoutingLevelForm">
+    <!-- Top Add Button -->
+    <div class="flex justify-center mb-4 ml-4">
+      <!-- <p-button
+        severity="contrast"
+        type="button"
+        [rounded]="true"
+        pTooltip="Add Role"
+        class="w-[100px] text-white text-sm ml-6 mt-2"
+        (click)="searchRole()"
+        rounded="true"
+        size="small"
+      >
+        <i class="pi pi-plus"></i>
+      </p-button> -->
+    </div>
+    <div *ngIf="routingFlowLevels.length > 0" class="w-[300px] mx-auto text-sm">
+      <label class="block mt-1"></label>
+
+      <div class="space-y-4 mt-2" formArrayName="invInfoRoutingLevels">
+        <div
+          *ngFor="let level of routingFlowLevels.controls; let i = index"
+          [formGroupName]="i"
+          class="flex flex-col items-center w-full"
+        >
+          <div
+            class="flex items-center justify-between bg-gray-100 p-3 rounded shadow-sm w-full"
+          >
+            <div class="text-center flex-1">
+              <div class="font-semibold">
+                {{ getRoleName(level.value.roleID!) }}
+              </div>
+              <small class="text-gray-500">Level {{ level.value.level }}</small>
+            </div>
+            <button
+              (click)="removeLevel(i)"
+              class="text-red-600 text-sm flex items-center ml-4"
+              pTooltip="Remove Role"
+              *ngIf="routingFlowLevels.length !== 1"
+            >
+              <i class="pi pi-times"></i>
+            </button>
+          </div>
+
+          <div class="flex items-center justify-center mt-2">
+            <p-button
+              severity="contrast"
+              type="button"
+              [rounded]="true"
+              class="w-[100px] text-white text-sm text-center"
+              pTooltip="Add Role"
+              (click)="searchRole(i + 1)"
+              size="small"
+            >
+              <i class="pi pi-plus"></i>
+            </p-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</p-panel>

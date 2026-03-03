@@ -1,0 +1,76 @@
+<div class="flex justify-between items-center mb-4 pl-2 mt-2">
+    <div>
+        <div class="flex items-center gap-2">        
+        <h5 class="m-0">            
+            <i class="pi pi-bell text-xl"></i> Noticeboard 
+        </h5>
+         <p-badge *ngIf="newMessageCount() > 0" [value]="newMessageCount()" severity="danger" [style]="{'margin-bottom': '1px'}"/>
+        </div>
+        <div class="text-gray-500 mb-5">
+            View current notices and reminders relative to your activities.
+        </div>
+    </div>
+    <div class="pr-4">
+    <p-button label="Add Message" [rounded]="true" severity="secondary" size="small" variant="outlined" icon="pi pi-envelope"
+        (click)="addMessage()" />
+
+  </div>
+</div>
+<p-dialog header="Notice" [modal]="true" [(visible)]="showReadMore" [style]="{ width: '50rem','max-height':'400px'}">
+    <div class="font-bold mb-1">
+        {{readMoreData()?.heading}}
+    </div>
+    <div class="text-gray-500 mb-3 flex gap-2 text-sm items-center">
+          <p-avatar 
+                                    label="{{getInitials(readMoreData()?.userName!)}}"                                     
+                                    [style]="{ 'background-color': '#29abe2', color: '#fff','font-weight':'bold' }" 
+                                    shape="circle" />
+                                    <span>{{readMoreData()?.userName}}</span>        
+                            
+        <span class="mt-1">°</span>
+        <span>{{readMoreData()?.messageDate! | datetimeformat}}</span>
+    </div>
+    <div style="white-space:pre-line;margin-bottom: 20px;">
+        {{readMoreData()?.message}}
+    </div>
+</p-dialog>
+<div class="space-y-2">
+    <div class="pb-5 mb-6">
+        <p-carousel [value]="notices" [numScroll]="2" [numVisible]="4" [circular]="false" showIndicators="false"
+            [responsiveOptions]="responsiveOptions">
+            <ng-template let-notice pTemplate="notice">
+                <div class="border-1 surface-border border-round m-2 p-3 card" style="height: 200px;" [class.new-message]="notice.isNew">
+                    <div class="mb-3 gap-2 flex justify-between items-center text-gray-500 text-xs">
+                        <div class="flex truncate-text items-center">
+                             <p-avatar 
+                                    label="{{getInitials(notice.userName)}}" 
+                                    styleClass="mr-2"     
+                                    [style]="{ 'background-color': '#29abe2', color: '#fff','font-weight':'bold' }" 
+                                    shape="circle" />
+                            <div pTooltip="{{notice.userName}}" style="max-width: 112px;">{{notice.userName}}</div>
+
+                         
+                        </div>
+                        <div class="flex gap-2 items-center">
+                            <div class="truncate-text">{{ notice.messageDate | datetimeformat }}</div>
+                            <a pTooltip="Edit" [routerLink]="" (click)="editNotice(notice)"
+                                class="text-blue-500 hover:text-blue-700">
+                                <i class="pi pi-pencil"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                    <div class="font-bold">
+                        {{notice.heading}}
+                    </div>
+                    <div class="pt-3 line-clamp">
+                        {{notice.message}}
+                    </div>
+                    <button (click)="readMore(notice)" class="text-blue-500 hover:text-blue-700 text-sm mt-1" *ngIf="notice.message.length > 122">
+                 Read more
+               </button>                    
+                </div>
+            </ng-template>
+        </p-carousel>
+    </div>
+</div>

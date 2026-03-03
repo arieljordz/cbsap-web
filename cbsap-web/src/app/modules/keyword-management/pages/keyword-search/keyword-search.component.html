@@ -1,0 +1,91 @@
+<div class="grid grid-cols-1 gap-4">
+  <div class="col">
+    <h5 class="mb-4 font-semibold text-lg">Keyword Management</h5>
+  </div>
+</div>
+
+<app-quick-search
+  [fields]="keywordFields"
+  [addButtonLabel]="'Add Keyword'"
+  (searchEvent)="onSearch($event)"
+  (clearEvent)="onClear()"
+  (exportEvent)="onExport()"
+  (addEvent)="onAddKeyword()"
+  [actionButtons]="searchActionButtonsConfig"
+></app-quick-search>
+
+<div class="card user-card mt-6">
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+  <p-table
+    id="dtKeywords"
+    #dtTaxCodes
+    [value]="keywords"
+    [lazy]="true"
+    (onLazyLoad)="onLazyLoad($event)"
+    dataKey="KeywordID"
+    [paginator]="true"
+    [showCurrentPageReport]="true"
+    [columns]="columns"
+    [rowHover]="true"
+    [rows]="pageSize"
+    [totalRecords]="totalRecords"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [loading]="loading"
+    [rowsPerPageOptions]="[5, 10, 25]"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    styleClass="p-datatable-sm p-datatable-striped p-datatable-header-bgwhite"
+    size="small"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Action</th>
+        <th *ngFor="let col of columns" [pSortableColumn]="col.sort ? col.field : undefined">
+          {{ col.header }}
+          <p-sortIcon
+            *ngIf="col.sort"
+            [field]="col.field"
+            pTooltip="Sort by {{ col.header }}"
+            tooltipPosition="top"
+          ></p-sortIcon>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <tr [pSelectableRow]="rowData">
+        <td>
+          <button
+            class="p-button-secondary p-button-rounded p-button-text"
+            icon="pi pi-pencil"
+            pButton
+            pRipple
+            type="button"
+            (click)="editKeyword(rowData)"
+          ></button>
+          <p-button  variant ="text" [rounded]="true" icon="pi pi-trash"  (click)="deleteConfirmation(rowData)"/>
+        </td>
+
+        <td *ngFor="let col of columns" [ngSwitch]="col.dataType">
+          <ng-container *ngSwitchCase="'date'">
+            {{ rowData[col.field] | dateformat }}
+          </ng-container>
+           <ng-container *ngSwitchCase="'boolean'">
+            {{ rowData[col.field] ? 'Yes' : 'No' }}
+           </ng-container>
+          <ng-container *ngSwitchDefault>
+            {{ rowData[col.field] }}
+          </ng-container>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="6">
+          <div class="flex items-center justify-center font-bold text-center">
+            No records found.
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

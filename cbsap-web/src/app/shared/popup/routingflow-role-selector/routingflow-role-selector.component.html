@@ -1,0 +1,31 @@
+<form [formGroup]="roleSelectorForm" (ngSubmit)="submit()">
+  <div class="grid grid-cols-1 gap-6 pt-4">
+    <div class="flex flex-col gap-2">
+      <label for="role" class="font-medium">Select Role</label>
+      <div class="flex items-center gap-8">
+        <p-select
+          class="w-full"
+          formControlName="selectedRoleID"
+          [options]="rolesOptions"
+          [filter]="true"
+          filterBy="label"
+          [showClear]="false"
+          [appendTo]="'body'"
+        >
+        </p-select>
+
+        <p-button
+          severity="contrast"
+          type="submit"
+          [raised]="true"
+          [rounded]="true"
+          class="min-w-[150px] px-4 py-2 text-white text-sm"
+          [severity]="!roleSelectorForm.valid ? 'secondary' : 'contrast'"
+          [disabled]="!roleSelectorForm.valid"
+        >
+          <i class="pi pi-plus mr-1"></i> Select Role
+        </p-button>
+      </div>
+    </div>
+  </div>
+</form>

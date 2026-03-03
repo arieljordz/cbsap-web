@@ -1,0 +1,12 @@
+export const ROUTING_FLOWS = 'v1/lookup/inv-routing-flows';
+export const ACCOUNTS = 'v1/lookup/accounts';
+export const TAX_CODES = 'v1/lookup/tax-codes';
+export const SUPPLIER_LOOKUP = 'v1/lookup/suppliers';
+export const INV_SUPPLIER_LOOKUP = 'v1/lookup/suppliers/paged';
+export const ACCOUNT_SEARCH_LOOKUP = 'v1/lookup/accounts/paged';
+export const ACCOUNT_EXPORT = 'v1/lookup/accounts/download';
+export const ROLES_LOOKUP = 'v1/lookup/roles';
+export const DIMENSION_SEARCH_LOOKUP = 'v1/lookup/dimensions/paged';
+export const DIMENSION_EXPORT = 'v1/lookup/dimensions/download';
+export const GOODS_RECEIPT_SEARCH_LOOKUP = 'v1/lookup/goods-receipts/paged';
+export const GOODS_RECEIPT_EXPORT = 'v1/lookup/goods-receipts/download';

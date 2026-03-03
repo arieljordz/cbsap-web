@@ -1,0 +1,67 @@
+<div
+  [formGroup]="formGroup"
+  class="grid grid-cols-1 sm:w-1/3 lg:w-2/4 xl:w-2/5 gap-6 pt-4"
+>
+  <!-- Invoice Due Date Notification -->
+  <div>
+    <label for="invoiceDueDate" class="block mb-1"
+      >Invoice Due Date Notification</label
+    >
+    <p-inputNumber
+      autocomplete="off"
+      id="invoiceDueDate"
+      formControlName="invoiceDueDateNotification"
+      [useGrouping]="false"
+      class="w-full"
+    ></p-inputNumber>
+  </div>
+
+  <!-- Escalate to Level 1 Manager -->
+  <div>
+    <label for="escalateToLevel1Mgr" class="block mb-1"
+      >Escalate to Level 1 Manager</label
+    >
+    <p-inputNumber
+      autocomplete="off"
+      id="escalateToLevel1Mgr"
+      formControlName="invoiceEscalateToLevel1ManagerNotification"
+      [useGrouping]="false"
+      class="w-full"
+    ></p-inputNumber>
+  </div>
+  <!-- Forward to Level 1 Manager -->
+  <div>
+    <label for="forwardRoleManager1" class="block mb-1"
+      >Forward to Level 1 Manager</label
+    >
+    <p-inputNumber
+      autocomplete="off"
+      id="forwardRoleManager1"
+      formControlName="forwardToLevel1Manager"
+      [useGrouping]="false"
+      class="w-full"
+    ></p-inputNumber>
+  </div>
+
+  <!-- Forward to Level 2 Manager -->
+  <div>
+    <label for="forwardRoleManager2" class="block mb-1"
+      >Forward to Level 2 Manager</label
+    >
+    <p-inputNumber
+      autocomplete="off"
+      id="forwardRoleManager2"
+      formControlName="forwardToLevel2Manager"
+      [useGrouping]="false"
+      class="w-full"
+    ></p-inputNumber>
+  </div>
+
+  <!-- New Invoice Notification Switch -->
+  <div class="flex items-center space-x-2">
+    <p-toggleswitch formControlName="isNewInvoiceReceiveNotification" />
+    <label for="isNewInvoiceReceiveNotification"
+      >New invoice Notification</label
+    >
+  </div>
+</div>

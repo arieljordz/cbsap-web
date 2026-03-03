@@ -1,0 +1,141 @@
+<div
+  [formGroup]="formGroup"
+  class="grid grid-cols-1 sm:w-1/3 lg:w-2/4 xl:w-2/5 gap-6 pt-4"
+>
+  <!-- Role Name -->
+  <div>
+    <label for="roleName" class="block mb-1">Role Name</label>
+    <input
+      id="roleName"
+      type="text"
+      pInputText
+      formControlName="roleName"
+      autocomplete="off"
+      maxlength="40"
+      appCharacterFocusTracker
+      (focusChange)="onFocusChange('roleName', $any($event))"
+      class="w-full border rounded p-2"
+    />
+    <div class="flex justify-between">
+      <div class="flex-1">
+        <small
+          *ngIf="f['roleName'].invalid && f['roleName'].touched"
+          class="pt-2 text-red-500"
+        >
+          {{ getErrorMessage(f["roleName"], "Role Name") }}
+        </small>
+      </div>
+      <div class="flex-1 text-right" *ngIf="focusStates['roleName']">
+        <small *ngIf="f?.['roleName']?.value?.length > 0" class="text-gray-400">
+          <span
+            *ngIf="
+              (f['roleName'].value | characterLength : 40).approachingLimit
+            "
+            class="text-red-400"
+          >
+            Approaching limit!
+          </span>
+          {{ (f["roleName"].value | characterLength : 40).length }}/40
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Authorisation Limit -->
+  <div>
+    <label for="authorisationLimit" class="block mb-1"
+      >Authorisation Limit</label
+    >
+    <p-inputNumber
+      class="w-full border rounded p-2"
+      autocomplete="off"
+      maxlength="40"
+      id="authorisationLimit"
+      formControlName="authorisationLimit"
+      [useGrouping]="false"
+      class="w-full"
+      appCharacterFocusTracker
+      (focusChange)="onFocusChange('authorisationLimit', $any($event))"
+    ></p-inputNumber>
+  </div>
+
+  <!-- Role Manager 1 -->
+  <div>
+    <label for="roleManager1Name" class="block mb-1">Role Manager 1</label>
+
+    <div class="flex gap-2 items-center">
+      <div class="relative w-full">
+        <input
+          id="roleManager1Name"
+          type="text"
+          pInputText
+          formControlName="roleManager1Name"
+          readonly
+          maxlength="40"
+          autocomplete="off"
+          appCharacterFocusTracker
+          (focusChange)="onFocusChange('roleManager1Name', $any($event))"
+          class="w-full pr-10 border rounded-md p-2 text-sm focus:ring focus:ring-blue-200"
+        />
+
+        <button
+          *ngIf="f['roleManager1Name'].value"
+          type="button"
+          (click)="clearRoleManager('roleManager1')"
+          class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 focus:outline-none"
+          aria-label="Clear Role Manager 1"
+        >
+          <i class="pi pi-times" style="font-size: 0.75rem; line-height: 1;"></i>
+        </button>
+      </div>
+
+      <p-button [rounded]="true" icon="pi pi-search" (click)="searchRoleManager1()"></p-button>
+    </div>
+  </div>
+
+  <!-- Role Manager 2 -->
+  <div>
+    <label for="roleManager2Name" class="block mb-1">Role Manager 2</label>
+
+    <div class="flex gap-2 items-center">
+      <div class="relative w-full">
+        <input
+          id="roleManager2Name"
+          type="text"
+          pInputText
+          formControlName="roleManager2Name"
+          readonly
+          maxlength="40"
+          autocomplete="off"
+          appCharacterFocusTracker
+          (focusChange)="onFocusChange('roleManager2Name', $any($event))"
+          class="w-full pr-10 border rounded-md p-2 text-sm focus:ring focus:ring-blue-200"
+        />
+
+        <button
+          *ngIf="f['roleManager2Name'].value"
+          type="button"
+          (click)="clearRoleManager('roleManager2')"
+          class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 focus:outline-none"
+          aria-label="Clear Role Manager 2"
+        >
+          <i class="pi pi-times" style="font-size: 0.75rem; line-height: 1;"></i>
+        </button>
+      </div>
+
+      <p-button [rounded]="true" icon="pi pi-search" (click)="searchRoleManager2()"></p-button>
+    </div>
+  </div>
+
+  <!-- Switches -->
+  <div class="flex space-x-6 items-center">
+    <div class="flex items-center space-x-2">
+      <p-toggleswitch formControlName="isActive" />
+      <label for="isActive">Active</label>
+    </div>
+    <div class="flex items-center space-x-2">
+      <p-toggleswitch formControlName="canBeAddedToInvoice" />
+      <label for="canBeAddedToInvoice">Add to Invoice</label>
+    </div>
+  </div>
+</div>

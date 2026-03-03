@@ -1,0 +1,18 @@
+<div class ="h-screen  flex items-center justify-center">
+
+  <div class="text-center p-8 w-full ">
+    <!-- Company Logo -->
+    <img src="assets/images/cbsap-grey.png" alt="Company Logo" class="mb-4 w-40 h-40 mx-auto" />
+    
+    <!-- Error Message -->
+    <h1 class="text-2xl font-bold text-red-500 mb-2">Link expired</h1>
+    <p class="mb-4 text-gray-600">{{ message }}</p>
+  
+    <!-- Button -->
+    <p-button label=" Back to login page" [rounded]="true" icon="pi pi-exclamation-circle"  (click)="goToMainPage()"/>
+      <div class="mt-6">
+        <img src="assets/images/image13051-mw2l-200h.png" alt="Error Illustration" class="w-48 mx-auto" />
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,20 @@
+<div class="grid grid-cols-1 gap-4">
+  <div class="col">
+    <h5 class="mb-4 font-semibold text-lg">Purchase Orders</h5>
+  </div>
+</div>
+
+<app-quick-search
+  [fields]="searchPOConfig.fields"
+  [actionButtons]="searchPOConfig.buttons"
+  (searchEvent)="search($event)"
+  (clearEvent)="clear()"
+  (exportEvent)="exportToExcel()"
+/>
+<div class="card user-card mt-6">
+  <app-dynamic-grid
+    (load)="onLazyLoad($event)"
+    [config]="gridConfig"
+    [tableStyle]="{ 'min-width': '60rem' }"
+  ></app-dynamic-grid>
+</div>

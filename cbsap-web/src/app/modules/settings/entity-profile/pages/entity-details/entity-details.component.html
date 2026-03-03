@@ -1,0 +1,282 @@
+<form [formGroup]="entityForm" (ngSubmit)="onSubmit()">
+    <p-confirmDialog [style]="{ width: '20vw', height: '200px' }"/>
+    <div class="card flex flex-col gap-6 p-6">
+        <div class="flex justify-between items-center">
+            <h5 class="font-semibold text-xl">{{ pagelabel }}</h5>
+            <div class="flex gap-3">
+                <p-button  label="Save"  icon="pi pi-check"  [raised]="true" [rounded]="true"  [severity]="!entityForm.valid ? 'secondary':'primary'" type="submit"  />
+                 <p-button 
+                  label="Delete"  
+                  *ngIf="this.entityProfileID !== 0" 
+                  icon="pi pi-trash"
+                  [raised]="true"
+                  [rounded]="true" 
+                  severity="contrast"
+                  (click) ="deleteConfirmation()" />
+
+                <p-button 
+                  label="Cancel"   
+                  icon="pi pi-times"
+                  [raised]="true"
+                  [rounded]="true" 
+                  severity="contrast"
+                  (click) ="cancel($event)"
+                   />
+             
+              </div>
+        </div>
+    
+        <p-fieldset legend="Entity Information">
+            <div class="flex flex-wrap gap-6 pt-4">
+                <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+                    <label for="entityName">Entity Name</label>
+                    <input type="text" pInputText id="entityName" formControlName="entityName" autocomplete="off" maxlength="100"  
+                    appCharacterFocusTracker
+                    appCharacterFocusTracker (focusChange)="onFocusChange('entityName', $any($event))" />
+                    <div class="flex justify-between">
+                        <div class="flex-1">
+                          <small *ngIf="f['entityName'].invalid && f['entityName'].touched"  class="pt-2 text-xs text-red-500">
+                            {{ getErrorMessage(f['entityName'], 'Entity Name') }}
+                         </small>
+                        </div>
+                        <div class="flex-1 text-right " *ngIf="focusStates['entityName']">
+                        <small *ngIf="f?.['entityName']?.value!.length > 0" class="text-gray-400 text-xs">
+                          <span *ngIf="(f['entityName'].value!  | characterLength: 80).approachingLimit" class="text-red-400 text-xs">
+                            Approaching limit!
+                          </span>
+                          {{ (f['entityName'].value! | characterLength: 100).length }}/100
+                          </small> 
+                         
+                        </div>
+                
+                      </div>
+                     
+                </div>
+                <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+                    <label for="entityCode">Entity Code</label>
+                    <input type="text" pInputText id="entityCode" formControlName="entityCode" autocomplete="off" maxlength="100" 
+                    appCharacterFocusTracker
+                    (focusChange)="onFocusChange('entityCode', $any($event))" />
+                    <div class="flex justify-between">
+                        <div class="flex-1">
+                          <small *ngIf="f['entityCode'].invalid && f['entityCode'].touched"  class="pt-2 text-xs text-red-500">
+                            {{ getErrorMessage(f['entityCode'], 'Entity Code') }}
+                         </small>
+                        </div>
+                        <div class="flex-1 text-right " *ngIf="focusStates['entityCode']">
+                        <small *ngIf="f?.['entityCode']?.value!.length > 0" class="text-gray-400 text-xs">
+                          <span *ngIf="(f['entityCode'].value!  | characterLength: 80).approachingLimit" class="text-red-400 text-xs">
+                            Approaching limit!
+                          </span>
+                          {{ (f['entityCode'].value! | characterLength: 100).length }}/100
+                          </small> 
+                         
+                        </div>
+                
+                      </div>
+                </div>
+                
+                <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+                    <label for="emailAddress">Email Address</label>
+                    <input type="email" pInputText id="emailAddress" formControlName="emailAddress" autocomplete="off" maxlength="100" 
+                    appCharacterFocusTracker
+                    (focusChange)="onFocusChange('emailAddress', $any($event))" />
+                    <div class="flex justify-between">
+                        <div class="flex-1">
+                          <small *ngIf="f['emailAddress'].invalid && f['emailAddress'].touched"  class="pt-2 text-xs text-red-500">
+                            {{ getErrorMessage(f['emailAddress'], 'Email Address') }}
+                         </small>
+                        </div>
+                        <div class="flex-1 text-right " *ngIf="focusStates['emailAddress']">
+                        <small *ngIf="f?.['emailAddress']?.value!.length > 0" class="text-gray-400 text-xs">
+                          <span *ngIf="(f['emailAddress'].value!  | characterLength: 80).approachingLimit" class="text-red-400 text-xs">
+                            Approaching limit!
+                          </span>
+                          {{ (f['emailAddress'].value! | characterLength: 100).length }}/100
+                          </small> 
+                         
+                        </div>
+                
+                      </div>
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-6 pt-4">
+                <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+                    <label for="taxID">Tax ID</label>
+                    <input type="text" pInputText id="taxID" formControlName="taxID" autocomplete="off" maxlength="100" 
+                    appCharacterFocusTracker
+                    (focusChange)="onFocusChange('taxID', $any($event))" />
+                    <div class="flex justify-between">
+                        <div class="flex-1">
+                          <small *ngIf="f['taxID'].invalid && f['taxID'].touched"  class="pt-2 text-xs text-red-500">
+                            {{ getErrorMessage(f['taxID'], 'Tax ID') }}
+                         </small>
+                        </div>
+                        <div class="flex-1 text-right " *ngIf="focusStates['taxID']">
+                        <small *ngIf="f?.['taxID']?.value!.length > 0" class="text-gray-400 text-xs">
+                          <span *ngIf="(f['taxID'].value!  | characterLength: 80).approachingLimit" class="text-red-400 text-xs">
+                            Approaching limit!
+                          </span>
+                          {{ (f['taxID'].value! | characterLength: 100).length }}/100
+                          </small> 
+                         
+                        </div>
+                     </div>
+                </div>
+                <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+                    <label for="erpFinanceSystem">ERP/Finance System</label>
+                    <input type="text" pInputText id="erpFinanceSystem" formControlName="erpFinanceSystem" autocomplete="off" maxlength="100" 
+                    appCharacterFocusTracker
+                    (focusChange)="onFocusChange('erpFinanceSystem', $any($event))" />
+                    <div class="flex justify-between">
+                      <div class="flex-1 text-right " *ngIf="focusStates['erpFinanceSystem']">
+                      <small *ngIf="f?.['erpFinanceSystem']?.value!.length > 0" class="text-gray-400 text-xs">
+                        <span *ngIf="(f['erpFinanceSystem'].value!  | characterLength: 80).approachingLimit" class="text-red-400 text-xs">
+                          Approaching limit!
+                        </span>
+                        {{ (f['erpFinanceSystem'].value! | characterLength: 100).length }}/100
+                        </small> 
+                       
+                      </div>
+                   </div>
+                </div>
+                <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm" *ngIf="this.entityProfileID > 0">
+                    <label for="createdDate">Created Date </label>
+                    <input type="text" pInputText id="createdDate" value="{{this.f['createdDate'].value! | datetimeformat}}" disabled autocomplete="off" maxlength="100" />
+                    
+                </div>
+            </div>
+        </p-fieldset>
+        <p-fieldset legend="Entity Settings">
+            <!-- Row 1 - Can be basic info or heading row -->
+            <div class="flex flex-wrap gap-6 pt-4">
+              <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+                <label for="defaultInvoiceDueInDays">Default Invoice Due Date in Days</label>
+                <p-inputNumber   id="defaultInvoiceDueInDays" formControlName="defaultInvoiceDueInDays" [useGrouping]="false" autocomplete="off" min="1" max="365" maxlength="31" 
+                appCharacterFocusTracker
+                (focusChange)="onFocusChange('defaultInvoiceDueInDays', $any($event))"
+                />
+                <div class="flex justify-between">
+                  <div class="flex-1">
+                    <small *ngIf="f['defaultInvoiceDueInDays'].invalid && f['defaultInvoiceDueInDays'].touched"  class="pt-2 text-xs text-red-500">
+                      {{ getErrorMessage(f['defaultInvoiceDueInDays'], 'Number of days ') }}
+                   </small>
+                  </div>
+                 
+               </div>
+              </div>
+            </div>
+          
+        <div class="pt-6" formArrayName="matchingConfigs">
+            <div *ngFor="let configGroup of matchingConfigs.controls; let i = index" [formGroupName]="i" class="mb-2">
+                <p-panel [header]="getPanelTitle(configGroup.get('configType')?.value!)" >
+        
+                    <div class="flex flex-wrap gap-6 pt-4">
+                        <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+                        <label>Header / Line Matching</label>
+                        <p-select
+                            formControlName="matchingLevel"
+                            [options]="entityDropdown['matchingLevel']"
+                           
+                            class="w-full"
+                        ></p-select>
+                        </div>
+                        
+                        <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+                        <label>Match Invoice Base on Net/Gross Amount</label>
+                        <p-select
+                            formControlName="invoiceMatchBasis"
+                            [options]="entityDropdown['invoiceMatchBasis']"
+                            class="w-full"
+                        ></p-select>
+                        </div>
+                    </div>
+                
+                    <div class="flex flex-wrap gap-6 pt-4">
+                        <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+                        <label>$ Amount</label>
+                              <p-inputNumber
+                              formControlName="dollarAmt"
+                              mode="decimal"
+                              [minFractionDigits]="2"
+                              [maxFractionDigits]="2"
+                              prefix="$"
+                              class="w-full"
+                          ></p-inputNumber>
+                        </div>
+                        <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+                        <label>% Amount</label>
+                              <p-inputNumber
+                              formControlName="percentageAmt"
+                              mode="decimal"
+                              [minFractionDigits]="2"
+                              [maxFractionDigits]="2"
+                              suffix="%"
+                              class="w-full"
+                          ></p-inputNumber>
+                        </div>
+                        
+                    </div>
+
+                   
+                
+                    </p-panel>
+            </div>
+        </div>
+
+        <div class="pt-6">
+          <p-panel header="Tax Amount Variance">
+            <div class="flex flex-wrap gap-6 pt-4">
+              <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+              <label>$ Amount</label>
+                    <p-inputNumber
+                    formControlName="taxDollarAmt"
+                    mode="decimal"
+                    [minFractionDigits]="2"
+                    [maxFractionDigits]="2"
+                    prefix="$"
+                    class="w-full"
+                ></p-inputNumber>
+              </div>
+              <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+              <label>% Amount</label>
+                    <p-inputNumber
+                    formControlName="taxPercentageAmt"
+                    mode="decimal"
+                    [minFractionDigits]="2"
+                    [maxFractionDigits]="2"
+                    suffix="%"
+                    class="w-full"
+                ></p-inputNumber>
+              </div>
+              
+          </div>
+          </p-panel>
+        </div>
+            
+        </p-fieldset>
+    
+        <p-fieldset legend="Invoice">
+            <div class="flex flex-wrap gap-6 pt-4">
+                <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+                    <label for="invAllowPresetAmount">Allow preset account to be used</label>
+                    <p-select formControlName="invAllowPresetAmount" [options]="entityDropdown['allowPresets']"  class="w-full" />
+                </div>
+                <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+                    <label for="invAllowPresetDimension">Allow preset dimensions to be used</label>
+                    <p-select formControlName="invAllowPresetDimension" [options]="entityDropdown['allowPresets']"  class="w-full" />
+                </div>
+            </div>
+            
+        </p-fieldset>
+
+        <div class="flex flex-wrap gap-6 pt-4">
+          <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm text-xs">
+           
+
+          </div>
+        </div>
+          
+
+    </div>
+</form>

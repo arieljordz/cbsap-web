@@ -1,0 +1,87 @@
+
+<div class="card">
+    <h5 class="text-lg font-semibold mb-4">Search</h5>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label for="roleName" class="block font-bold mb-2">Role Name</label>
+        <input
+          pInputText
+          id="roleName"
+          [(ngModel)]="filterbyRoleName"
+          type="text"
+          class="w-full border rounded-md px-3 py-2"
+        />
+      </div>
+      <div>
+        <label for="firstName" class="block font-bold mb-2">User First Name</label>
+        <input
+          pInputText
+          id="firstName"
+          [(ngModel)]="filterbyFirstName"
+          type="text"
+          class="w-full border rounded-md px-3 py-2"
+        />
+      </div>
+      <div>
+        <label for="lastName" class="block font-bold mb-2">User Last Name</label>
+        <input
+          pInputText
+          id="lastName"
+          [(ngModel)]="filterbyLastName"
+          type="text"
+          class="w-full border rounded-md px-3 py-2"
+        />
+      </div>
+    </div>
+  
+    <div class="flex justify-end mt-4">
+      <p-button
+        [raised]="true"
+        type="button"
+        label="Search"
+        [rounded]="true"
+        (click)="search()"
+        severity="primary"
+      ></p-button>
+    </div>
+  </div>
+  
+  <!-- Roles Listbox Card -->
+  <div class="card rounded-xl p-4 m-2">
+    <div class="flex justify-between items-center mb-4">
+      <div class="w-full md:w-1/2">
+        <!-- Left side content (optional) -->
+      </div>
+    </div>
+  
+    <div class="flex justify-end mb-4">
+      <p-button
+        type="button"
+        [raised]="true"
+        [rounded]="true"
+        severity="contrast"
+        [label]="selectedRowLabel"
+        (click)="closedSearchRoleDialog()"
+      ></p-button>
+    </div>
+  
+    <div>
+      <p-listbox
+        [options]="activeRolesOptions"
+        [(ngModel)]="selectedRoles"
+        [listStyle]="{ 'max-height': '250px' }"
+        [multiple]="true"
+        [metaKeySelection]="false"
+      >
+        <ng-template let-item pTemplate="item">
+          <div>
+            <strong class="text-xs">{{ item.roleName }}</strong>
+            <span class="text-xs text-blue-500">
+              ({{ item.users.length ? item.users : '**No user exist in this role** ' }})
+            </span>
+          </div>
+        </ng-template>
+      </p-listbox>
+    </div>
+  </div>
+  

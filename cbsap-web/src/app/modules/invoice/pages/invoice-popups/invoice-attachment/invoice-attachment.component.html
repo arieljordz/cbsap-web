@@ -1,0 +1,42 @@
+<div class="flex items-center space-x-4">
+  <p-fileUpload
+    #fu
+    mode="basic"
+    name="File"
+    [auto]="false"
+    [customUpload]="true"
+    chooseLabel="Browse"
+    chooseIcon="pi pi-upload"
+    [url]="uploadUrl"
+    accept=".jpg, .jpeg, .png, .pdf, .tif, .tiff, .xls, .xlsx, .txt, doc ,.docx, .csv"
+    [maxFileSize]="10485760"
+    (uploadHandler)="onCustomUpload($event)">
+  </p-fileUpload>
+
+  <p-button icon="pi pi-paperclip"  variant="text"  (onClick)="fu.upload()" severity="contrast" />
+   <p-button icon="pi pi-times"  variant="text" (onClick)="fu.clear()" severity="danger" />
+</div>
+
+
+<ul class="divide-y divide-gray-200">
+  <li *ngFor="let attachment of attachments" class="flex justify-between items-center py-2">
+   
+  <span class=" italic" title="{{ attachment.originalFileName }}">
+    (Original: <span class="font-medium">{{ attachment.originalFileName }}</span>)
+    → <span class="text-blue-600 font-bold">{{ attachment.storageFileName }}</span>
+  </span>
+
+    <div class="space-x-2">
+      <button
+        pButton
+        type="button"
+        icon="pi pi-download"
+        class="p-button-rounded p-button-text p-button-plain"
+        aria-label="Download"
+        (click)="download(attachment.invoiceAttachnmentID)">
+      </button>
+
+     
+    </div>
+  </li>
+</ul>

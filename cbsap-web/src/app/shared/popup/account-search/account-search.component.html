@@ -1,0 +1,52 @@
+<!-- Search Form Container -->
+<div class="p-4 border rounded bg-white">
+  <div class="p-4 bg-white rounded space-y-4">
+    <div *ngFor="let row of fieldRows" class="flex gap-4">
+      <div *ngFor="let field of row" class="flex flex-col w-1/3">
+        <label class="mb-2" [for]="field.key">{{ field.label }}</label>
+
+        <ng-container [ngSwitch]="field.type">
+          <input
+            *ngSwitchCase="'text'"
+            pInputText
+            [type]="field.type"
+            class="p-inputtext p-component w-full"
+            [(ngModel)]="searchfilters[field.key]"
+            [id]="field.key.toString()"
+          />
+          <p-dropdown
+            *ngIf="field.fieldType === 'dropdown'"
+            [options]="field.options || []"
+            [autoDisplayFirst]="false"
+            [showClear]="true"
+            class="p-fluid w-full"
+            [(ngModel)]="searchfilters[field.key.toString()]"
+            [id]="field.key.toString()"
+          ></p-dropdown>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-end gap-2">
+      <p-button
+        label="Search"
+        icon="pi pi-search"
+        rounded="true"
+        (click)="search()"
+      />
+      <p-button
+        label="Clear"
+        icon="pi pi-refresh"
+        rounded="true"
+        (click)="clear()"
+      />
+    </div>
+  </div>
+</div>
+<div class="card user-card mt-6">
+  <app-dynamic-grid
+    (load)="onLazyLoad($event)"
+    [config]="gridConfig"
+  ></app-dynamic-grid>
+</div>

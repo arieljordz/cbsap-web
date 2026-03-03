@@ -1,0 +1,12 @@
+
+:host ::ng-deep .blur-on-readonly[readonly] {
+  background-color: #f5f5f5; /* light gray background */
+  color: #6c757d; /* muted gray text */
+  cursor: not-allowed;
+}
+
+:host ::ng-deep .blur-on-readonly .p-inputtext[readonly] {
+  background-color: #f5f5f5; /* light gray background */
+  color: #6c757d; /* muted gray text */
+  cursor: not-allowed;
+}

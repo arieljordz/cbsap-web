@@ -1,0 +1,67 @@
+.edit-panel {
+    display: none !important;
+}
+
+.announcement-container {
+    max-height: 400px;
+    overflow: auto;
+    margin-top: 5px;
+    white-space: pre-line; 
+}
+
+.line-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.text-normal {
+    display: block;
+    overflow: visible;
+}
+.announcement:hover .edit-panel {
+    display: block !important;
+}
+
+a {
+    cursor: pointer;
+}
+
+
+
+  /* styles.css or component-specific CSS */
+  .ui-button.custom {
+    background-color: #f0f0f0; /* Custom background color */
+    border-color: #ccc; /* Custom border color */
+    color: #333; /* Custom text color */
+  }
+  
+  .ui-button.custom:hover {
+    background-color: #e0e0e0; /* Hover state */
+    border-color: #bbb; /* Hover border color */
+  }
+  
+  .ui-button.custom:focus {
+    box-shadow: 0 0 0 0.2rem rgba(66, 133, 244, 0.25); /* Focus state */
+  }
+  
+  
+  .truncate-text {
+  /* Forces the content to stay on a single line */
+  white-space: nowrap;
+
+  /* Hides any content that goes beyond the bounds of the container */
+  overflow: hidden;
+
+  /* Displays an ellipsis (...) to signify that the content has been cut off */
+  text-overflow: ellipsis;
+
+  /* Optional: Set a specific width for the container for the effect to work */
+  //width: 200px;
+}
+
+.new-message {
+  background-color: #feeae7;
+}

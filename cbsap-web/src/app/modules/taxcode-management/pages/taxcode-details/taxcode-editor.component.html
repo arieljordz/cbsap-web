@@ -1,0 +1,130 @@
+<form [formGroup]="taxCodeForm" (ngSubmit)="onSubmit()">
+  <p-confirmDialog [style]="{ width: '20vw', height: '200px' }" />
+  
+  <div class="card p-8 shadow-md rounded-2xl space-y-8 bg-white">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <h2 class="text-2xl font-bold text-gray-800">{{ pagelabel }}</h2>
+      <div class="flex gap-3">
+        <p-button
+          label="Save"
+          icon="pi pi-check"
+          [raised]="true"
+          [rounded]="true"
+          [severity]="!taxCodeForm.valid ? 'secondary' : 'primary'"
+          type="submit"
+        ></p-button>
+        <p-button
+          label="Cancel"
+          icon="pi pi-times"
+          [raised]="true"
+          [rounded]="true"
+          severity="contrast"
+          (click)="cancel($event)"
+        ></p-button>
+      </div>
+    </div>
+
+    <p-divider></p-divider>
+
+    <!-- Vertical Form Fields -->
+    <div class="space-y-6 sm:w-full md:w-2/3 xl:w-1/2">
+      
+      <!-- Entity -->
+      <div>
+        <label class="block mb-2 font-medium text-gray-700">Entity</label>
+        <p-select
+          class="w-full"
+          formControlName="entityID"
+          [options]="entityOptions"
+          [filter]="true"
+          filterBy="label"
+          [showClear]="false"
+        ></p-select>
+         <div class="mt-1 flex justify-between items-center text-xs text-gray-500">
+          <small *ngIf="f['entityID'].invalid && f['entityID'].touched" class="text-red-500">
+            {{ getErrorMessage(f['entityID'], 'Entity') }}
+          </small>
+         
+        </div>
+      </div>
+
+      <!-- Tax Code Name -->
+      <div>
+        <label for="taxCodeName" class="block mb-2 font-medium text-gray-700">Tax Code Name</label>
+        <input
+          type="text"
+          pInputText
+          id="taxCodeName"
+          formControlName="taxCodeName"
+          autocomplete="off"
+          maxlength="40"
+          class="w-full"
+          appCharacterFocusTracker
+          (focusChange)="onFocusChange('taxCodeName', $any($event))"
+        />
+        <div class="mt-1 flex justify-between items-center text-xs text-gray-500">
+          <small *ngIf="f['taxCodeName'].invalid && f['taxCodeName'].touched" class="text-red-500">
+            {{ getErrorMessage(f['taxCodeName'], 'Tax Code Name') }}
+          </small>
+          <small *ngIf="focusStates['taxCodeName'] && f?.['taxCodeName']?.value">
+            <span *ngIf="(f['taxCodeName'].value! | characterLength: 80).approachingLimit" class="text-red-400">
+              Approaching limit!
+            </span>
+            {{ (f['taxCodeName'].value! | characterLength: 100).length }}/40
+          </small>
+        </div>
+      </div>
+
+      <!-- Tax Code -->
+      <div>
+        <label for="code" class="block mb-2 font-medium text-gray-700">Tax Code</label>
+        <input
+          type="text"
+          pInputText
+          id="code"
+          formControlName="code"
+          autocomplete="off"
+          maxlength="40"
+          class="w-full"
+          appCharacterFocusTracker
+          (focusChange)="onFocusChange('code', $any($event))"
+        />
+        <div class="mt-1 flex justify-end text-xs text-gray-500" *ngIf="focusStates['code'] && f?.['code']?.value">
+          <span *ngIf="(f['code'].value! | characterLength: 40).approachingLimit" class="text-red-400">
+            Approaching limit!
+          </span>
+          {{ (f['code'].value! | characterLength: 50).length }}/100
+        </div>
+      </div>
+
+      <!-- Tax Rate -->
+      <div>
+        <label for="taxRate" class="block mb-2 font-medium text-gray-700">Tax Rate</label>
+        <p-inputNumber
+          id="taxRate"
+          formControlName="taxRate"
+          suffix="%"
+          mode="decimal"
+          [minFractionDigits]="2"
+          [maxFractionDigits]="2"
+          class="w-full"
+          appCharacterFocusTracker
+          (focusChange)="onFocusChange('taxRate', $any($event))"
+        ></p-inputNumber>
+        <div class="mt-1 flex justify-between text-xs text-gray-500">
+          <small *ngIf="f['taxRate'].invalid && f['taxRate'].touched" class="text-red-500">
+            {{ getErrorMessage(f['taxRate'], 'Tax Rate') }}
+          </small>
+          <small *ngIf="focusStates['taxRate'] && f?.['taxRate']?.value">
+            <span *ngIf="(f['taxRate'].value! | characterLength: 80).approachingLimit" class="text-red-400">
+              Approaching limit!
+            </span>
+            {{ (f['taxRate'].value! | characterLength: 100).length }}/100
+          </small>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</form>

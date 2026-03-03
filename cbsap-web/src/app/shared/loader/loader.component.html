@@ -1,0 +1,6 @@
+<p-dialog  [(visible)]="loaderVisible"  [modal]="true" [closable]="false" [showHeader]="false" [dismissableMask]="false" >
+    <div class="flex flex-col items-center justify-center p-2">
+        <p-progress-spinner strokeWidth="8" fill="transparent" animationDuration=".5s" [style]="{ width: '30px', height: '30px' }" />
+      <p class="mt-3 text-xs">Loading, please wait...</p>
+    </div>
+  </p-dialog>

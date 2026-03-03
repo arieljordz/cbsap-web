@@ -1,0 +1,48 @@
+<form [formGroup]="invAddReasonForm" (ngSubmit)="onSubmit()">
+    <div class="p-dialog-content mb-4">
+            <textarea rows="5"cols="50" pTextarea  formControlName="reason" class="w-full" maxlength="255"
+            appCharacterFocusTracker (focusChange)="onFocusChange('reason', $any($event))"  
+            ></textarea>
+            <div class="flex justify-between">
+                <div class="flex-1">
+                <small *ngIf="f['reason'].invalid && f['reason'].touched"  class="pt-2 text-xs text-red-500">
+                    {{ getErrorMessage(f['reason'], 'Reason') }}
+                </small>
+                </div>
+                <div class="flex-1 text-right " *ngIf="focusStates['reason']">
+                <small *ngIf="f?.['reason']?.value!.length > 0" class="text-gray-400 text-xs">
+                <span *ngIf="(f['reason'].value!  | characterLength: 240).approachingLimit" class="text-red-400 text-xs">
+                    Approaching limit!
+                </span>
+                {{ (f['reason'].value! | characterLength: 255).length }}/255
+                </small> 
+                
+                </div>
+        
+            </div>
+            <input type="hidden" formControlName="invoiceID" />
+            <input type="hidden" formControlName="status" />
+            
+    </div>
+
+  <div class="p-dialog-footer">
+    <p-button 
+    [label]="saveButtonLabel"  
+    [raised]="true" 
+    [rounded]="true" 
+    [disabled]="!invAddReasonForm.valid"
+    [severity]="buttonSeverity" 
+    type="submit"  />
+
+    <p-button 
+    label="Cancel"   
+    icon="pi pi-times"
+    [raised]="true"
+    [rounded]="true" 
+    severity="contrast"
+    (click) ="cancel()"
+     />
+  </div>
+</form>
+
+

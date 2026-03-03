@@ -1,0 +1,103 @@
+<div class="grid grid-cols-1 gap-4">
+  <div class="card p-6 shadow-md rounded-lg flex flex-col h-full min-h-[1px]">
+    <h5 class="mb-4 text-xl font-semibold">Quick Search</h5>
+
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 w-full"
+    >
+      <div class="flex flex-col" *ngFor="let field of fields">
+        <label class="mb-2" [for]="field.key">{{ field.label }}</label>
+
+        <input
+          *ngIf="field.fieldType === 'input'"
+          pInputText
+          [type]="field.type"
+          (keydown.enter)="search()"
+          class="p-inputtext p-component w-full"
+          [(ngModel)]="model[field.key.toString()]"
+          [id]="field.key.toString()"
+        />
+
+        <p-dropdown
+          *ngIf="field.fieldType === 'dropdown'"
+          [options]="field.options || []"
+          [autoDisplayFirst]="false"
+          (keydown.enter)="search()"
+          [showClear]="true"
+          class="p-fluid w-full"
+          [(ngModel)]="model[field.key.toString()]"
+          [id]="field.key.toString()"
+        ></p-dropdown>
+
+        <p-datepicker
+          *ngIf="field.fieldType === 'calendar'"
+          [(ngModel)]="model[field.key.toString()]"
+          [showIcon]="true"
+          dateFormat="dd/mm/yy"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          (keydown.enter)="search()"
+          [id]="field.key.toString()"
+        ></p-datepicker>
+      </div>
+    </div>
+
+    <!-- Buttons Section -->
+    <div class="flex flex-col sm:flex-row flex-wrap gap-4 mt-6 w-full">
+      <p-button
+        *ngIf="actionButtons.search"
+        label="Search"
+        [rounded]="true"
+        [raised]="true"
+        icon="pi pi-search"
+        (click)="search()"
+        styleClass="w-full sm:w-auto"
+      />
+      <p-button
+        *ngIf="actionButtons.clear"
+        label="Clear"
+        [rounded]="true"
+        [raised]="true"
+        icon="pi pi-refresh"
+        (click)="clear()"
+        styleClass="w-full sm:w-auto"
+      />
+      <p-button
+        *ngIf="actionButtons.export"
+        label="Export"
+        severity="secondary"
+        [raised]="true"
+        outlined="true"
+        [rounded]="true"
+        icon="pi pi-download"
+        (click)="exportToExcel()"
+        styleClass="w-full sm:w-auto"
+      />
+      <p-button
+        *ngFor="let btn of actionButtons.custom || []"
+        [label]="btn.label"
+        [icon]="btn.icon"
+        [severity]="btn.severity"
+        [outlined]="
+          btn.outlined === null || btn.outlined === undefined
+            ? true
+            : btn.outlined
+        "
+        [rounded]="true"
+        [raised]="true"
+        (click)="btn.action()"
+        styleClass="w-full sm:w-auto"
+      />
+      <p-button
+        *ngIf="addButtonLabel"
+        [label]="addButtonLabel"
+        severity="contrast"
+        [raised]="true"
+        [rounded]="true"
+        icon="pi pi-cog"
+        (click)="addItem()"
+        styleClass="w-full sm:w-auto"
+      />
+    </div>
+  </div>
+</div>

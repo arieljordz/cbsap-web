@@ -1,0 +1,42 @@
+<div class="grid grid-cols-1 gap-4">
+  <div class="col">
+    <h5 class="mb-4 font-semibold text-lg">Invoice Routing Flow Management</h5>
+  </div>
+</div>
+<app-quick-search
+  [fields]="invRoutingSearchFields"
+  [addButtonLabel]="'Add Invoice Routing Flow'"
+  (searchEvent)="search($event)"
+  (clearEvent)="clear()"
+  (exportEvent)="exportToExcel()"
+  (addEvent)="addInvRoutingFlow()"
+  [actionButtons]="searchActionButtonsConfig"
+></app-quick-search>
+
+<div class="card user-card mt-6">
+  <app-dynamic-grid
+    (load)="onLazyLoad($event)"
+    [config]="gridConfig"
+    [tableStyle]="{ 'min-width': '60rem' }"
+  ></app-dynamic-grid>
+</div>
+
+<ng-template #rolesTemplate let-row>
+  <p-button
+    label="Show"
+    variant="text"
+    icon="pi pi-cog"
+    severity="info"
+    (click)="openSearchInvRoutingFlowByRoles(row)"
+  ></p-button>
+</ng-template>
+
+<ng-template #usersTemplate let-row>
+  <p-button
+    label="Show"
+    variant="text"
+    icon="pi pi-user"
+    severity="info"
+    (click)="openSearchInvRoutingFlowByUser(row)"
+  ></p-button>
+</ng-template>

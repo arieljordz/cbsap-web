@@ -1,0 +1,21 @@
+::ng-deep .panel-info .p-panel-header {
+  background-color: #214359 !important;
+  color: #fff;
+}
+
+::ng-deep .panel-items .p-panel-header {
+  background-color: #f5f5f6 !important; /* light orange */
+}
+
+::ng-deep .panel-flow .p-panel-header {
+  background-color: #e8f5e9 !important; /* light green */
+}
+
+:host ::ng-deep .p-tabpanels{
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+}
+
+.invoice-details-container {
+  height: calc(100vh - 110px); /* Adjust based on other component heights */
+}

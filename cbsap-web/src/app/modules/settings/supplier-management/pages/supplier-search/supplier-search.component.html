@@ -1,0 +1,95 @@
+<div class="grid grid-cols-1 gap-4">
+    <div class="col">
+      <h5 class="mb-4 font-semibold text-lg">Supplier Management</h5>
+    </div>
+ </div>
+<app-quick-search
+  [fields]="supplierSearchFields"
+  [addButtonLabel]="'Add Supplier'"
+  (searchEvent)="search($event)"
+  (clearEvent)="clear()"
+  (exportEvent)="exportToExcel()"
+  (addEvent)="addSupplier()"
+  [actionButtons]="searchActionButtonsConfig"
+></app-quick-search>
+
+
+ <div class="card user-card mt-6">
+    <p-toast></p-toast>
+    <p-confirmDialog></p-confirmDialog>
+    <p-table
+    id="dtSearchSupplierPagination"
+    #dtSearchSupplierPagination
+    [value]="supplierPagination"
+    [lazy]="true"
+    (onLazyLoad)="onLazyLoad($event)"
+    dataKey="supplierInfoID"
+    [paginator]="true"
+    [showCurrentPageReport]="true"
+    [columns]="columns"
+    [rowHover]="true"
+    [rows]= "pageSize"
+    [totalRecords]="totalRecords"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+     [loading]="loading"
+    [rowsPerPageOptions]="[5, 10, 25]"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    styleClass="p-datatable-sm p-datatable-striped p-datatable-header-bgwhite"
+    size="small"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Action</th>
+        <th
+          *ngFor="let col of columns"
+          [pSortableColumn]="col.field"
+          [pSortableColumnDisabled]="!col.sort ? true : false"
+        >
+          {{ col.header }}
+          <p-sortIcon
+            [field]="col.field"
+            [ngClass]="{ hidden: !col.sort }"
+             pTooltip="Sort by {{ col.header }}"
+             tooltipPosition="top"
+          ></p-sortIcon>
+        </th>
+      </tr>
+ 
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <tr [pSelectableRow]="rowData">
+        <td>
+          <!-- theming icon based on color -->
+          <button
+            class="p-button-secondary p-button-rounded p-button-text"
+            icon="pi pi-pencil"
+            pButton
+            pRipple
+            type="button"
+            (click)="editSupplier(rowData)"
+          ></button>
+          <!-- <p-button  variant ="text" [rounded]="true" icon="pi pi-trash"  (click)="softUserDeletion(rowData)"/> -->
+        </td>
+       <td *ngFor="let col of columns" [ngSwitch]="col.field">
+          <ng-container *ngSwitchCase="'isActive'">
+            <p-tag [value]="rowData[col.field] | yesno" [severity]="rowData[col.field] ? 'success' : 'danger' "></p-tag>
+         
+          </ng-container>
+          <ng-container *ngSwitchDefault >
+            {{ rowData[col.field] }}
+          </ng-container>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="columns.length + 1">
+          <div class="flex justify-center items-center  text-gray-500 font-semibold">
+            No record found.
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+</div>

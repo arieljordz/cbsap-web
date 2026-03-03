@@ -1,0 +1,81 @@
+<div class="grid grid-cols-1 gap-4">
+	<div class="col">
+		<h5 class="mb-4 font-semibold text-lg">Accounts</h5>
+	</div>
+</div>
+
+<app-quick-search
+	[fields]="accountSearchFields"
+	[actionButtons]="searchActionButtonsConfig"
+	(searchEvent)="onSearch($event)"
+	(clearEvent)="onClear()"
+	(exportEvent)="onExport()"
+></app-quick-search>
+
+<div class="card mt-6">
+	<p-table
+		id="dtAccounts"
+		#dtAccounts
+		[value]="accounts"
+		[lazy]="true"
+		(onLazyLoad)="onLazyLoad($event)"
+		dataKey="accountId"
+		[paginator]="true"
+		[showCurrentPageReport]="true"
+		[columns]="columns"
+		[rowHover]="true"
+		[rows]="pageSize"
+		[totalRecords]="totalRecords"
+		currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+		[loading]="loading"
+		[rowsPerPageOptions]="[5, 10, 25]"
+		[tableStyle]="{ 'min-width': '70rem' }"
+		styleClass="p-datatable-sm p-datatable-striped p-datatable-header-bgwhite"
+		size="small"
+	>
+		<ng-template pTemplate="header">
+			<tr>
+				<th
+					*ngFor="let col of columns"
+					[pSortableColumn]="col.sort ? col.field : undefined"
+				>
+					{{ col.header }}
+					<p-sortIcon
+						*ngIf="col.sort"
+						[field]="col.field"
+						pTooltip="Sort by {{ col.header }}"
+						tooltipPosition="top"
+					></p-sortIcon>
+				</th>
+			</tr>
+		</ng-template>
+		<ng-template pTemplate="body" let-rowData let-columns="columns">
+			<tr>
+				<td *ngFor="let col of columns" [ngSwitch]="col.dataType">
+					<ng-container *ngSwitchCase="'tag'">
+						<p-tag
+							[value]="rowData[col.field] | yesno"
+							[severity]="rowData[col.field] ? 'success' : 'danger'"
+						></p-tag>
+					</ng-container>
+					<ng-container *ngSwitchCase="'boolean'">
+						{{ rowData[col.field] | yesno }}
+					</ng-container>
+					<ng-container *ngSwitchDefault>
+						{{ rowData[col.field] }}
+					</ng-container>
+
+				</td>
+			</tr>
+		</ng-template>
+		<ng-template pTemplate="emptymessage">
+			<tr>
+				<td [attr.colspan]="columns.length">
+					<div class="flex items-center justify-center font-bold text-center">
+						No records found.
+					</div>
+				</td>
+			</tr>
+		</ng-template>
+	</p-table>
+</div>

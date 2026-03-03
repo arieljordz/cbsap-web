@@ -1,0 +1,17 @@
+:host ::ng-deep .p-divider-solid.p-divider-horizontal:before {
+  border-top-style: solid;
+}
+
+:host ::ng-deep .p-chip {
+  margin: 3px !important;
+}
+
+:host ::ng-deep .p-chips-multiple-container {
+  border: none !important;
+}
+
+:host ::ng-deep .p-chips .p-chips-multiple-container .p-chips-token {
+  background-color: #dee2e6;
+  color: #495057;
+  border-radius: 16px;
+}

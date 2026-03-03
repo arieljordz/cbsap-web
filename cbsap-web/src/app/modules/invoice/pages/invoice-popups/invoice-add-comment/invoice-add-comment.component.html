@@ -1,0 +1,62 @@
+
+<form [formGroup]="invAddCommentForm" (ngSubmit)="onSubmit()">
+    <div class="p-dialog-content mb-4">
+  
+        <textarea rows="5"cols="50" pTextarea  formControlName="comment" class="w-full" maxlength="255"
+        appCharacterFocusTracker (focusChange)="onFocusChange('comment', $any($event))"  
+        ></textarea>
+        <div class="flex justify-between">
+            <div class="flex-1">
+              <small *ngIf="f['comment'].invalid && f['comment'].touched"  class="pt-2 text-xs text-red-500">
+                {{ getErrorMessage(f['comment'], 'Comment') }}
+              </small>
+            </div>
+            <div class="flex-1 text-right " *ngIf="focusStates['comment']">
+            <small *ngIf="f?.['comment']?.value!.length > 0" class="text-gray-400 text-xs">
+              <span *ngIf="(f['comment'].value!  | characterLength: 240).approachingLimit" class="text-red-400 text-xs">
+                Approaching limit!
+              </span>
+              {{ (f['comment'].value! | characterLength: 255).length }}/255
+              </small> 
+              
+            </div>
+    
+          </div>
+             
+        
+        <input type="hidden" formControlName="invoiceID" />
+        <div class="card user-card mt-2" *ngIf="isShowComments">
+            <app-dynamic-grid
+              (load)="onLazyLoad($event)"
+              [config]="gridConfig"
+            ></app-dynamic-grid>
+          </div>
+
+
+          
+</div>
+
+  <div class="p-dialog-footer">
+    <p-button 
+    label="Add"  
+    icon="pi pi-check"  
+    [raised]="true" 
+    [rounded]="true" 
+    [disabled]="!invAddCommentForm.valid"
+    [severity]="!invAddCommentForm.valid ? 'secondary':'primary'" 
+    type="submit"  />
+
+    <p-button 
+    label="Cancel"   
+    icon="pi pi-times"
+    [raised]="true"
+    [rounded]="true" 
+    severity="contrast"
+    (click) ="cancel()"
+     />
+  </div>
+</form>
+
+
+
+   

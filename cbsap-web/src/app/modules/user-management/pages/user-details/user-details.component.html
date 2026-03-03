@@ -1,0 +1,235 @@
+<form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
+  <p-confirmDialog [style]="{ width: '20vw', height: '200px' }"/>
+  <div class="card flex flex-col gap-6 p-6">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+      <h5 class="font-semibold text-xl">{{ pagelabel }}</h5>
+      <div class="flex gap-3">
+        <p-button
+          pButton
+          *ngIf="userDto && !isNewUser"
+          variant="text"
+          size="large"
+          [rounded]="true"
+          [outlined]="true"
+          [icon]="userDto.isLockedOut ? 'pi pi-lock' : 'pi pi-unlock'"
+          [pTooltip]="userDto.isLockedOut ? 'User is locked' : 'User is unlocked'"
+          (click) = "lockUnlockUser()"
+        />
+        <p-button  label="Save"  icon="pi pi-check"  [raised]="true" [rounded]="true"  [severity]="!userForm.valid ? 'secondary':'primary'" type="submit" [disabled]="!userForm.valid"  />
+        <p-button 
+          label="Delete"  
+          *ngIf="!this.isNewUser" 
+          icon="pi pi-trash"
+          [raised]="true"
+          [rounded]="true" 
+          severity="contrast"
+          (click) ="softUserDeletion()"
+         />
+        <p-button 
+          label="Cancel"   
+          icon="pi pi-times"
+          [raised]="true"
+          [rounded]="true" 
+          severity="contrast"
+          (click) ="cancel($event)"
+           />
+     
+      </div>
+    </div>
+
+    <p-fieldset legend="User Information">
+      <div class="flex flex-wrap gap-6 pt-4">
+        <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+          <label for="emailAddress">Email Address</label>
+          <input type="email" pInputText id="emailAddress" formControlName="emailAddress" autocomplete="off" maxlength="100" 
+          appCharacterFocusTracker
+          (focusChange)="onFocusChange('emailAddress', $any($event))" 
+          />
+        
+
+          <div class="flex justify-between">
+            <div class="flex-1">
+              <small *ngIf="f['emailAddress'].invalid && f['emailAddress'].touched"  class="pt-2 text-xs text-red-500">
+                {{ getErrorMessage(f['emailAddress'], 'Email Address') }}
+             </small>
+            </div>
+            <div class="flex-1 text-right " *ngIf="focusStates['emailAddress']">
+            <small *ngIf="f?.['emailAddress']?.value?.length > 0" class="text-gray-400 text-xs">
+              <span *ngIf="(f['emailAddress'].value  | characterLength: 80).approachingLimit" class="text-red-400 text-xs">
+                Approaching limit!
+              </span>
+              {{ (f['emailAddress'].value | characterLength: 100).length }}/100
+              </small> 
+             
+            </div>
+    
+          </div>
+         
+        </div>
+        <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+          <label for="firstName">First Name</label>
+          <input type="text" pInputText id="firstName" formControlName="firstName" autocomplete="off" maxlength="50" 
+          appCharacterFocusTracker
+          (focusChange)="onFocusChange('firstName', $any($event))" 
+          />
+          <div class="flex justify-between">
+            <div class="flex-1">
+              <small *ngIf="f['firstName'].invalid && f['firstName'].touched"  class="pt-2 text-xs text-red-500">
+                {{ getErrorMessage(f['firstName'], 'First Name') }}
+             </small>
+            </div>
+            <div class="flex-1 text-right" *ngIf="focusStates['firstName']">
+            <small *ngIf="f?.['firstName']?.value?.length > 0" class="text-gray-400 text-xs">
+              <span *ngIf="(f['firstName'].value  | characterLength: 40).approachingLimit" class="text-red-400 text-xs">
+                Approaching limit!
+              </span>
+              {{ (f['firstName'].value | characterLength: 50).length }}/50
+              </small> 
+             
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+          <label for="lastName">Last Name</label>
+          <input type="text" pInputText id="lastName" formControlName="lastName" autocomplete="off"  maxlength="50"
+          appCharacterFocusTracker
+          (focusChange)="onFocusChange('lastName', $any($event))" />
+          <div class="flex justify-between">
+            <div class="flex-1">
+              <small *ngIf="f['lastName'].invalid && f['lastName'].touched"  class="pt-2 text-xs text-red-500">
+                {{ getErrorMessage(f['lastName'], 'Last Name') }}
+             </small>
+            </div>
+            <div class="flex-1 text-right " *ngIf="focusStates['lastName']">
+            <small *ngIf="f?.['lastName']?.value?.length > 0" class="text-gray-400 text-xs">
+              <span *ngIf="(f['lastName'].value  | characterLength: 40).approachingLimit" class="text-red-400 text-xs">
+                Approaching limit!
+              </span>
+              {{ (f['lastName'].value | characterLength: 50).length }}/50
+              </small> 
+             
+            </div>
+          </div>
+        </div>
+      </div>
+    </p-fieldset>
+
+
+
+    <!-- User Authentication (Two Columns) -->
+    <p-fieldset legend="User Authentication" class="w-full">
+        <div class="w-full max-w-5xl mt-2 pt-2">
+            <div class="flex gap-4 mb-2">
+              <div class="flex-1">
+                <label for="userID">Username</label>
+                <input type="text" pInputText id="userID" formControlName="userID" autocomplete="off" class="w-full" maxlength="50"
+                appCharacterFocusTracker  (focusChange)="onFocusChange('userID', $any($event))" />
+                <div class="flex justify-between">
+                  <div class="flex-1">
+                    <small *ngIf="f['userID'].invalid && f['userID'].touched"  class="pt-2 text-xs text-red-500">
+                      {{ getErrorMessage(f['userID'], 'User Name') }}
+                   </small>
+                  </div>
+                  <div class="flex-1 text-right "  *ngIf="focusStates['userID']">
+                  <small *ngIf="f?.['userID']?.value?.length > 0" class="text-gray-400 text-xs">
+                    <span *ngIf="(f['userID'].value  | characterLength: 40).approachingLimit" class="text-red-400 text-xs">
+                      Approaching limit!
+                    </span>
+                    {{ (f['userID'].value | characterLength: 50).length }}/50
+                    </small> 
+                   
+                  </div>
+                </div>
+              </div>
+              <div class="flex-1 pt-6">
+                <div *ngIf="!isNewUser">
+                  <p-checkbox [disabled]="isNewUser" [binary]="true" formControlName="passwordMandatory" inputId="binary"></p-checkbox>
+                  <label for="binary" class="ml-1">Force to Change Password</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex gap-4 mb-2" *ngIf="f['passwordMandatory']?.value && !isNewUser">
+             
+              <div class="flex-1" >
+                <label for="password">Password</label>
+                <input type="password" pInputText id="password" formControlName="password" autocomplete="off" class="w-full"  minlength="8" maxlength="20"
+                appCharacterFocusTracker  (focusChange)="onFocusChange('password', $any($event))"/>
+                <div class="flex justify-between">
+                  <div class="flex-1">
+                    <small *ngIf="f['password'].invalid && f['password'].touched"  class="pt-2 text-xs text-red-500">
+                      {{ getErrorMessage(f['password'], 'Password') }}
+                   </small>
+                  </div>
+                  <div class="flex-1 text-right"  *ngIf="focusStates['password']">
+                  <small *ngIf="f?.['password']?.value?.length > 0" class="text-gray-400 text-xs">
+                    <span *ngIf="(f['password'].value  | characterLength: 18).approachingLimit" class="text-red-400 text-xs">
+                      Approaching limit!
+                    </span>
+                    {{ (f['password'].value | characterLength: 20).length }}/20
+                    </small> 
+                   
+                  </div>
+                </div>
+               
+              </div>
+              <div class="flex-1" >
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" pInputText id="confirmPassword" formControlName="confirmPassword" autocomplete="off" class="w-full"
+                appCharacterFocusTracker  (focusChange)="onFocusChange('confirmPassword', $any($event))"  />
+                <div class="flex justify-between">
+                  <div class="flex-1">
+                    <small *ngIf="f['confirmPassword'].invalid && f['confirmPassword'].touched"  class="pt-2 text-xs text-red-500">
+                      {{ getErrorMessage(f['confirmPassword'], 'confirm Password') }}
+                   </small>
+                  </div>
+                  <div class="flex-1 text-right" *ngIf="focusStates['confirmPassword']">
+                  <small *ngIf="f?.['confirmPassword']?.value?.length > 0" class="text-gray-400 text-xs">
+                    <span *ngIf="(f['confirmPassword'].value  | characterLength: 18).approachingLimit" class="text-red-400 text-xs">
+                      Approaching limit!
+                    </span>
+                    {{ (f['confirmPassword'].value | characterLength: 20).length }}/20
+                    </small> 
+                   
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex gap-4 mb-2">
+              <div class="flex 1">
+                <label for="isActive" class="font-medium mr-2 ">Active</label>
+                <p-toggleswitch id="isActive" formControlName="isActive"/>
+               
+              </div>
+            </div>
+        </div>
+    </p-fieldset>
+
+    <!-- Role Assignment -->
+    <p-fieldset legend="Role Assignment">
+      <div class="flex items-center pt-2 gap-3">
+        <span class="font-bold"> Assign role/s</span>
+        <p-button type="button" [rounded]="true" icon="pi pi-plus" class="rounded-full p-button-outlined p-button-sm" pTooltip="Assign roles" (click)="assignRoles()">
+        </p-button>
+        <small class="text-red-500" *ngIf="!formSubmitted && f['userRoles']?.value.length ===0">
+          Assign one role
+        </small>
+      </div>
+      <div class="field mt-3">
+       
+        <div class="flex flex-wrap gap-2">
+        
+          
+          <p-chip  *ngFor="let item of f['userRoles'].value" 
+                  [label]="item.roleName" removable="true" (onRemove)="removeRole(item.roleID)" >
+
+          </p-chip>
+        </div>
+
+      </div>
+    </p-fieldset>
+  </div>
+</form>

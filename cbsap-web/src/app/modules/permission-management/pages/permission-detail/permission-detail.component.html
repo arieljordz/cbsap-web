@@ -1,0 +1,96 @@
+<form [formGroup]="permissionForm" (ngSubmit)="onSubmit(permissionForm)" class="flex flex-col gap-6">
+    <p-confirmDialog [style]="{ width: '20vw', height: '200px' }"/>
+    <div class="card flex flex-col gap-6 p-6">
+        <div class="flex justify-between items-center">
+            <h5 class="font-semibold text-xl">{{ pagelabel }}</h5>
+            <div class="flex gap-3">
+
+                <p-button  [raised]="true" [rounded]="true"  icon="pi pi-refresh"  label="Clear" (click)="reset()" />
+                <p-button  [raised]="true" [rounded]="true" [severity]="!permissionForm.valid ? 'secondary':'primary'" [disabled]="!permissionForm.valid" icon="pi pi-check" type="submit" label="Save" />
+                <p-button  [raised]="true" [rounded]="true"  severity="contrast" icon="pi pi-times" type="submit" label="Cancel" (click)="confirm($event)" />
+              
+            </div>
+        </div>
+        <div class="p-6">
+
+            <div class="flex flex-wrap gap-6 mb-3">
+                <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
+                    <label for="permissionGroupName" >Name</label>
+                    <input type="text" pInputText  id="permissionGroupName" formControlName="permissionGroupName" autocomplete="off"  maxlength="50" class=" w-10rem" 
+                    appCharacterFocusTracker (focusChange)="onFocusChange('permissionGroupName', $any($event))"/>
+                    <div class="flex justify-between">
+                        <div class="flex-1">
+                          <small *ngIf="f['permissionGroupName'].invalid && f['permissionGroupName'].touched"  class="pt-2 text-xs text-red-500">
+                            {{ getErrorMessage(f['permissionGroupName'], 'Permission Name') }}
+                         </small>
+                        </div>
+                        <div class="flex-1 text-right " *ngIf="focusStates['permissionGroupName']">
+                        <small *ngIf="f?.['permissionGroupName']?.value!.length > 0" class="text-gray-400 text-xs">
+                          <span *ngIf="(f['permissionGroupName'].value!  | characterLength: 80).approachingLimit" class="text-red-400 text-xs">
+                            Approaching limit!
+                          </span>
+                          {{ (f['permissionGroupName'].value! | characterLength: 100).length }}/100
+                          </small> 
+                         
+                        </div>
+                
+                      </div>
+                </div>
+            </div>
+                      <!-- Roles Field -->
+            
+            <p-fieldset legend="Role Assignment (optional)" class="mb-3">
+                <div class="flex items-center pt-2 gap-3">
+                    <span class="font-bold"> Assign role/s</span>
+                    <button type="button" pButton class="p-button-rounded p-button-outlined p-button-sm" pTooltip="Assign roles"  (click)="assignRoles()">
+                        <i class="pi pi-plus"></i>
+                    </button>
+                </div>
+                <div class="mb-4">
+                    <div class="flex items-center gap-3">
+                     
+                    </div>
+                </div>
+                <div class="">
+                    <div class="field">
+                        <ng-container>
+                            <p-chip  *ngFor="let item of f['roles'].value" 
+                            [label]="item.roleName" removable="true" (onRemove)="removeRole(item.roleID)">
+          
+                            </p-chip>
+                        </ng-container>
+                    </div>
+                </div>
+
+
+
+            </p-fieldset>
+            <!-- Chips for Roles -->
+
+            <p-fieldset legend="Permissions" >
+
+                <!-- Group Panels for Operations -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <ng-container *ngFor="let panel of groupPanelDTO">
+                        <div class="col-span-1">
+                            <p-panel [header]="panel.panel" [toggleable]="false">
+                                <div *ngFor="let operation of panel.operations" class="field flex gap-4">
+                                    <label for="access{{ operation.operationID }}" class="text-sm">{{ operation.operationName }}</label>
+                                    <div class="flex-1 text-right">
+                                        <!-- <p-toggle-switch   [formControlName]="operation.operationName +'_' + operation.operationID"  class="text-xs" [name]="'access' + operation.operationID"  /> -->
+                                            <p-toggle-switch [(ngModel)]="operation.access" class="text-xs" name="access{{ operation.operationID }}" [ngModelOptions]="{standalone: true}" />
+                                    </div>
+                                </div>
+                            </p-panel>
+                        </div>
+                    </ng-container>
+                </div>
+
+            </p-fieldset>
+
+
+			
+
+        </div>
+    </div>
+</form>

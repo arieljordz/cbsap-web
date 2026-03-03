@@ -1,0 +1,61 @@
+<!-- <nav
+  class="bg-gray-800 text-white p-5 flex justify-between sticky top-0 z-50 rounded-t-lg"
+>
+  <div class="text-lg font-bold">Invoice # 123-456-11</div>
+  <div>
+    <ul class="flex space-x-4">
+  <li>
+    <a href="#" class="flex items-center space-x-2 hover:underline">
+      <span>Dashboard Alert</span>
+      <p-overlaybadge value="2" badgeSize="small" class="flex items-center">
+        <i class="pi pi-bell text-base"></i>
+      </p-overlaybadge>
+    </a>
+  </li>
+
+  <li><a href="#" class="hover:underline">Exception Queue</a></li>
+  <li><a href="#" class="hover:underline">Reject Queue</a></li>
+  <li><a href="#" class="hover:underline">Archive Invoice</a></li>
+  <li><a href="#" class="hover:underline">System Setting</a></li>
+  <li><a href="#" class="hover:underline">Back</a></li>
+</ul>
+
+  </div>
+</nav> -->
+
+<div class="bg-gray-800 text-white p-2 sticky top-0 z-50 rounded-t-lg" >
+  <p-menubar class="border-none bg-no">
+    <!-- LEFT SIDE -->
+    <ng-template pTemplate="start">
+
+        <div class="flex items-center">
+    <img src="assets/images/cbsap-white.png" alt="Logo" class="h-8 w-auto" />
+  </div>
+    </ng-template>
+
+    <!-- RIGHT SIDE -->
+    <ng-template pTemplate="end">
+      <ul class="flex space-x-6 items-center">
+            <li><p-avatar icon="pi pi-arrow-left" [style]="{'background-color': '#ece9fc;' ,'color': '#2a1261'}" shape="circle" pTooltip="Back" /></li>
+        <li>
+          <a href="#" class="flex items-center space-x-2 hover:underline">
+            <span>Dashboard Alert</span>
+           <p-overlaybadge
+              value="2"
+              badgeSize="small"
+              class="flex items-center"
+            >
+              <i class="pi pi-bell" style="font-size: 1.5rem"></i>
+            </p-overlaybadge>
+
+          </a>
+        </li>
+        <li><a href="#" class="hover:underline">Inbox</a></li>
+        <li><a href="#" class="hover:underline">Exception Queue</a></li>
+        <li><a href="#" class="hover:underline">Reject Queue</a></li>
+        <li><a href="#" class="hover:underline">Archive Invoice</a></li>
+        <li><a href="#" class="hover:underline">System Setting</a></li>
+      </ul>
+    </ng-template>
+  </p-menubar>
+</div>

@@ -1,0 +1,14 @@
+
+
+.taxcode-card {
+  padding: 10px;
+}
+
+:host ::ng-deep {
+    .p-datatable {
+      .p-datatable-header {
+        background-color: #ffffff;
+      }
+    }
+  }
+  

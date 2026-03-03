@@ -1,0 +1,1 @@
+export const SUPPLIER ='v1/supplier';

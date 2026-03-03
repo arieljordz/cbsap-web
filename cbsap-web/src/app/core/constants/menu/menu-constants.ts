@@ -1,0 +1,1 @@
+export const MENU ='v1/menu/';
