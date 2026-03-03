@@ -31,7 +31,7 @@
       [raised]="true"
       [rounded]="true"
       (click)="force()"
-      *ngIf="forceButtonVisible()"
+      *ngIf="forceButtonVisible() && !getHasMissingRoutingFlow()"
     />
     <p-button
       label="No"

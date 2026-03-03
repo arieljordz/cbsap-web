@@ -84,4 +84,10 @@ export class InvoiceValidationResponseComponent implements OnInit {
   forceButtonVisible(): boolean {
     return this.action.toLowerCase() === InvoiceActionButton.Submit;
   }
+
+  getHasMissingRoutingFlow(): boolean {
+  return this.messages?.some(msg =>
+    msg.includes('Invoice has a missing routing flow')
+  ) ?? false;
+}
 }
