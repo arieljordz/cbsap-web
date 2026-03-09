@@ -4,7 +4,7 @@ import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
 export type MatchingConfigFormGroup = FormGroup<{
     matchingConfigID: FormControl<number>;
     entityProfileID: FormControl<number>;
-    configType: FormControl<'PO' | 'GR'>;
+    configType: FormControl<'POMT' | 'PO' | 'GR'>;
     matchingLevel: FormControl<string | null>;
     invoiceMatchBasis: FormControl<string | null>;
     dollarAmt: FormControl<number | null>;

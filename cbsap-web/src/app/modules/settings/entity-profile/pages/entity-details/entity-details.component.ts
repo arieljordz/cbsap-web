@@ -284,16 +284,18 @@ export class EntityDetailsComponent implements OnInit {
   }
 
   private initializeDefaultConfigs(): void {
-    ['PO', 'GR'].forEach((type) => {
+    ['POMT', 'PO', 'GR'].forEach((type) => {
       const configGroup = createMatchingConfigGroup({
-        configType: type as 'PO' | 'GR',
+        configType: type as 'POMT' |'PO' | 'GR',
       });
       this.matchingConfigs.push(configGroup);
     });
   }
 
-  getPanelTitle(configType: 'PO' | 'GR' | string): string {
+  getPanelTitle(configType: 'POMT' | 'PO' | 'GR' | string): string {
     switch (configType) {
+      case 'POMT':
+        return 'Purchase Order Match Type';
       case 'PO':
         return 'Purchase Order Variance';
       case 'GR':
