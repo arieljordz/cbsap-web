@@ -148,11 +148,10 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
     this.invoiceID = Number(this.activeRoute.snapshot.params['id'] ?? 0);
   }
 
-  // inside your component class
-page = 1;
-pageSize = 10;
-totalComments = 0;
-invoiceComments: LoadInvoiceCommentsDto[] = [];   
+  page = 1;
+  pageSize = 10;
+  totalComments = 0;
+  invoiceComments: LoadInvoiceCommentsDto[] = [];   
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -675,7 +674,6 @@ invoiceComments: LoadInvoiceCommentsDto[] = [];
       .subscribe({
         next: (res) => {
           if (res.isSuccess) {
-            // use `data` instead of `items`
             this.invoiceComments = res.responseData?.data ?? [];
             this.totalComments = res.responseData?.totalCount ?? 0;
           }
