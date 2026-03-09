@@ -280,7 +280,7 @@
     </div>
   </p-panel>
 
-    <p-panel [toggleable]="true" styleClass="mb-4 panel-items">
+  <p-panel [toggleable]="true" styleClass="mb-4 panel-items">
     <ng-template #header>
       <div class="flex items-center gap-2">
         <span class="font-bold">Transaction Information</span>
@@ -313,6 +313,21 @@
       </div>       
     </div>
   </p-panel>
+
+<p-panel header="Comments" styleClass="mt-4">
+  <div *ngIf="!invoiceComments || invoiceComments.length === 0" class="text-gray-500">
+    No comments found.
+  </div>
+
+  <div *ngFor="let comment of invoiceComments" class="mb-2 border-b border-gray-300 pb-2">
+    <div class="text-sm text-gray-600">
+      {{ comment.createdDate }} - {{ comment.createdBy }}
+    </div>
+    <div class="text-gray-800">
+      {{ comment.comment }}
+    </div>
+  </div>
+</p-panel>
 
   <p-panel header="Free Fields" [toggleable]="true" styleClass="mb-2 panel-items" *ngIf="false">
     <div class="mt-2 mb-2 flex flex-col gap-4">

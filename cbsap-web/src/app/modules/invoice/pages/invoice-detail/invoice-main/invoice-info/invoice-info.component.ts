@@ -33,6 +33,8 @@ import {
 import {
   InvSearchSupplierDto,
   InvSupplierLookUpQuery,
+  LoadInvoiceCommentQuery,
+  LoadInvoiceCommentsDto,
 } from '@core/model/invoicing/invoicing.index';
 import { Keyword, KeywordGridQuery } from '@core/model/keyword-management';
 import { POSearchDto } from '@core/model/purchase-order/po-search.dto';
@@ -146,7 +148,11 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
     this.invoiceID = Number(this.activeRoute.snapshot.params['id'] ?? 0);
   }
 
-     
+  // inside your component class
+page = 1;
+pageSize = 10;
+totalComments = 0;
+invoiceComments: LoadInvoiceCommentsDto[] = [];   
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -159,6 +165,7 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
     if (hydratedInvoiceId) {
       this.invoiceID = hydratedInvoiceId;
       this.loadInvoiceData(this.invoiceID);
+      this.loadComments(this.invoiceID);
     }
 
     this.f['dueDate'].valueChanges
@@ -653,4 +660,28 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       totalAmount: this.f['totalAmount'].value!,
     };
   }
+
+  loadComments(invoiceID: number) {
+    const query: LoadInvoiceCommentQuery = {
+      InvoiceID: invoiceID,
+      PageNumber: this.page,
+      PageSize: this.pageSize,
+      SortField: 'CreatedDate',
+      SortOrder: -1,
+    };
+
+    this.invDetailService.loadInvoiceComments(query)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          if (res.isSuccess) {
+            // use `data` instead of `items`
+            this.invoiceComments = res.responseData?.data ?? [];
+            this.totalComments = res.responseData?.totalCount ?? 0;
+          }
+        },
+        error: (err) => console.error('Failed to load comments', err),
+      });
+  }
 }
+
