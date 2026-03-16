@@ -113,8 +113,14 @@
         </div>
         <div class="grid grid-cols-12 items-center gap-2">
           <label for="grNo" class="col-span-12 md:col-span-4 font-medium">Good Receipt No</label>
-          <div class="col-span-12 md:col-span-8">
-            <input id="grNo" type="text" pInputText formControlName="grNo"  class="w-full" />
+           <div class="col-span-12 md:col-span-8">
+            <p-inputgroup>
+              <input id="grNo" type="text" pInputText formControlName="grNo"  class="w-full" />
+              <p-inputgroup-addon>
+                <p-button variant="text" severity="secondary" icon="pi pi-search" size="small"
+                  (click)="assignGoodReceiptNo()"></p-button>
+              </p-inputgroup-addon>
+            </p-inputgroup>
           </div>
         </div>
       </div>

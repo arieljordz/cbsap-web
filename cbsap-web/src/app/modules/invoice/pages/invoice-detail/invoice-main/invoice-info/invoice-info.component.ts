@@ -48,7 +48,7 @@ import {
 } from '@core/services';
 import { InvoiceDetailService } from '@core/services/invoicing/invoice-detail.service';
 import { PurchaseOrderService } from '@core/services/purchase-order/purchase-order.service';
-import { getErrorMessage } from '@core/utils/shared-utils';
+import { getErrorMessage, formatToIsoDate } from '@core/utils/shared-utils';
 import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
 import { SelectTableComponent } from '@shared/popup/select-table/select-table.component';
 import { SelectItem } from 'primeng/api';
@@ -67,6 +67,8 @@ import {
   throwError,
 } from 'rxjs';
 import { InvoiceValidationMessageComponent } from '../invoice-validation-message/invoice-validation-message.component';
+import { SearchGoodsReceiptQuery } from '@core/model/goods-receipt/search-goods-receipt.query';
+import { SearchGoodsReceiptLookupDto } from '@core/model/goods-receipt';
 
 @Component({
   selector: 'app-invoice-info',
@@ -132,6 +134,11 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
   purchaseOrderData: POSearchDto[] = [];
   selectedPurchaseOrder?: POSearchDto;
   daysTillDue:number | null=null;
+  private goodsReceiptDataList$ = new BehaviorSubject<SearchGoodsReceiptLookupDto[]>([]);
+  private goodsReceiptTotalRecord$ = new BehaviorSubject<number>(0);
+  goodsReceiptTotalRecords = 0;
+  goodsReceiptData: SearchGoodsReceiptLookupDto[] = [];
+  selectedGoodsReceipt?: SearchGoodsReceiptLookupDto;
 
   constructor(
     private lookUpOptionService: LookupOptionsService,
@@ -393,6 +400,59 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       this.f['poNo'].setValue(purchaseOrder.poNo ?? '');
     });
   }
+  
+  assignGoodReceiptNo(): void {
+    const initialQuery = this.buildGoodReceiptGridQuery({
+      pageNumber: 1,
+      pageSize: 5,
+    });
+    this.searchGoodReceiptNos(initialQuery);
+
+    const ref: DynamicDialogRef = this.dialogService.open(
+      SelectTableComponent,
+      {
+        header: 'Good Receipt No Lookup',
+        contentStyle: { overflow: 'auto' },
+        baseZIndex: 10000,
+        modal: true,
+        closable: true,
+        data: {
+          multiple: false,
+          columns: this.gridService.GoodReceiptSelectTableGrid(),
+          data$: this.goodsReceiptDataList$,
+          totalRecords$: this.goodsReceiptTotalRecord$,
+          selectedRows: this.selectedGoodsReceipt
+            ? [this.selectedGoodsReceipt]
+            : [],
+          rowDisablePredicate: (row: SearchGoodsReceiptLookupDto) =>
+            !this.normalizeBooleanFlag(row?.active),
+          onSearch: (filters: any) => {
+            const query = this.buildGoodReceiptGridQuery(filters);
+            this.searchGoodReceiptNos(query);
+          },
+        },
+      }
+    );
+
+    ref.onClose.subscribe((selected) => {
+      const goodReceiptNo = Array.isArray(selected)
+        ? selected?.[0]
+        : selected;
+      if (!goodReceiptNo) {
+        return;
+      }
+
+      if (!this.normalizeBooleanFlag(goodReceiptNo.isActive)) {
+        return;
+      }
+
+      this.selectedGoodsReceipt = {
+        ...goodReceiptNo,
+        isActive: this.normalizeBooleanFlag(goodReceiptNo.isActive),
+      };
+      this.f['grNo'].setValue(goodReceiptNo.goodsReceiptNumber ?? '');
+    });
+  }
 
   private searchKeyword(searchQuery: KeywordGridQuery): void {
     this.keywordService
@@ -444,6 +504,40 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       });
   }
 
+  
+  private searchGoodReceiptNos(searchQuery: SearchGoodsReceiptQuery): void {
+    this.invDetailService
+      .goodReceiptNoSearch(searchQuery)
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe({
+        next: (res) => {
+          if (!res.isSuccess || !res.responseData) {
+            this.goodsReceiptDataList$.next([]);
+            this.goodsReceiptTotalRecord$.next(0);
+            return;
+          }
+
+          const mappedData =
+            res.responseData.data?.map((grNo) => ({
+              ...grNo,
+              isActive: this.normalizeBooleanFlag(grNo.active),
+              deliveryDate: grNo.deliveryDate ?? null,
+            })) ?? [];
+
+          this.goodsReceiptData = mappedData;
+          this.goodsReceiptTotalRecords = res.responseData.totalCount ?? 0;
+          this.goodsReceiptDataList$.next(mappedData);
+          this.goodsReceiptTotalRecord$.next(
+            this.goodsReceiptTotalRecords
+          );
+        },
+        error: () => {
+          this.goodsReceiptDataList$.next([]);
+          this.goodsReceiptTotalRecord$.next(0);
+        },
+      });
+  }
+
   private buildKeywordGridQuery(filters: any = {}): KeywordGridQuery {
     const normalizedActive =
       filters.isActive === undefined || filters.isActive === null
@@ -483,6 +577,43 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       EntityName: filters.entityName?.trim() ?? null,
       Supplier: supplierValue ? supplierValue : null,
       IsActive: normalizedActive,
+      PageNumber: filters.pageNumber ?? 1,
+      PageSize: filters.pageSize ?? 10,
+      SortField: filters.sortField,
+      SortOrder: filters.sortOrder,
+    };
+  }
+
+  private buildGoodReceiptGridQuery(filters: any = {}): SearchGoodsReceiptQuery {
+    const normalizedActive =
+      filters.active === undefined || filters.active === null
+        ? null
+        : this.normalizeBooleanFlag(filters.active);
+
+    const supplierRaw =
+      filters.supplierName ??
+      filters.supplier ??
+      (filters.supplierID !== undefined && filters.supplierID !== null
+        ? String(filters.supplierID)
+        : null);
+
+    const supplierValue =
+      typeof supplierRaw === 'string' ? supplierRaw.trim() : supplierRaw;
+
+    const deliveryDateFrom = filters.deliveryDateFrom
+      ? formatToIsoDate(filters.deliveryDateFrom)  // <-- convert Date to string
+      : null;
+    const deliveryDateTo = filters.deliveryDateTo
+      ? formatToIsoDate(filters.deliveryDateTo)    // <-- convert Date to string
+      : null;
+
+    return {
+      entity: filters.entityName?.trim() ?? null,
+      supplier: supplierValue ? supplierValue : null,
+      goodsReceiptNumber: filters.goodsReceiptNumber?.trim() ?? null,
+      active: normalizedActive,
+      deliveryDateFrom, 
+      deliveryDateTo, 
       PageNumber: filters.pageNumber ?? 1,
       PageSize: filters.pageSize ?? 10,
       SortField: filters.sortField,

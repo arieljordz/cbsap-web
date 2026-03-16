@@ -15,7 +15,7 @@ export interface DynamicGridColumn {
     | 'actionButtons'
     | 'checkbox'
     | 'tag';
-  filterType?: 'text' | 'number' | 'boolean';
+  filterType?: 'text' | 'number' | 'boolean' | 'date-range';
   customTemplate?: TemplateRef<any>;
   buttonConfig?: {
     label: string;

@@ -821,6 +821,41 @@ export class GridService {
     ];
   }
 
+  GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
+    return [
+      {
+        field: 'goodsReceiptNumber',
+        header: 'Goods Receipt Number',
+        sort: true,
+        isSearchFilter: true
+      },
+      {
+        field: 'supplier',
+        header: 'Supplier Name',
+        sort: true,
+        isSearchFilter: true
+      },
+      {
+        field: 'deliveryDate',
+        header: 'Delivery Date',
+        sort: false,
+        isSearchFilter: true,
+        type: 'date',
+        pipe: 'date',
+        filterType: 'date-range' 
+      },
+      {
+        field: 'active',
+        header: 'Active',
+        sort: true,
+        isSearchFilter: true,
+        type: 'tag',
+        pipe: 'yesno',
+        filterType: 'boolean'
+      }
+    ];
+  }
+
   myInvoiceSearchColumn(
     selectInvoiceTemplate: TemplateRef<any>
   ): DynamicGridColumn[] {
