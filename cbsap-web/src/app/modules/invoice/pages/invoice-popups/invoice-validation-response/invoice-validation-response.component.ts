@@ -46,7 +46,9 @@ export class InvoiceValidationResponseComponent implements OnInit {
   }
 
   force() {
-    const ForApprovalQueue = InvoiceQueue.ApproverQueue;
+    if (this.getHasMissingRoutingFlow()) {
+      return;
+    }
 
     const invoiceStatusChangeDTO: InvStatusChangeDto = {
       invoiceID: this.invoiceID,
@@ -69,20 +71,27 @@ export class InvoiceValidationResponseComponent implements OnInit {
   }
 
   validationInfo(action: InvoiceActionButton): string {
-    let validation: string = '';
     switch (action.toLowerCase()) {
       case InvoiceActionButton.Submit:
-        return ' The invoice contains errors and is not able to be approved. Do you want to route the invoice to the next role in the flow?';
+        if (this.getHasMissingRoutingFlow()) {
+          return 'Invoice is missing a role/Routing Flow and cannot be forced/submitted.';
+        }
+
+        return 'The invoice contains errors and is not able to be approved. Do you want to route the invoice to the next role in the flow?';
+
       case InvoiceActionButton.Approve:
-        return ' The invoice contains errors and is not able to be approved.';
+        return 'The invoice contains errors and is not able to be approved.';
 
       default:
-        return validation;
+        return '';
     }
   }
 
   forceButtonVisible(): boolean {
-    return this.action.toLowerCase() === InvoiceActionButton.Submit;
+    return (
+      this.action.toLowerCase() === InvoiceActionButton.Submit &&
+      !this.getHasMissingRoutingFlow()
+    );
   }
 
   getHasMissingRoutingFlow(): boolean {
