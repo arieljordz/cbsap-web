@@ -33,6 +33,9 @@ export interface InvInfoDto {
   approvedUser: string;
   freeFields: FreeFieldDto[] | [];
   spareAmounts: SpareAmountDto[] | [];
+  createdDate: Date;
+  invDueDateCalculation: number;
+  defaultInvoiceDueInDays: number;
 }
 
 export interface FreeFieldDto {

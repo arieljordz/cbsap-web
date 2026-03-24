@@ -24,6 +24,7 @@ export class EntityService {
     matchingLevel: SelectItem[];
     invoiceMatchBasis: SelectItem[];
     allowPresets: SelectItem[];
+    dueDateCalculations: SelectItem[];
   }>;
 
   constructor(
@@ -37,6 +38,7 @@ export class EntityService {
     matchingLevel: SelectItem[];
     invoiceMatchBasis: SelectItem[];
     allowPresets: SelectItem[];
+    dueDateCalculations: SelectItem[];
   }> {
     if (!this.drowpdownEntityData$) {
       this.drowpdownEntityData$ = this.httpClient
@@ -46,6 +48,7 @@ export class EntityService {
             matchingLevel: this.toSelectItems(data.matchingLevel),
             invoiceMatchBasis: this.toSelectItems(data.invoiceMatchBasis),
             allowPresets: data.allowPresets,
+            dueDateCalculations: data.dueDateCalculations,
           })),
           shareReplay(1)
         );

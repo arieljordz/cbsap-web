@@ -69,6 +69,7 @@ import {
 import { InvoiceValidationMessageComponent } from '../invoice-validation-message/invoice-validation-message.component';
 import { SearchGoodsReceiptQuery } from '@core/model/goods-receipt/search-goods-receipt.query';
 import { SearchGoodsReceiptLookupDto } from '@core/model/goods-receipt';
+import { DueDateCalculationDto } from '@core/model/system-settings/entity/entity-duedate.calculationDto';
 
 @Component({
   selector: 'app-invoice-info',
@@ -100,8 +101,7 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
   focusStates: { [key: string]: boolean } = {};
 
   invoiceID: number = 0;
-   @Output() invoiceDataLoaded = new EventEmitter<InvInfoDto>();
-
+  @Output() invoiceDataLoaded = new EventEmitter<InvInfoDto>();
   @Input() messages: string[] = [];
   @Input() invoiceValidationHeader: string = '';
   @Input() invoiceId?: number;
@@ -139,6 +139,10 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
   goodsReceiptTotalRecords = 0;
   goodsReceiptData: SearchGoodsReceiptLookupDto[] = [];
   selectedGoodsReceipt?: SearchGoodsReceiptLookupDto;
+
+  createdDate: Date = new Date(); 
+  invDueDateCalculation: number = 1;
+  defaultInvoiceDueDays: number = 0;
 
   constructor(
     private lookUpOptionService: LookupOptionsService,
@@ -183,8 +187,17 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       .subscribe(() => {
         this.computeDaysTillDue();
       });
-  }
 
+    this.f['paymentTerm'].valueChanges
+      .pipe(
+        startWith(this.f['paymentTerm'].value),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.updateDueDate(); 
+      });
+  }
 
   computeDaysTillDue(){    
     const dueDate = this.f['dueDate'].value as Date | null;
@@ -205,9 +218,70 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       this.daysTillDue = daysDiff;
     }
   }
+ 
+  private updateDueDate() {
+    const formValue = this.invInfoForm.getRawValue();
+    const dto: DueDateCalculationDto = {
+      InvoiceDate: formValue.invoiceDate ?? new Date(),
+      ScanDate: formValue.scanDate ?? new Date(),
+      PaymentTerm: Number(formValue.paymentTerm) || 0
+    };
 
+    try {
+      const dueDate = this.computeInvoiceDueDate(
+        dto,
+        this.createdDate,
+        this.invDueDateCalculation,
+        this.defaultInvoiceDueDays
+      );
 
-  
+      this.invInfoForm.patchValue(
+        { dueDate: dueDate },
+        { emitEvent: false } // prevent infinite loop
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  computeInvoiceDueDate(
+    invoice: DueDateCalculationDto,
+    createdDate: Date,
+    calculationMethod: number,
+    defaultDueDays: number
+  ): Date {
+    const invoiceDate = invoice.InvoiceDate ? new Date(invoice.InvoiceDate) : null;
+    const scanDate = invoice.ScanDate ? new Date(invoice.ScanDate) : null;
+
+    let baseDate: Date | null = null;
+
+    switch (calculationMethod) {
+      case 1: // Scan Date + Payment Terms
+        baseDate = scanDate;
+        break;
+      case 2: // CBSAP Insert Date + Payment Terms
+        baseDate = createdDate;
+        break;
+      case 3: // Invoice Date + Payment Terms
+        baseDate = invoiceDate;
+        break;
+      default:
+        throw new Error('Invalid due date calculation method');
+    }
+
+    if (!baseDate) {
+      baseDate = new Date();
+    }
+
+    const paymentTermDays =
+      invoice.PaymentTerm != null && invoice.PaymentTerm > 0
+        ? invoice.PaymentTerm
+        : defaultDueDays;
+
+    const dueDate = new Date(baseDate);
+    dueDate.setDate(dueDate.getDate() + paymentTermDays);
+    return dueDate;
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['invoiceId'] && !changes['invoiceId'].firstChange) {
@@ -219,7 +293,6 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       }            
     }    
   }
-  
 
   private resetFormState(): void {
     this.invInfoForm = createInvInfoForm();
@@ -234,9 +307,6 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
     this.keywordTotalRecord$.next(0);
     this.purchaseOrderDataList$.next([]);
     this.purchaseOrderTotalRecord$.next(0);
-
-    
-
   }
 
   /** Look up action */
@@ -503,7 +573,6 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
         },
       });
   }
-
   
   private searchGoodReceiptNos(searchQuery: SearchGoodsReceiptQuery): void {
     this.invDetailService
@@ -630,53 +699,54 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
           if (response?.isSuccess && response.responseData) {
             const invoice = response.responseData;
             this.routingFlowName = invoice.routingFlowName;
+
             return combineLatest([
               of(invoice),
               this.entityOptions$,
               this.invDetailService.getDropdownOptions(),
               this.taxCodeLookUpOptions$
-
             ]);
           } else {
-            // handle error, or return empty fallback
             return throwError(() => new Error('Failed to fetch invoice'));
           }
         }),
         takeUntil(this.destroy$)
       )
       .subscribe(([invoice, entityOptions, dropdown, taxCodeLookUpOptions]) => {
-        this.invInfoForm.patchValue({
+        const patchValue = {
           ...invoice,
-          invoiceDate: invoice.invoiceDate
-            ? new Date(invoice.invoiceDate)
-            : null,
+          invoiceDate: invoice.invoiceDate ? new Date(invoice.invoiceDate) : null,
           dueDate: invoice.dueDate ? new Date(invoice.dueDate) : null,
-          scanDate: invoice.scanDate ? new Date(invoice.invoiceDate) : null,
-        });
+          scanDate: invoice.scanDate ? new Date(invoice.scanDate) : null,
+        };
+        this.invInfoForm.patchValue(patchValue);
+
+        this.createdDate = invoice.createdDate ? new Date(invoice.createdDate) : new Date();
+        this.invDueDateCalculation = invoice.invDueDateCalculation ?? 1;
+        this.defaultInvoiceDueDays = invoice.defaultInvoiceDueInDays ?? 0;
+
+        this.updateDueDate();
 
         this.entityOptions = entityOptions;
         this.taxCodeOptions = taxCodeLookUpOptions;
         this.invInfoDropdown = {
-          currencies: dropdown.currencies,
-          paymentTerms: dropdown.paymentTerms,
+          currencies: dropdown.currencies ?? [],
+          paymentTerms: dropdown.paymentTerms ?? [],
         };
-       
 
-       this.invoiceDataLoaded.emit(invoice);
+        this.invoiceDataLoaded.emit(invoice);
 
         this.formFreeFields.clear();
-        invoice?.freeFields.forEach((freeField) => {
+        invoice?.freeFields?.forEach(freeField => {
           this.formFreeFields.push(createFreeFieldFormGroup(freeField));
         });
+
         this.formSpareAmountFields.clear();
-        invoice?.spareAmounts.forEach((freeField) => {
-          this.formSpareAmountFields.push(
-            createSpareAmountFormGroup(freeField)
-          );
+        invoice?.spareAmounts?.forEach(spareField => {
+          this.formSpareAmountFields.push(createSpareAmountFormGroup(spareField));
         });
 
-        //
-        let amounts: AmountDto = this.amountValues();
+        const amounts: AmountDto = this.amountValues();
         this.amounts.emit({ ...amounts });
       });
   }
@@ -695,6 +765,7 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
     //this.freeFields.splice(index, 1);
     this.formFreeFields.removeAt(index);
   }
+
   onAddSpareAmountField() {
     // this.spareAmountFields.push({ value: '' });
     const index = this.formSpareAmountFields.length + 1;
@@ -758,11 +829,13 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
   get formFreeFields(): FormArray<FreeFieldsFormGroup> {
     return this.invInfoForm.get('freeFields') as FormArray<FreeFieldsFormGroup>;
   }
+
   get formSpareAmountFields(): FormArray<SpareAmountFormGroup> {
     return this.invInfoForm.get(
       'spareAmount'
     ) as FormArray<SpareAmountFormGroup>;
   }
+
   groupName(group: AbstractControl): string {
     return Object.keys((group as FormGroup).controls)[0];
   }

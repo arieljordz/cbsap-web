@@ -258,6 +258,7 @@ export class EntityDetailsComponent implements OnInit {
         matchingLevel: dropdowns.matchingLevel,
         invoiceMatchBasis: dropdowns.invoiceMatchBasis,
         allowPresets: dropdowns.allowPresets,
+        dueDateCalculations: dropdowns.dueDateCalculations,
       };
       if (response.isSuccess) {
         const entity = response.responseData;
