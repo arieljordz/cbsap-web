@@ -258,7 +258,6 @@ export class EntityDetailsComponent implements OnInit {
         matchingLevel: dropdowns.matchingLevel,
         invoiceMatchBasis: dropdowns.invoiceMatchBasis,
         allowPresets: dropdowns.allowPresets,
-        dueDateCalculations: dropdowns.dueDateCalculations,
       };
       if (response.isSuccess) {
         const entity = response.responseData;
@@ -285,22 +284,21 @@ export class EntityDetailsComponent implements OnInit {
   }
 
   private initializeDefaultConfigs(): void {
-    ['POMT', 'PO', 'GR'].forEach((type) => {
+    ['POMT','PO', 'GR'].forEach((type) => {
       const configGroup = createMatchingConfigGroup({
-        configType: type as 'POMT' |'PO' | 'GR',
+        configType: type as  'PO'|'GR',
       });
       this.matchingConfigs.push(configGroup);
     });
   }
 
-  getPanelTitle(configType: 'POMT' | 'PO' | 'GR' | string): string {
+  getPanelTitle(configType: 'POMT'|'PO'| 'GR' | string): string {
     switch (configType) {
       case 'POMT':
         return 'Purchase Order Match Type';
       case 'PO':
-        return 'Purchase Order Variance';
-      case 'GR':
-        return 'Good Receipt Variance';
+    return 'Purchace Order Variance';
+    case 'GR':
       default:
         return 'Matching Configuration';
     }

@@ -8,6 +8,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { FormArray, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FlowStatus } from '@core/enums';
 import {
   createInvInfoRoutingLevelForm,
   createInvRoutingFlowLevelFormGroup,
@@ -60,6 +61,7 @@ export class InvoiceRoutingFlowComponent
   selectedRoutingFlow?: InvoiceRoutingFlowSelectTableDto;
   invoiceRoutingFlowData: InvoiceRoutingFlowSelectTableDto[] = [];
   rolesOptions?: SelectItem[] = [];
+  public FlowStatus = FlowStatus;
 
   // new implementation
   invInfoRoutingLevelForm!: InvInfoRoutingFlowFormGroup;
@@ -179,7 +181,6 @@ export class InvoiceRoutingFlowComponent
       if (res.isSuccess) {
         const routingLevels = res.responseData;
         this.routingFlowLevels.clear();
-
         routingLevels?.forEach((level) => {
           this.routingFlowLevels.push(
             createInvRoutingFlowLevelFormGroup(level)

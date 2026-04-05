@@ -11,6 +11,7 @@ export interface MyInvoiceSearchConfig {
     search: boolean;
     clear: boolean;
     export: boolean;
+    advancedSearch:boolean,
     custom?: CustomButton[];
   };
 }
@@ -48,6 +49,7 @@ export function buildMyInvoiceSearchConfig(
       search: true,
       clear: true,
       export: true,
+      advancedSearch:true,
       custom: customButtons,
     },
   };

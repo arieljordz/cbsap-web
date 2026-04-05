@@ -150,6 +150,10 @@ export class RoutingFlowSearchComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    const stored = localStorage.getItem('routingflow-search');
+    if(stored){
+      this.searchInvRoutingModel = JSON.parse(stored);
+    }
     this.sizes = { name: 'Small', class: 'p-table?-sm' };
   }
 
@@ -168,21 +172,14 @@ export class RoutingFlowSearchComponent implements OnInit, AfterViewInit {
       pageNumber: 1,
       sortField: '',
       sortOrder: -1,
-      actions: [
-        {
-          label: '',
-          icon: 'pi pi-pencil',
-          action: (item) => this.editInvRoutingFlow(item),
-        },
-      ],
-
-      loading: false,
-      rowClick: [
+      loading: true,
+      rowClick:[
         {
           clickable: (item) => this.editInvRoutingFlow(item),
-          allow: false,
-        },
+          allow:true
+        }
       ],
+      gridKey: 'routingflow-grid'
     });
   }
 
@@ -230,6 +227,7 @@ export class RoutingFlowSearchComponent implements OnInit, AfterViewInit {
   /** button action */
   editInvRoutingFlow(invRoutingFlow: any): void {
     const id = invRoutingFlow.invRoutingFlowID;
+    localStorage.setItem('routingflow-search',JSON.stringify(this.searchInvRoutingModel));
     this.router.navigate(['inv-routing-flow-management/edit-routing-flow', id]);
   }
   search(filters: SearchInvRoutingModel) {
@@ -288,6 +286,8 @@ export class RoutingFlowSearchComponent implements OnInit, AfterViewInit {
       });
   }
   clear() {
+    localStorage.removeItem("routingflow-grid");
+    localStorage.removeItem("routingflow-search");
     this.searchInvRoutingModel = {
       entityName: '',
       invRoutingFlowName: '',

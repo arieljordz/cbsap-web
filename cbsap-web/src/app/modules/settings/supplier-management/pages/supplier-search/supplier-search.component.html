@@ -11,6 +11,7 @@
   (exportEvent)="exportToExcel()"
   (addEvent)="addSupplier()"
   [actionButtons]="searchActionButtonsConfig"
+  [searchKey]="'supplier-search'"    
 ></app-quick-search>
 
 
@@ -36,10 +37,12 @@
     [tableStyle]="{ 'min-width': '50rem' }"
     styleClass="p-datatable-sm p-datatable-striped p-datatable-header-bgwhite"
     size="small"
+    [stateStorage]="'local'"
+    [stateKey]="'supplier-grid'"    
   >
     <ng-template pTemplate="header">
       <tr>
-        <th>Action</th>
+        <!--<th>Action</th>-->
         <th
           *ngFor="let col of columns"
           [pSortableColumn]="col.field"
@@ -57,9 +60,9 @@
  
     </ng-template>
     <ng-template pTemplate="body" let-rowData let-columns="columns">
-      <tr [pSelectableRow]="rowData">
-        <td>
-          <!-- theming icon based on color -->
+      <tr [pSelectableRow]="rowData" (dblclick)="editSupplier(rowData)">
+        <!--<td>
+          theming icon based on color
           <button
             class="p-button-secondary p-button-rounded p-button-text"
             icon="pi pi-pencil"
@@ -68,8 +71,8 @@
             type="button"
             (click)="editSupplier(rowData)"
           ></button>
-          <!-- <p-button  variant ="text" [rounded]="true" icon="pi pi-trash"  (click)="softUserDeletion(rowData)"/> -->
-        </td>
+           <p-button  variant ="text" [rounded]="true" icon="pi pi-trash"  (click)="softUserDeletion(rowData)"/>
+        </td>-->
        <td *ngFor="let col of columns" [ngSwitch]="col.field">
           <ng-container *ngSwitchCase="'isActive'">
             <p-tag [value]="rowData[col.field] | yesno" [severity]="rowData[col.field] ? 'success' : 'danger' "></p-tag>

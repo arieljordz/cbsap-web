@@ -137,6 +137,11 @@ export class SearchComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    const stored = localStorage.getItem('role-search');
+    if(stored){
+      this.searchRoleModel = JSON.parse(stored);
+    }
+
     this.columns = this.gridService.roleManagementSearchColGrid();
     this.permissionGroupColumns = this.gridService.rolePermissionGroupGrid();
   }
@@ -161,6 +166,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   clear() {
+    localStorage.removeItem('role-search');
+    localStorage.removeItem('role-grid');
     this.searchRoleModel = {
       entityName: '',
       roleName: '',
@@ -258,6 +265,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   editRole(role: RoleSearchDTO) {
     const id = role.roleID;
+    localStorage.setItem('role-search',JSON.stringify(this.searchRoleModel));
     this.router.navigate(['role-management/edit-role', id]);
   }
 

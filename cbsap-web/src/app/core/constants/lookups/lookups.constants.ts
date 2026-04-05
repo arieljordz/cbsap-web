@@ -3,6 +3,7 @@ export const ACCOUNTS = 'v1/lookup/accounts';
 export const TAX_CODES = 'v1/lookup/tax-codes';
 export const SUPPLIER_LOOKUP = 'v1/lookup/suppliers';
 export const INV_SUPPLIER_LOOKUP = 'v1/lookup/suppliers/paged';
+export const ROUTING_FLOWS_LOOKUP = 'v1/lookup/routingflow/paged';
 export const ACCOUNT_SEARCH_LOOKUP = 'v1/lookup/accounts/paged';
 export const ACCOUNT_EXPORT = 'v1/lookup/accounts/download';
 export const ROLES_LOOKUP = 'v1/lookup/roles';

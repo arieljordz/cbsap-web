@@ -71,16 +71,19 @@ export class InvoiceValidationResponseComponent implements OnInit {
   }
 
   validationInfo(action: InvoiceActionButton): string {
+    
     switch (action.toLowerCase()) {
       case InvoiceActionButton.Submit:
-        if (this.getHasMissingRoutingFlow()) {
+        if(this.getHasMissingRoutingFlow()){
           return 'Invoice is missing a role/Routing Flow and cannot be forced/submitted.';
         }
 
         return 'The invoice contains errors and is not able to be approved. Do you want to route the invoice to the next role in the flow?';
 
+
       case InvoiceActionButton.Approve:
-        return 'The invoice contains errors and is not able to be approved.';
+
+        return ' The invoice contains errors and is not able to be approved.';
 
       default:
         return '';
@@ -91,12 +94,14 @@ export class InvoiceValidationResponseComponent implements OnInit {
     return (
       this.action.toLowerCase() === InvoiceActionButton.Submit &&
       !this.getHasMissingRoutingFlow()
+
     );
   }
 
   getHasMissingRoutingFlow(): boolean {
-  return this.messages?.some(msg =>
+    return this.messages?.some(msg =>
+
     msg.includes('Invoice has a missing routing flow')
-  ) ?? false;
-}
+    ) ?? false;
+  }
 }

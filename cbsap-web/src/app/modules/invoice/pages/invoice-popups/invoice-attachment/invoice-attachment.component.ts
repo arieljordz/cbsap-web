@@ -45,7 +45,6 @@ export class InvoiceAttachmentComponent implements OnInit {
   // }
   beforeUpload(event: any): void {
     event.formData.append('InvoiceID', this.invoiceID.toString());
-    console.log(event);
   }
 
   onCustomUpload(event: any) {

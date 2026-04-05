@@ -473,6 +473,8 @@ export class GridService {
     ];
   }
 
+
+
   invRoutingFlowGridColumn(
     rolesTemplate: TemplateRef<any>,
     usersTemplate: TemplateRef<any>
@@ -745,6 +747,25 @@ export class GridService {
     ];
   }
 
+  invoiceRoutingSelectTableGrid(): DynamicGridColumn[]{
+      return[{
+          field: 'invRoutingFlowID',
+          header: 'Routing Flow ID',
+          sort: true,
+          isSearchFilter: true
+      },{
+          field: 'invRoutingFlowName',
+          header: 'Routing Flow Name',
+          sort: true,
+          isSearchFilter: true
+      },{
+          field: 'supplierName',
+          header: 'Supplier Name',
+          sort: true,
+          isSearchFilter: true,
+      }]
+  }
+
   supplierSelectTableGrid(): DynamicGridColumn[] {
     return [
       {
@@ -821,7 +842,7 @@ export class GridService {
     ];
   }
 
-  GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
+GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
     return [
       {
         field: 'goodsReceiptNumber',
@@ -855,6 +876,7 @@ export class GridService {
       }
     ];
   }
+
 
   myInvoiceSearchColumn(
     selectInvoiceTemplate: TemplateRef<any>

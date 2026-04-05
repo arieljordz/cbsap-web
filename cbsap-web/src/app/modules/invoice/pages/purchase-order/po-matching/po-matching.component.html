@@ -29,12 +29,12 @@
   <ng-template pTemplate>
     <p-splitter layout="vertical">
       <ng-template pTemplate>
-        <div class="panel-scroll w-full p-4">
+        <div class="panel-scroll w-full p-4  overflow-auto max-h-[calc(85vh-6rem)]">
           <!--  Row 2: Unmatched Invoice Lines Grid -->
 
           <p-fieldset legend="Matching lines" [toggleable]="true">
-            <div class="flex items-center justify-start m-2 gap-x-2">
-              <div class="flex gap-2">
+            <div class="flex items-center justify-start m-2 gap-x-2  sticky top-0 z-10 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 border-b border-gray-200">
+              <div class="flex gap-2 mb-5">
                 <p-button label="Unmatch All Lines" rounded="true" severity="info" raised="true" size="small"
                   icon="pi pi-check" (click)="unmatchAll()" />
 
@@ -43,14 +43,23 @@
               </div>
             </div>
             <div class="overflow-auto border rounded shadow bg-white">
-              <p-table #tableMatchingPO [value]="matchingPOs" [columns]="matchingLinesColumns"
-                [(selection)]="targetMatchPoLines" dataKey="purchaseOrderLineID" selectionMode="multiple"
-                (onRowSelect)="onRowSelected($event)" editable="true" size="small" [paginator]="true" [rows]="5"
-                [rowsPerPageOptions]="[5, 10]" [scrollable]="true" scrollHeight="400px"
-                [paginatorDropdownAppendTo]="'body'">
+              <p-table 
+              #tableMatchingPO 
+              [value]="matchingPOs" 
+              [columns]="matchingLinesColumns"
+              [(selection)]="targetMatchPoLines" 
+              dataKey="purchaseOrderLineID" 
+              selectionMode="multiple"
+              (onRowSelect)="onRowSelected($event)" 
+              editable="true" 
+              size="small" 
+              [paginator]="true" 
+              [rows]="5"
+              [rowsPerPageOptions]="[5, 10]" [scrollable]="true" scrollHeight="200px"
+              [paginatorDropdownAppendTo]="'body'">
                 <ng-template pTemplate="header" let-columns>
                   <tr>
-                    <th *ngFor="let col of columns; trackBy: trackByValue">
+                    <th *ngFor="let col of columns; trackBy: trackByValue" [pSortableColumn]="col.sort ? col.field : undefined">
                       {{ col.header }}
                     </th>
                     <th><p-tableHeaderCheckbox /></th>
@@ -114,10 +123,10 @@
         </div>
       </ng-template>
       <ng-template pTemplate>
-        <div class="panel-scroll w-full p-4">
+        <div class="panel-scroll w-full p-4  overflow-auto max-h-[calc(85vh-6rem)]">
           <p-fieldset legend="Search Purchase Order" [toggleable]="true">
-            <div class="flex items-center justify-start m-2">
-              <div class="flex gap-2">
+            <div class="flex items-center justify-start m-2 sticky top-0 z-10 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 border-b border-gray-200"><!--Make this div sticky to its parent class-->
+              <div class="flex gap-2 mb-2">
                 <p-button label="Search PO" rounded="true" raised="true" size="small" icon="pi pi-table"
                   (click)="SearchPO()" />
 
@@ -129,14 +138,25 @@
             </div>
 
             <!-- PO Grid -->
-
-            <p-table #tablePO [value]="availablesPOs" [columns]="availablePOcolumns" [(selection)]="srcSelectedPOline"
-              dataKey="purchaseOrderLineID" selectionMode="multiple" (onRowSelect)="onRowSelected($event)" size="small"
-              [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10]" [scrollable]="true" scrollHeight="400px"
-              [paginatorDropdownAppendTo]="'body'">
+            <!--ptable header sticky-->
+            <p-table 
+            #tablePO 
+            [value]="availablesPOs" 
+            [columns]="availablePOcolumns" 
+            [(selection)]="srcSelectedPOline"
+            dataKey="purchaseOrderLineID" 
+            selectionMode="multiple" 
+            (onRowSelect)="onRowSelected($event)" 
+            size="small"
+            [paginator]="true" 
+            [rows]="5" 
+            [rowsPerPageOptions]="[5, 10]" 
+            [scrollable]="true" 
+            scrollHeight="200px"
+            [paginatorDropdownAppendTo]="'body'">
               <ng-template pTemplate="header" let-columns>
                 <tr>
-                  <th *ngFor="let col of columns; trackBy: trackByValue">
+                  <th *ngFor="let col of columns; trackBy: trackByValue" [pSortableColumn]="col.sort ? col.field : undefined">
                     {{ col.header }}
                   </th>
                   <th>

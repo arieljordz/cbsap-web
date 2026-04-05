@@ -12,7 +12,7 @@ import {
   ExcelService,
   AlertService,
 } from 'src/app/core/services/index';
-import { Subject, takeUntil } from 'rxjs';
+import { first, Subject, takeUntil } from 'rxjs';
 import { User } from 'src/app/core/model/user-management/user.model';
 import { ConfirmationService, SelectItem, PrimeTemplate } from 'primeng/api';
 import { TableColumn } from 'src/app/core/model/common/grid-column';
@@ -174,6 +174,10 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const stored = localStorage.getItem('user-search');
+    if(stored){
+      this.searchUserModel = JSON.parse(stored);
+    }
     this.statusFilterOptions = getStatusFilterOptions();
     this.columns = this.gridService.userSearchManagementColGrid();
     this.sizes = { name: 'Small', class: 'p-table?-sm' };
@@ -186,6 +190,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   editUser(user: User) {
+    localStorage.setItem('user-search',JSON.stringify(this.searchUserModel));
     this.router.navigate(['user-management/edit-user', user.userAccountID]);
   }
 
@@ -232,6 +237,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   clear(): void {
+    localStorage.removeItem('user-search');
+    localStorage.removeItem('user-grid');
     this.searchUserModel = {
       name: '',
       username: '',
