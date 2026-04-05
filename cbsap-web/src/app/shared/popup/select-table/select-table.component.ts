@@ -5,7 +5,7 @@ import {
   NgSwitch,
   NgSwitchCase,
   NgSwitchDefault,
-  DatePipe, 
+  DatePipe
 } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -28,7 +28,7 @@ import { formatToIsoDate } from '@core/utils/shared-utils';
     NgSwitchCase,
     NgSwitchDefault,
     YesnoPipe,
-    DatePipe,
+    DatePipe
   ],
   templateUrl: './select-table.component.html',
   styleUrl: './select-table.component.scss',
@@ -98,7 +98,8 @@ export class SelectTableComponent implements OnInit, OnDestroy {
     }
     console.log(this.filters);
   }
-  
+
+
   get selectionMode(): 'single' | 'multiple' {
     return this.multiple ? 'multiple' : 'single';
   }
@@ -109,14 +110,15 @@ export class SelectTableComponent implements OnInit, OnDestroy {
     const range: Date[] = this.filterValues['deliveryDate'] ?? [];
     const deliveryDateFrom = range[0]
       ? formatToIsoDate(range[0])
-      : null;
-    const deliveryDateTo = range[1]
+      :null;
+      const deliveryDateTo = range[1]
       ? formatToIsoDate(range[1])
       : null;
+
     const filters = {
       ...this.filterValues,
       deliveryDateFrom: deliveryDateFrom,
-      deliveryDateTo: deliveryDateTo,
+      deliveryDateTo:deliveryDateTo,
       pageNumber: this.pagination.pageNumber + 1,
       pageSize: this.pagination.pageSize,
       ...(this.sortField && this.sortOrder != null
@@ -126,7 +128,9 @@ export class SelectTableComponent implements OnInit, OnDestroy {
           }
         : {}),
     };
+
     console.log('Search filters:', filters);
+
     this.onSearchCallback?.(filters);
   }
 

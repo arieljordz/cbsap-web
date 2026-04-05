@@ -33,8 +33,9 @@ import {
 import {
   InvSearchSupplierDto,
   InvSupplierLookUpQuery,
-  LoadInvoiceCommentQuery,
-  LoadInvoiceCommentsDto,
+
+  RoutingFlowLookupDto,
+  RoutingFlowLookupQuery
 } from '@core/model/invoicing/invoicing.index';
 import { Keyword, KeywordGridQuery } from '@core/model/keyword-management';
 import { POSearchDto } from '@core/model/purchase-order/po-search.dto';
@@ -48,12 +49,12 @@ import {
 } from '@core/services';
 import { InvoiceDetailService } from '@core/services/invoicing/invoice-detail.service';
 import { PurchaseOrderService } from '@core/services/purchase-order/purchase-order.service';
-import { getErrorMessage, formatToIsoDate } from '@core/utils/shared-utils';
+import { getErrorMessage, formatToIsoDate} from'@core/utils/shared-utils';
 import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
 import { SelectTableComponent } from '@shared/popup/select-table/select-table.component';
 import { SelectItem } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   BehaviorSubject,
   combineLatest,
@@ -65,11 +66,14 @@ import {
   distinctUntilChanged,
   map,
   throwError,
+  debounceTime,
+  skip,
+  filter
 } from 'rxjs';
 import { InvoiceValidationMessageComponent } from '../invoice-validation-message/invoice-validation-message.component';
 import { SearchGoodsReceiptQuery } from '@core/model/goods-receipt/search-goods-receipt.query';
 import { SearchGoodsReceiptLookupDto } from '@core/model/goods-receipt';
-import { DueDateCalculationDto } from '@core/model/system-settings/entity/entity-duedate.calculationDto';
+import { InvoiceQueue } from '@core/enums';
 
 @Component({
   selector: 'app-invoice-info',
@@ -93,7 +97,7 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
   freeFields: { value: string }[] = [];
   spareAmountFields: { value: string }[] = [];
   routingFlowName:string | null = null;
-  
+  queueroute?: InvoiceQueue | null = null;
 
   invInfoDropdown: Record<string, SelectItem[]> = {};
   entityOptions?: SelectItem[] = [];
@@ -101,7 +105,8 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
   focusStates: { [key: string]: boolean } = {};
 
   invoiceID: number = 0;
-  @Output() invoiceDataLoaded = new EventEmitter<InvInfoDto>();
+   @Output() invoiceDataLoaded = new EventEmitter<InvInfoDto>();
+
   @Input() messages: string[] = [];
   @Input() invoiceValidationHeader: string = '';
   @Input() invoiceId?: number;
@@ -118,31 +123,39 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
 
   @Output() amounts = new EventEmitter<AmountDto>();
   private destroySubject: Subject<void> = new Subject();
+
+
+
   private supplierDataList$ = new BehaviorSubject<any[]>([]);
   private supplierTotalRecord$ = new BehaviorSubject<number>(0);
   supplierTotalRecords = 0;
   supplierData: InvSearchSupplierDto[] = [];
   selectedSupplier?: InvSearchSupplierDto;
+
   private keywordDataList$ = new BehaviorSubject<Keyword[]>([]);
   private keywordTotalRecord$ = new BehaviorSubject<number>(0);
   keywordTotalRecords = 0;
   keywordData: Keyword[] = [];
   selectedKeyword?: Keyword;
+
+  private routingFlowDataList$ = new BehaviorSubject<any[]>([]);
+  private routingFlowTotalRecords$ = new BehaviorSubject<number>(0);
+  routingFlowTotalRecords=0;
+  routingFlowData: RoutingFlowLookupDto[] = [];
+  selectedRoutingFlow?: RoutingFlowLookupDto;
+
   private purchaseOrderDataList$ = new BehaviorSubject<POSearchDto[]>([]);
   private purchaseOrderTotalRecord$ = new BehaviorSubject<number>(0);
   purchaseOrderTotalRecords = 0;
   purchaseOrderData: POSearchDto[] = [];
   selectedPurchaseOrder?: POSearchDto;
+
   daysTillDue:number | null=null;
   private goodsReceiptDataList$ = new BehaviorSubject<SearchGoodsReceiptLookupDto[]>([]);
   private goodsReceiptTotalRecord$ = new BehaviorSubject<number>(0);
   goodsReceiptTotalRecords = 0;
   goodsReceiptData: SearchGoodsReceiptLookupDto[] = [];
-  selectedGoodsReceipt?: SearchGoodsReceiptLookupDto;
-
-  createdDate: Date = new Date(); 
-  invDueDateCalculation: number = 1;
-  defaultInvoiceDueDays: number = 0;
+  selectedGoodsReceipt?: SearchGoodsReceiptLookupDto
 
   constructor(
     private lookUpOptionService: LookupOptionsService,
@@ -157,12 +170,10 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
   ) {
     this.invInfoForm = createInvInfoForm();
     this.invoiceID = Number(this.activeRoute.snapshot.params['id'] ?? 0);
-  }
+     }
 
-  page = 1;
-  pageSize = 10;
-  totalComments = 0;
-  invoiceComments: LoadInvoiceCommentsDto[] = [];   
+
+     
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -175,7 +186,7 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
     if (hydratedInvoiceId) {
       this.invoiceID = hydratedInvoiceId;
       this.loadInvoiceData(this.invoiceID);
-      this.loadComments(this.invoiceID);
+
     }
 
     this.f['dueDate'].valueChanges
@@ -188,16 +199,20 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
         this.computeDaysTillDue();
       });
 
-    this.f['paymentTerm'].valueChanges
-      .pipe(
-        startWith(this.f['paymentTerm'].value),
+      this.invInfoForm.get('keyword')!.valueChanges.pipe(
+        map(v => (v ?? '').trim()),
+        debounceTime(300),
         distinctUntilChanged(),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(() => {
-        this.updateDueDate(); 
+        skip(1)
+      ).subscribe(value => {
+        if(value === ''){
+          this.f['keyword'].setValue('');
+          this.f['keywordID'].setValue(null);
+          //this.routingFlowName = '';
+        }
       });
   }
+
 
   computeDaysTillDue(){    
     const dueDate = this.f['dueDate'].value as Date | null;
@@ -218,70 +233,9 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       this.daysTillDue = daysDiff;
     }
   }
- 
-  private updateDueDate() {
-    const formValue = this.invInfoForm.getRawValue();
-    const dto: DueDateCalculationDto = {
-      InvoiceDate: formValue.invoiceDate ?? new Date(),
-      ScanDate: formValue.scanDate ?? new Date(),
-      PaymentTerm: Number(formValue.paymentTerm) || 0
-    };
 
-    try {
-      const dueDate = this.computeInvoiceDueDate(
-        dto,
-        this.createdDate,
-        this.invDueDateCalculation,
-        this.defaultInvoiceDueDays
-      );
 
-      this.invInfoForm.patchValue(
-        { dueDate: dueDate },
-        { emitEvent: false } // prevent infinite loop
-      );
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  computeInvoiceDueDate(
-    invoice: DueDateCalculationDto,
-    createdDate: Date,
-    calculationMethod: number,
-    defaultDueDays: number
-  ): Date {
-    const invoiceDate = invoice.InvoiceDate ? new Date(invoice.InvoiceDate) : null;
-    const scanDate = invoice.ScanDate ? new Date(invoice.ScanDate) : null;
-
-    let baseDate: Date | null = null;
-
-    switch (calculationMethod) {
-      case 1: // Scan Date + Payment Terms
-        baseDate = scanDate;
-        break;
-      case 2: // CBSAP Insert Date + Payment Terms
-        baseDate = createdDate;
-        break;
-      case 3: // Invoice Date + Payment Terms
-        baseDate = invoiceDate;
-        break;
-      default:
-        throw new Error('Invalid due date calculation method');
-    }
-
-    if (!baseDate) {
-      baseDate = new Date();
-    }
-
-    const paymentTermDays =
-      invoice.PaymentTerm != null && invoice.PaymentTerm > 0
-        ? invoice.PaymentTerm
-        : defaultDueDays;
-
-    const dueDate = new Date(baseDate);
-    dueDate.setDate(dueDate.getDate() + paymentTermDays);
-    return dueDate;
-  }
+  
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['invoiceId'] && !changes['invoiceId'].firstChange) {
@@ -293,6 +247,7 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       }            
     }    
   }
+  
 
   private resetFormState(): void {
     this.invInfoForm = createInvInfoForm();
@@ -301,12 +256,52 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
     this.selectedSupplier = undefined;
     this.selectedKeyword = undefined;
     this.selectedPurchaseOrder = undefined;
+    this.selectedRoutingFlow = undefined;
     this.supplierDataList$.next([]);
     this.supplierTotalRecord$.next(0);
     this.keywordDataList$.next([]);
     this.keywordTotalRecord$.next(0);
     this.purchaseOrderDataList$.next([]);
     this.purchaseOrderTotalRecord$.next(0);
+    this.routingFlowDataList$.next([]);    
+    this.routingFlowTotalRecords$.next(0);
+  }
+
+  assignRoutingFlow(){
+    const ref: DynamicDialogRef = this.dialogService.open(
+      SelectTableComponent,
+      {
+        header: 'Routing Flow Lookup',
+        contentStyle: { overflow: 'auto' },
+        baseZIndex: 10000,
+        modal: true,
+        closable: true,
+        data:{
+          multiple: false,
+          columns: this.gridService.invoiceRoutingSelectTableGrid(),
+          data$: this.routingFlowDataList$,
+          totalRecords$: this.routingFlowTotalRecords$,
+          selectedRows: this.selectedRoutingFlow ? [this.selectedRoutingFlow] : [],
+          rowDisablePredicate: (row: RoutingFlowLookupDto) => !row?.isActive,
+          onSearch: (filter: any) => {
+            const query: RoutingFlowLookupQuery ={
+              ...filter,
+            };
+            this.searchRoutingFlow(query)
+          }
+        }
+      }
+    );
+
+    ref.onClose.subscribe((selected) => {
+      const routingFlow = Array.isArray(selected) ? selected?.[0] : selected;
+      if(!routingFlow){
+        return;
+      }
+      this.selectedRoutingFlow = routingFlow;
+      this.f['invRoutingFlowID'].setValue(routingFlow.invRoutingFlowID);
+      this.f['invRoutingFlowName'].setValue(routingFlow.invRoutingFlowName);
+    });
   }
 
   /** Look up action */
@@ -353,10 +348,56 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
         );
         this.f['suppName'].setValue(
           this.selectedSupplier?.supplierName ?? null
-        );
+        );     
+      }
+
+
+      if(this.f['keywordID'].value == null && this.queueroute !== InvoiceQueue.MyInvoices){
+        this.f['invRoutingFlowName'].setValue(this.selectedSupplier?.invoiceRoutingFlowName || null);
+        this.f['invRoutingFlowID'].setValue(this.selectedSupplier?.invoiceRoutingFlowID || null);
       }
     });
   }
+
+  disableBrowseBtn(){
+     return (this.queueroute === InvoiceQueue.MyInvoices)
+  }
+
+
+  disabledFieldsInException() {
+    const shouldDisable = this.queueroute === InvoiceQueue.MyInvoices;
+    const controls = ['keyword','invRoutingFlowName'];
+
+    controls.forEach(name => {
+      const ctrl = this.invInfoForm.get(name);
+      if (!ctrl) return;
+
+      if (shouldDisable) {
+        ctrl.disable({ emitEvent: false, onlySelf: true });
+      } else {
+        ctrl.enable({ emitEvent: false, onlySelf: true });
+      }
+    });
+  }
+
+
+  searchRoutingFlow(searchQuery: RoutingFlowLookupQuery){
+    this.lookOptionService
+    .routingFlowSearchLookUp(searchQuery)
+    .pipe(takeUntil(this.destroySubject))
+    .subscribe({
+      next: (res) => {
+        this.routingFlowData = res.responseData?.data ?? [];
+        this.routingFlowTotalRecords = res.responseData?.totalCount ?? 0;
+
+        this.routingFlowDataList$.next(this.routingFlowData);
+        this.routingFlowTotalRecords$.next(this.routingFlowTotalRecords);
+        
+      },
+      error: () => {},
+    });
+  }
+
 
   searchSupplier(searchQuery: InvSupplierLookUpQuery) {
     this.lookOptionService
@@ -367,7 +408,6 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
           if (res.isSuccess) {
             this.supplierData = res.responseData?.data ?? [];
             this.supplierTotalRecords = res.responseData?.totalCount ?? 0;
-            console.log(this.supplierData);
             // Push new data to the modal table
             this.supplierDataList$.next(this.supplierData);
             this.supplierTotalRecord$.next(this.supplierTotalRecords);
@@ -412,9 +452,12 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       if (!keyword) {
         return;
       }
+      
       this.selectedKeyword = keyword;
       this.f['keyword'].setValue(keyword.keywordName);
       this.f['keywordID'].setValue(keyword.keywordID);
+      this.f['invRoutingFlowID'].setValue(keyword.invoiceRoutingFlowID);
+      this.f['invRoutingFlowName'].setValue(keyword.invoiceRoutingFlowName);
     });
   }
 
@@ -470,14 +513,14 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       this.f['poNo'].setValue(purchaseOrder.poNo ?? '');
     });
   }
-  
+
   assignGoodReceiptNo(): void {
     const initialQuery = this.buildGoodReceiptGridQuery({
       pageNumber: 1,
       pageSize: 5,
     });
     this.searchGoodReceiptNos(initialQuery);
-
+ 
     const ref: DynamicDialogRef = this.dialogService.open(
       SelectTableComponent,
       {
@@ -503,7 +546,7 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
         },
       }
     );
-
+ 
     ref.onClose.subscribe((selected) => {
       const goodReceiptNo = Array.isArray(selected)
         ? selected?.[0]
@@ -511,11 +554,11 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       if (!goodReceiptNo) {
         return;
       }
-
+ 
       if (!this.normalizeBooleanFlag(goodReceiptNo.isActive)) {
         return;
       }
-
+ 
       this.selectedGoodsReceipt = {
         ...goodReceiptNo,
         isActive: this.normalizeBooleanFlag(goodReceiptNo.isActive),
@@ -573,8 +616,9 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
         },
       });
   }
-  
-  private searchGoodReceiptNos(searchQuery: SearchGoodsReceiptQuery): void {
+
+
+private searchGoodReceiptNos(searchQuery: SearchGoodsReceiptQuery): void {
     this.invDetailService
       .goodReceiptNoSearch(searchQuery)
       .pipe(takeUntil(this.destroySubject))
@@ -585,14 +629,14 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
             this.goodsReceiptTotalRecord$.next(0);
             return;
           }
-
+ 
           const mappedData =
             res.responseData.data?.map((grNo) => ({
               ...grNo,
               isActive: this.normalizeBooleanFlag(grNo.active),
               deliveryDate: grNo.deliveryDate ?? null,
             })) ?? [];
-
+ 
           this.goodsReceiptData = mappedData;
           this.goodsReceiptTotalRecords = res.responseData.totalCount ?? 0;
           this.goodsReceiptDataList$.next(mappedData);
@@ -606,6 +650,7 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
         },
       });
   }
+
 
   private buildKeywordGridQuery(filters: any = {}): KeywordGridQuery {
     const normalizedActive =
@@ -622,6 +667,43 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       pageSize: filters.pageSize ?? 10,
       sortField: filters.sortField,
       sortOrder: filters.sortOrder,
+    };
+  }
+
+  private buildGoodReceiptGridQuery(filters: any = {}): SearchGoodsReceiptQuery {
+    const normalizedActive =
+      filters.active === undefined || filters.active === null
+        ? null
+        : this.normalizeBooleanFlag(filters.active);
+ 
+    const supplierRaw =
+      filters.supplierName ??
+      filters.supplier ??
+      (filters.supplierID !== undefined && filters.supplierID !== null
+        ? String(filters.supplierID)
+        : null);
+ 
+    const supplierValue =
+      typeof supplierRaw === 'string' ? supplierRaw.trim() : supplierRaw;
+ 
+    const deliveryDateFrom = filters.deliveryDateFrom
+      ? formatToIsoDate(filters.deliveryDateFrom)  // <-- convert Date to string
+      : null;
+    const deliveryDateTo = filters.deliveryDateTo
+      ? formatToIsoDate(filters.deliveryDateTo)    // <-- convert Date to string
+      : null;
+ 
+    return {
+      entity: filters.entityName?.trim() ?? null,
+      supplier: supplierValue ? supplierValue : null,
+      goodsReceiptNumber: filters.goodsReceiptNumber?.trim() ?? null,
+      active: normalizedActive,
+      deliveryDateFrom, 
+      deliveryDateTo, 
+      PageNumber: filters.pageNumber ?? 1,
+      PageSize: filters.pageSize ?? 10,
+      SortField: filters.sortField,
+      SortOrder: filters.sortOrder,
     };
   }
 
@@ -653,43 +735,6 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
     };
   }
 
-  private buildGoodReceiptGridQuery(filters: any = {}): SearchGoodsReceiptQuery {
-    const normalizedActive =
-      filters.active === undefined || filters.active === null
-        ? null
-        : this.normalizeBooleanFlag(filters.active);
-
-    const supplierRaw =
-      filters.supplierName ??
-      filters.supplier ??
-      (filters.supplierID !== undefined && filters.supplierID !== null
-        ? String(filters.supplierID)
-        : null);
-
-    const supplierValue =
-      typeof supplierRaw === 'string' ? supplierRaw.trim() : supplierRaw;
-
-    const deliveryDateFrom = filters.deliveryDateFrom
-      ? formatToIsoDate(filters.deliveryDateFrom)  // <-- convert Date to string
-      : null;
-    const deliveryDateTo = filters.deliveryDateTo
-      ? formatToIsoDate(filters.deliveryDateTo)    // <-- convert Date to string
-      : null;
-
-    return {
-      entity: filters.entityName?.trim() ?? null,
-      supplier: supplierValue ? supplierValue : null,
-      goodsReceiptNumber: filters.goodsReceiptNumber?.trim() ?? null,
-      active: normalizedActive,
-      deliveryDateFrom, 
-      deliveryDateTo, 
-      PageNumber: filters.pageNumber ?? 1,
-      PageSize: filters.pageSize ?? 10,
-      SortField: filters.sortField,
-      SortOrder: filters.sortOrder,
-    };
-  }
-
   /** API CALLS  */
   private loadInvoiceData(invoiceID: number) {
     this.invDetailService
@@ -698,55 +743,56 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
         switchMap((response: ResponseResult<InvInfoDto>) => {
           if (response?.isSuccess && response.responseData) {
             const invoice = response.responseData;
+            this.queueroute = invoice.queueType ?? this.queueroute;
+            this.disabledFieldsInException();
             this.routingFlowName = invoice.routingFlowName;
-
             return combineLatest([
               of(invoice),
               this.entityOptions$,
               this.invDetailService.getDropdownOptions(),
               this.taxCodeLookUpOptions$
+
             ]);
           } else {
+            // handle error, or return empty fallback
             return throwError(() => new Error('Failed to fetch invoice'));
           }
         }),
         takeUntil(this.destroy$)
       )
       .subscribe(([invoice, entityOptions, dropdown, taxCodeLookUpOptions]) => {
-        const patchValue = {
+        this.invInfoForm.patchValue({
           ...invoice,
-          invoiceDate: invoice.invoiceDate ? new Date(invoice.invoiceDate) : null,
+          invoiceDate: invoice.invoiceDate
+            ? new Date(invoice.invoiceDate)
+            : null,
           dueDate: invoice.dueDate ? new Date(invoice.dueDate) : null,
-          scanDate: invoice.scanDate ? new Date(invoice.scanDate) : null,
-        };
-        this.invInfoForm.patchValue(patchValue);
-
-        this.createdDate = invoice.createdDate ? new Date(invoice.createdDate) : new Date();
-        this.invDueDateCalculation = invoice.invDueDateCalculation ?? 1;
-        this.defaultInvoiceDueDays = invoice.defaultInvoiceDueInDays ?? 0;
-
-        this.updateDueDate();
+          scanDate: invoice.scanDate ? new Date(invoice.invoiceDate) : null,
+        });
 
         this.entityOptions = entityOptions;
         this.taxCodeOptions = taxCodeLookUpOptions;
         this.invInfoDropdown = {
-          currencies: dropdown.currencies ?? [],
-          paymentTerms: dropdown.paymentTerms ?? [],
+          currencies: dropdown.currencies,
+          paymentTerms: dropdown.paymentTerms,
         };
+       
 
         this.invoiceDataLoaded.emit(invoice);
 
         this.formFreeFields.clear();
-        invoice?.freeFields?.forEach(freeField => {
+        invoice?.freeFields.forEach((freeField) => {
           this.formFreeFields.push(createFreeFieldFormGroup(freeField));
         });
-
         this.formSpareAmountFields.clear();
-        invoice?.spareAmounts?.forEach(spareField => {
-          this.formSpareAmountFields.push(createSpareAmountFormGroup(spareField));
+        invoice?.spareAmounts.forEach((freeField) => {
+          this.formSpareAmountFields.push(
+            createSpareAmountFormGroup(freeField)
+          );
         });
 
-        const amounts: AmountDto = this.amountValues();
+        //
+        let amounts: AmountDto = this.amountValues();
         this.amounts.emit({ ...amounts });
       });
   }
@@ -765,7 +811,6 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
     //this.freeFields.splice(index, 1);
     this.formFreeFields.removeAt(index);
   }
-
   onAddSpareAmountField() {
     // this.spareAmountFields.push({ value: '' });
     const index = this.formSpareAmountFields.length + 1;
@@ -817,9 +862,14 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
     if (typeof value === 'number') {
       return value === 1;
     }
-
+    
     return false;
   }
+
+
+
+  
+  
 
   /**Reactive Form Init */
   get f() {
@@ -829,13 +879,11 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
   get formFreeFields(): FormArray<FreeFieldsFormGroup> {
     return this.invInfoForm.get('freeFields') as FormArray<FreeFieldsFormGroup>;
   }
-
   get formSpareAmountFields(): FormArray<SpareAmountFormGroup> {
     return this.invInfoForm.get(
       'spareAmount'
     ) as FormArray<SpareAmountFormGroup>;
   }
-
   groupName(group: AbstractControl): string {
     return Object.keys((group as FormGroup).controls)[0];
   }
@@ -863,27 +911,4 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       totalAmount: this.f['totalAmount'].value!,
     };
   }
-
-  loadComments(invoiceID: number) {
-    const query: LoadInvoiceCommentQuery = {
-      InvoiceID: invoiceID,
-      PageNumber: this.page,
-      PageSize: this.pageSize,
-      SortField: 'CreatedDate',
-      SortOrder: -1,
-    };
-
-    this.invDetailService.loadInvoiceComments(query)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res) => {
-          if (res.isSuccess) {
-            this.invoiceComments = res.responseData?.data ?? [];
-            this.totalComments = res.responseData?.totalCount ?? 0;
-          }
-        },
-        error: (err) => console.error('Failed to load comments', err),
-      });
-  }
 }
-

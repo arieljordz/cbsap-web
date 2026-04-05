@@ -33,9 +33,6 @@ export interface InvInfoDto {
   approvedUser: string;
   freeFields: FreeFieldDto[] | [];
   spareAmounts: SpareAmountDto[] | [];
-  createdDate: Date;
-  invDueDateCalculation: number;
-  defaultInvoiceDueInDays: number;
 }
 
 export interface FreeFieldDto {
@@ -84,6 +81,8 @@ export interface InvoiceDto {
   statusType: InvoiceStatusEnum;
   keywordID: number;
   keyword: string;
+  invRoutingFlowID: number;
+  invRoutingFlowName: string;
   freeFields: FreeFieldDto[];
   spareAmount: SpareAmountDto[];
   invoiceAllocationLines: InvAllocEntryDto[];

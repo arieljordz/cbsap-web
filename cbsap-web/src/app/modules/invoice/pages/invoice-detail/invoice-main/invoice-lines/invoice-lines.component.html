@@ -84,7 +84,7 @@
 
             <!-- Account-->
 
-            <!-- <td>
+          <!--  <td>
               <ng-container *ngIf="editingRowIndex === ri; else showAccount">
                 <p-input-group>
                   <input
@@ -108,9 +108,12 @@
               <ng-template #showAccount>
                 {{ getAccountLabel(item.account) }}</ng-template
               >
-            </td> -->
+            </td>
+          -->
 
-            <td>
+            <!-- Account-->
+
+              <td>
               <ng-container *ngIf="editingRowIndex === ri; else showAccount">
                 <p-select
                   class="w-full"
@@ -123,11 +126,13 @@
                   [appendTo]="'body'"
                 >
                 </p-select>
+                <!-- <input type="text" formControlName="taxCodeID" class="p-inputtext-sm w-full" /> -->
               </ng-container>
               <ng-template #showAccount>{{
                 getAccountLabel(item.account)
               }}</ng-template>
             </td>
+
 
             <!-- Dimension 1 
             <td>
@@ -234,7 +239,12 @@
                 getTaxCodeLabel(item.taxCodeID)
               }}</ng-template>
             </td>
+
+
+
+
             <!-- Net Amount -->
+
             <td>
               <ng-container
                 *ngIf="editingRowIndex === ri; else showlineNetAmount"

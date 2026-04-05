@@ -1,9 +1,67 @@
-<p-table
-  [value]="invoiceActivityLogs"
-  sortField="actionName"
-  sortMode="single"
-  dataKey="actionName"
-  rowGroupMode="subheader"
+<p-table 
+    [value]="invoiceActivityLogs2"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10,25,50]"
+    [scrollable]="true"
+    paginatorDropdownAppendTo="body"
+    styleClass="p-datatable-gridlines">
+ 
+    <!-- HEADER -->
+<ng-template pTemplate="header">
+<tr>
+<th pSortableColumn="actionDate">
+       Action Date
+<p-sortIcon field="actionDate"></p-sortIcon>
+</th>
+<th pSortableColumn="activity">
+              Action
+<p-sortIcon field="activity"></p-sortIcon>
+</th>
+<th pSortableColumn="table">
+        Table
+<p-sortIcon field="table"></p-sortIcon>
+</th>
+<th pSortableColumn="column">
+        Column
+<p-sortIcon field="column"></p-sortIcon>
+</th>
+<th pSortableColumn="activityClass">
+              Activity Class
+<p-sortIcon field="activityClass"></p-sortIcon>
+</th>        
+<th pSortableColumn="preValue">
+              Previous Value
+<p-sortIcon field="preValue"></p-sortIcon>
+</th>
+<th pSortableColumn="newValue">
+              New Value
+<p-sortIcon field="newValue"></p-sortIcon>
+</th>        
+<th pSortableColumn="actionedBy">
+              Actioned By
+<p-sortIcon field="actionedBy"></p-sortIcon>
+</th>
+</tr>
+</ng-template>
+ 
+    <!-- BODY -->
+<ng-template pTemplate="body" let-row>
+<tr>
+<td>{{row.actionDate | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+<td>{{row.action}}</td>
+<td>{{row.table}}</td>
+<td>{{row.column}}</td>
+<td>{{row.activityClass}}</td>
+<td>{{row.prevValue}}</td>
+<td>{{row.newValue}}</td>
+<td>{{row.ActionedBy}}</td>
+</tr>
+</ng-template>
+ 
+</p-table>
+
+<!--
   groupRowsBy="actionName"
   [tableStyle]="{ 'min-width': '50rem' }"
 >
@@ -27,7 +85,7 @@
         <button
           type="button"
           pButton
-          pRipple
+            pple
           [pRowToggler]="invActivityLogEntries"
           text
           rounded
@@ -68,4 +126,4 @@
       </td>
     </tr>
   </ng-template>
-</p-table>
+</p-table> -->

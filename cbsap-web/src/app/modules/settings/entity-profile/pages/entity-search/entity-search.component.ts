@@ -85,6 +85,11 @@ export class EntitySearchComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const stored = localStorage.getItem('entity-search');
+    if (stored) {
+      this.entitySearchFilters = JSON.parse(stored);
+    }
+
     this.columns = this.gridService.entityGridColumn();
     this.sizes = { name: 'Small', class: 'p-table?-sm' };
   }
@@ -100,13 +105,15 @@ export class EntitySearchComponent implements OnInit {
   }
 
   clear() {
+    localStorage.removeItem('entity-search');
+    localStorage.removeItem('entity-grid');
     this.entitySearchFilters = {
       EntityName: '',
       EntityCode: '',
     };
     this.pageNumber = 0;
     this.pageSize = 10;
-    this.sortField = undefined;
+    this.sortField = '';
     this.sortOrder = 1;
     this.table?.reset();
     this.searchEntity();
@@ -186,6 +193,7 @@ export class EntitySearchComponent implements OnInit {
 
   editEntity(entity: any): void {
     const id = entity.entityProfileID;
+    localStorage.setItem('entity-search', JSON.stringify(this.entitySearchFilters));
     this.router.navigate(['entity-profile-management/edit-entity', id]);
   }
 
@@ -251,4 +259,7 @@ export class EntitySearchComponent implements OnInit {
     const timestamp = this.datePipe.transform(new Date(), 'yyyyMMdd_HHmmss');
     return `Entity_${timestamp}.xlsx`;
   }
+
+  
 }
+

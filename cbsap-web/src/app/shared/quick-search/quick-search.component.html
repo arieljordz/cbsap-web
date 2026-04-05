@@ -73,6 +73,17 @@
         (click)="exportToExcel()"
         styleClass="w-full sm:w-auto"
       />
+      <p-button  *ngIf="actionButtons.advancedSearch"
+       
+        label="Adv Search"
+        severity="secondary"
+        [raised]="true"
+        outlined="true"
+        [rounded]="true"
+        icon="pi pi-search-plus"
+       
+        styleClass="w-full sm:w-auto"
+      />
       <p-button
         *ngFor="let btn of actionButtons.custom || []"
         [label]="btn.label"

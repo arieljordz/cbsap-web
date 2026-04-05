@@ -84,10 +84,11 @@ export class AuthService {
 
   
   private savePermissions(token:string){
-     const decodedToken = this.decodeToken(token) as AccessToken;
+      const decodedToken = this.decodeToken(token) as AccessToken;
       const permissions: PermissionValues[] = Array.isArray(decodedToken.permission) ? decodedToken.permission : [decodedToken.permission];
       this.localStorage.set('user_permissions', permissions);
       this.localStorage.set('authorisation_limit', decodedToken.authorisationlimit);
+      this.localStorage.set('sr', decodedToken.role);
   }
 
   
@@ -126,14 +127,58 @@ export class AuthService {
       );
   }
 
-  logout() {
-    this.setUsername(null);
-    this.localStorage.remove('username');
-    this.localStorage.remove('sr');
-    this.localStorage.remove('token');
-    this.localStorage.remove('user_permissions');
-    this.localStorage.remove('authorisation_limit');
+  logout() : void {
+    const authKey = [
+    'username',
+    'sr',
+    'token',
+    'user_permissions',
+    'authorisation_limit'
+    ];
+
+    const searchKey = [
+    'archive-queue-search',
+    'exception-queue-search',
+    'myinvoice-search',
+    'reject-queue-search',
+    'keyword-search',
+    'permission-search',
+    'role-search',
+    'entity-search',
+    'routingflow-search',
+    'supplier-search',
+    'taxcode-search',
+    'user-search'
+    ];
+
+    const gridKey = [
+    'myinvoice-grid', 
+    'archive-queue-grid', 
+    'exception-queue-grid', 
+    'reject-queue-grid',
+    'keyword-grid', 
+    'permission-grid', 
+    'role-grid', 
+    'entity-grid', 
+    'routingflow-grid',
+    'supplier-grid', 
+    'taxcode-grid', 
+    'user-grid'
+    ];
+
+    try{
+      this.setUsername(null);
+      
+      for (const k of [...authKey, ...gridKey, ...searchKey]) {
+        this.localStorage.remove(k);
+      }
+    }catch(err){
+      console.error('Logout encountered an error while clearing storage:', err)
+    }finally{
+      (document.activeElement as HTMLElement)?.blur?.();
+    }           
   }
+
 
   private setUsername(username: string | null): void {
     this.localStorage.set('username', username);
@@ -237,8 +282,11 @@ export class AuthService {
     if (!decoded) {
       throw new Error('Cannot decode the token');
     }
-
-    return JSON.parse(decoded);
+    const payload = JSON.parse(decoded);
+    if (payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]) {
+      payload.role = payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    }
+    return payload;
   }
 
   private urlBase64Decode(str: string): string {

@@ -15,7 +15,7 @@ import { SelectItem } from 'primeng/api';
 import { Observable, catchError, map, shareReplay, throwError } from 'rxjs';
 import { ResultsHttpService } from '../common/results-http.service';
 import { Pagination, ResponseResult } from '@core/model/common';
-import { GOODS_RECEIPT_SEARCH_LOOKUP, HttpErrorResponse, INV_ENPOINT } from '@core/constants/index';
+import { GOODS_RECEIPT_SEARCH_LOOKUP, HttpErrorResponse,INV_ENPOINT } from '@core/constants/index';
 import {
   ArchiveSearchQuery,
   ExceptionsSearchQuery,
@@ -25,6 +25,7 @@ import {
   ExportRejectedInvoiceQuery,
   GetInvAllocLineQuery,
   InvActivityLogDto,
+  InvActivityLogEntriesDto,
   InvoiceCommentDto,
   LoadInvoiceCommentQuery,
   LoadInvoiceCommentsDto,
@@ -179,7 +180,37 @@ export class InvoiceDetailService {
         })
       );
   }
+
+  getInvoiceActivityLogByInvID2(
+    invoiceID: number
+  ): Observable<ResponseResult<InvActivityLogEntriesDto[]>> {
+
+        return this.resultHttpClient
+        .get<InvActivityLogEntriesDto[]>(
+
+          INV_ENPOINT.Get_INV_ACTIVITY_LOG2(invoiceID),
+          true
+        )
+
+        .pipe(
+
+          map((response) => {
+
+            return response;
+
+          }),
+
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+
+        })
+
+        );
+        
+
+  }
   
+
   getInvoiceStatus(
     invoiceID: number
   ): Observable<ResponseResult<GetInvoiceStatusDto>> {
@@ -615,9 +646,11 @@ export class InvoiceDetailService {
           return throwError(() => error);
         })
       );
+
+
   }
-  
-   goodReceiptNoSearch(
+
+goodReceiptNoSearch(
         query: SearchGoodsReceiptQuery
       ): Observable<ResponseResult<Pagination<SearchGoodsReceiptLookupDto>>> {
         return this.resultHttpClient
@@ -635,6 +668,8 @@ export class InvoiceDetailService {
               return throwError(() => error);
             })
           );
-    }
-  }
 
+}
+
+
+}

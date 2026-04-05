@@ -1,424 +1,447 @@
 <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()">
-    <p-confirmDialog [style]="{ width: '20vw', height: '200px' }"/>
-    <div class="card flex flex-col gap-6 p-6">
-        <div class="flex justify-between items-center">
-            <h5 class="font-semibold text-xl">{{ pagelabel }}</h5>
+  <p-confirmDialog [style]="{ width: '20vw', height: '200px' }" />
+  <div class="card flex flex-col gap-6 p-6">
+    <div class="flex justify-between items-center">
+      <h5 class="font-semibold text-xl">{{ pagelabel }}</h5>
 
-            <div class="flex gap-3">
-                <p-button 
-                  label="Save"  
-                  icon="pi pi-check"  
-                  [raised]="true" 
-                  [rounded]="true" 
-                  [disabled]="!supplierForm.valid"
-                  [severity]="!supplierForm.valid ? 'secondary':'primary'" 
-                  type="submit"  />
+      <div class="flex gap-3">
+        <p-button label="Save" icon="pi pi-check" [raised]="true" [rounded]="true" [disabled]="!supplierForm.valid"
+          [severity]="!supplierForm.valid ? 'secondary':'primary'" type="submit" />
 
-                  <p-button 
-                  label="Delete"  
-                  *ngIf="this.supplierInfoID !== 0" 
-                  icon="pi pi-trash"
-                  [raised]="true"
-                  [rounded]="true" 
-                  severity="contrast"
-                  (click) ="deleteConfirmation()" />
+        <p-button label="Delete" *ngIf="this.supplierInfoID !== 0" icon="pi pi-trash" [raised]="true" [rounded]="true"
+          severity="contrast" (click)="deleteConfirmation()" />
 
-                <p-button 
-                label="Cancel"   
-                icon="pi pi-times"
-                [raised]="true"
-                [rounded]="true" 
-                severity="contrast"
-                (click) ="cancel($event)"
-                 />
-           
-            </div>
-        </div>
+        <p-button label="Cancel" icon="pi pi-times" [raised]="true" [rounded]="true" severity="contrast"
+          (click)="cancel($event)" />
 
-        <p-tabs value="0">
-            <p-tablist>
-                <p-tab value="0"> <i class="pi pi-info"></i> Basic Information</p-tab>
-                <p-tab value="1"> <i class="pi pi-address-book"></i> Contact Information</p-tab>
-                <p-tab value="2"> <i class="pi pi-wallet"></i> Account Information</p-tab>
-                <p-tab value="3"><i class="pi pi-plus-circle"></i>Additional Information</p-tab>
-                <p-tab value="4"><i class="pi pi-map"></i>Notes</p-tab>
-            </p-tablist>
-            <p-tabpanels>
-                <p-tabpanel value="0">
-                    <div class="grid grid-cols-1 sm:w-1/3 lg:w-2/4 xl:w-2/5 gap-6 pt-4">
-                        <div >
-                          <label for ="supplierID" class=" block mb-1" >Supplier ID</label>
-                          <input type="text" pInputText id="supplierID" formControlName="supplierID" autocomplete="off" maxlength="40"  
-                          appCharacterFocusTracker (focusChange)="onFocusChange('supplierID', $any($event))" class="w-full border rounded p-2" />
-                          <div class="flex justify-between">
-                            <div class="flex-1">
-                              <small *ngIf="f['supplierID'].invalid && f['supplierID'].touched"  class="pt-2 text-xs text-red-500">
-                                {{ getErrorMessage(f['supplierID'], 'Supplier ID') }}
-                             </small>
-                            </div>
-                            <div class="flex-1 text-right " *ngIf="focusStates['supplierID']">
-                            <small *ngIf="f?.['supplierID']?.value!.length > 0" class="text-gray-400 text-xs">
-                              <span *ngIf="(f['supplierID'].value!  | characterLength: 40).approachingLimit" class="text-red-400 text-xs">
-                                Approaching limit!
-                              </span>
-                              {{ (f['supplierID'].value! | characterLength: 40).length }}/40
-                              </small> 
-                             
-                            </div>
-                    
-                         </div>
-                        </div>
-                         <div >
-                          <label class=" block mb-1">Supplier Name</label>
-                          <input type="text" pInputText id="supplierName" formControlName="supplierName" autocomplete="off" maxlength="100"  
-                           appCharacterFocusTracker (focusChange)="onFocusChange('supplierName', $any($event))" class="w-full border rounded p-2" />
-                          <div class="flex justify-between">
-                            <div class="flex-1">
-                              <small *ngIf="f['supplierName'].invalid && f['supplierName'].touched"  class="pt-2 text-xs text-red-500">
-                                {{ getErrorMessage(f['supplierName'], 'Supplier  Name') }}
-                            </small>
-                            </div>
-                              <div class="flex-1 text-right " *ngIf="focusStates['supplierName']">
-                              <small *ngIf="f?.['supplierName']?.value!.length > 0" class="text-gray-400 text-xs">
-                                <span *ngIf="(f['supplierName'].value!  | characterLength: 80).approachingLimit" class="text-red-400 text-xs">
-                                  Approaching limit!
-                                </span>
-                                {{ (f['supplierName'].value! | characterLength: 100).length }}/100
-                                </small> 
-                              
-                              </div>
-                      
-                          </div>
-                        </div>
-                        <div>
-                          <label for ="supplierTaxID" class=" block mb-1">Supplier TaxID</label>
-                          <input type="text" pInputText id="supplierTaxID" formControlName="supplierTaxID" autocomplete="off" maxlength="40"  
-                          appCharacterFocusTracker (focusChange)="onFocusChange('supplierTaxID', $any($event))" class="w-full border rounded p-2" />
-
-                            <div class="flex justify-between">
-                            
-                              <div class="flex-1 text-right " *ngIf="focusStates['supplierTaxID']">
-                              <small *ngIf="f?.['supplierTaxID']?.value!.length > 0" class="text-gray-400 text-xs">
-                                <span *ngIf="(f['supplierTaxID'].value!  | characterLength: 40).approachingLimit" class="text-red-400 text-xs">
-                                  Approaching limit!
-                                </span>
-                                {{ (f['supplierTaxID'].value! | characterLength: 100).length }}/100
-                                </small> 
-                              
-                              </div>
-                         </div>
-                        </div>
-                        <div>
-                          <label class=" block mb-1" >Entity</label>
-                          <p-select class="w-full" formControlName="entityProfileID"  [options]="entityOptions" [filter]="true" filterBy="label" [showClear]="false" > </p-select>
-                        </div>
-                       
-                        <div>
-                          <div class="flex items-center space-x-2">
-                            <p-toggleswitch formControlName="isActive" />
-                            <label for="isActive" class="">Active</label> 
-                            </div>
-                                 
-                          </div>
-                      </div>
-                  
-                </p-tabpanel>
-                <p-tabpanel value="1">
-                    <div class="grid grid-cols-1 sm:w-1/3 lg:w-2/4 xl:w-2/5 gap-6 pt-4">
-                        <div>
-                            <label class="block  mb-1">Telephone</label>
-                          	 <input type="text" pInputText id="telephone" formControlName="telephone" autocomplete="off" maxlength="30"  
-                              appCharacterFocusTracker (focusChange)="onFocusChange('telephone', $any($event))" class="w-full border rounded p-2" />
-                              <div class="flex justify-between">
-                                
-                                  <div class="flex-1 text-right " *ngIf="focusStates['telephone']">
-                                  <small *ngIf="f?.['telephone']?.value!.length > 0" class="text-gray-400 text-xs">
-                                    <span *ngIf="(f['telephone'].value!  | characterLength: 30).approachingLimit" class="text-red-400 text-xs">
-                                      Approaching limit!
-                                    </span>
-                                    {{ (f['telephone'].value! | characterLength: 30).length }}/30
-                                    </small> 
-                                  
-                                  </div>
-                          
-                              </div>
-                        </div>
-                        <div>
-                            <label class="block  mb-1">Email</label>
-                               <input type="email" pInputText id="emailAddress" formControlName="emailAddress" autocomplete="off" maxlength="90"  
-                            appCharacterFocusTracker (focusChange)="onFocusChange('emailAddress', $any($event))" class="w-full border rounded p-2" />
-                            <div class="flex justify-between">
-                                 <div class="flex-1">
-                                  <small *ngIf="f['emailAddress'].invalid && f['emailAddress'].touched"  class="pt-2 text-xs text-red-500">
-                                    {{ getErrorMessage(f['emailAddress'], 'Email Address') }}
-                                </small>
-                                </div>
-                                <div class="flex-1 text-right " *ngIf="focusStates['emailAddress']">
-                                <small *ngIf="f?.['emailAddress']?.value!.length > 0" class="text-gray-400 text-xs">
-                                    <span *ngIf="(f['emailAddress'].value!  | characterLength: 90).approachingLimit" class="text-red-400 text-xs">
-                                    Approaching limit!
-                                    </span>
-                                    {{ (f['emailAddress'].value! | characterLength: 30).length }}/90
-                                    </small> 
-                                    
-                                </div>
-
-                            </div>
-                        </div>
-                        <div>
-                          <label class="block  mb-1">Contact</label>
-                          <input type="text" pInputText id="contact" formControlName="contact" autocomplete="off" maxlength="90"  
-                            appCharacterFocusTracker (focusChange)="onFocusChange('contact', $any($event))" class="w-full border rounded p-2" />
-                            <div class="flex justify-between">
-                              
-                                <div class="flex-1 text-right " *ngIf="focusStates['contact']">
-                                <small *ngIf="f?.['contact']?.value!.length > 0" class="text-gray-400 text-xs">
-                                  <span *ngIf="(f['contact'].value!  | characterLength: 90).approachingLimit" class="text-red-400 text-xs">
-                                    Approaching limit!
-                                  </span>
-                                  {{ (f['contact'].value! | characterLength: 90).length }}/90
-                                  </small> 
-                                
-                                </div>
-                        
-                            </div>
-
-                        </div>
-                        
-                        <div>
-                          <label class="block  mb-1">Address Line 1</label>
-                          <textarea class="w-full border rounded p-2" rows="2" formControlName="addressLine1" autocomplete="off" maxlength="90"  
-                          appCharacterFocusTracker (focusChange)="onFocusChange('addressLine1', $any($event))"></textarea>
-                          <div class="flex justify-between">
-                          
-                              <div class="flex-1 text-right " *ngIf="focusStates['addressLine1']">
-                              <small *ngIf="f?.['addressLine1']?.value!.length > 0" class="text-gray-400 text-xs">
-                                  <span *ngIf="(f['addressLine1'].value!  | characterLength: 90).approachingLimit" class="text-red-400 text-xs">
-                                  Approaching limit!
-                                  </span>
-                                  {{ (f['addressLine1'].value! | characterLength: 90).length }}/90
-                                  </small> 
-                                  
-                              </div>
-
-                          </div>
-                        </div>
-                        <div>
-                          <label class="block  mb-1">Address Line 2</label>
-                          <textarea class="w-full border rounded p-2" rows="2" formControlName="addressLine2" autocomplete="off" maxlength="90"  
-                          appCharacterFocusTracker (focusChange)="onFocusChange('addressLine2', $any($event))"></textarea>
-                          <div class="flex justify-between">
-                          
-                              <div class="flex-1 text-right " *ngIf="focusStates['addressLine2']">
-                              <small *ngIf="f?.['addressLine2']?.value!.length > 0" class="text-gray-400 text-xs">
-                                  <span *ngIf="(f['addressLine2'].value!  | characterLength: 90).approachingLimit" class="text-red-400 text-xs">
-                                  Approaching limit!
-                                  </span>
-                                  {{ (f['addressLine2'].value! | characterLength: 90).length }}/90
-                                  </small> 
-                                  
-                              </div>
-
-                          </div>
-                        </div>
-
-                        <div>
-                          <label class="block  mb-1">Address Line 3</label>
-                          <textarea class="w-full border rounded p-2" rows="2" formControlName="addressLine3" autocomplete="off" maxlength="90"  
-                          appCharacterFocusTracker (focusChange)="onFocusChange('addressLine3', $any($event))"></textarea>
-                          <div class="flex justify-between">
-                          
-                              <div class="flex-1 text-right " *ngIf="focusStates['addressLine3']">
-                              <small *ngIf="f?.['addressLine3']?.value!.length > 0" class="text-gray-400 text-xs">
-                                  <span *ngIf="(f['addressLine3'].value!  | characterLength: 90).approachingLimit" class="text-red-400 text-xs">
-                                  Approaching limit!
-                                  </span>
-                                  {{ (f['addressLine3'].value! | characterLength: 90).length }}/90
-                                  </small> 
-                                  
-                              </div>
-
-                          </div>
-                        </div>
-                        <div>
-                          <label class="block  mb-1">Address Line 4</label>
-                          <textarea class="w-full border rounded p-2" rows="2" formControlName="addressLine4" autocomplete="off" maxlength="90"  
-                          appCharacterFocusTracker (focusChange)="onFocusChange('addressLine4', $any($event))"></textarea>
-                          <div class="flex justify-between">
-                          
-                              <div class="flex-1 text-right " *ngIf="focusStates['addressLine4']">
-                              <small *ngIf="f?.['addressLine4']?.value!.length > 0" class="text-gray-400 text-xs">
-                                  <span *ngIf="(f['addressLine4'].value!  | characterLength: 90).approachingLimit" class="text-red-400 text-xs">
-                                  Approaching limit!
-                                  </span>
-                                  {{ (f['addressLine4'].value! | characterLength: 90).length }}/90
-                                  </small> 
-                                  
-                              </div>
-
-                          </div>
-                        </div>
-                        <div>
-                          <label class="block  mb-1">Address Line 5</label>
-                          <textarea class="w-full border rounded p-2" rows="2" formControlName="addressLine5" autocomplete="off" maxlength="90"  
-                          appCharacterFocusTracker (focusChange)="onFocusChange('addressLine5', $any($event))"></textarea>
-                          <div class="flex justify-between">
-                          
-                              <div class="flex-1 text-right " *ngIf="focusStates['addressLine5']">
-                              <small *ngIf="f?.['addressLine5']?.value!.length > 0" class="text-gray-400 text-xs">
-                                  <span *ngIf="(f['addressLine5'].value!  | characterLength: 90).approachingLimit" class="text-red-400 text-xs">
-                                  Approaching limit!
-                                  </span>
-                                  {{ (f['addressLine5'].value! | characterLength: 90).length }}/90
-                                  </small> 
-                                  
-                              </div>
-
-                          </div>
-                        </div>
-                        <div>
-                          <label class="block  mb-1">Address Line 6</label>
-                          <textarea class="w-full border rounded p-2" rows="2" formControlName="addressLine6" autocomplete="off" maxlength="90"  
-                          appCharacterFocusTracker (focusChange)="onFocusChange('addressLine6', $any($event))"></textarea>
-                          <div class="flex justify-between">
-                          
-                              <div class="flex-1 text-right " *ngIf="focusStates['addressLine6']">
-                              <small *ngIf="f?.['addressLine6']?.value!.length > 0" class="text-gray-400 text-xs">
-                                  <span *ngIf="(f['addressLine6'].value!  | characterLength: 90).approachingLimit" class="text-red-400 text-xs">
-                                  Approaching limit!
-                                  </span>
-                                  {{ (f['addressLine6'].value! | characterLength: 90).length }}/90
-                                  </small> 
-                                  
-                              </div>
-
-                          </div>
-                        </div>
-                      </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6 pt-4">
-
-                      </div>
-                </p-tabpanel>
-               
-                <p-tabpanel value="2">
-                    <div class="grid grid-cols-1 sm:w-1/3 lg:w-2/4 xl:w-2/5 gap-6 pt-4">
-                       <div>
-                            <label class=" block mb-1" >Account</label>
-                             <p-select class="w-full" formControlName="accountID"  [options]="accountsOptions" [filter]="true" filterBy="label" [showClear]="false" > </p-select>
-                        </div>
-                        <div>
-                            <label class=" block mb-1" >Tax Code</label>
-                          <p-select class="w-full" formControlName="taxCodeID"  [options]="taxCodeOptions" [filter]="true" filterBy="label" [showClear]="false" > </p-select>
-                        </div>
-                        <div>
-                            <label class=" block mb-1" >Currency</label>
-                             <p-select
-                              formControlName="currency"
-                              [options]="supplierInfoDropdown['currencies']"
-                              class="w-full" >
-                            </p-select>
-                        </div>
-                        <div>
-                            <label class="block  mb-1">Payment Term</label>
-                             <p-select
-                              formControlName="paymentTerms"
-                              [options]="supplierInfoDropdown['paymentTerms']"
-                              class="w-full" >
-                            </p-select>
-                        </div>
-                        <div>
-                            <label class="block font-medium mb-1">Invoice Routing Flow</label>
-                            <p-select class="w-full" formControlName="invRoutingFlowID"  [options]="invRoutingFlowOptions" [filter]="true" filterBy="label" [showClear]="false" > </p-select>
-                          
-                          </div>
-                    </div>
-                </p-tabpanel>
-                <p-tabpanel value="3">
-                    <div class="grid grid-cols-1 sm:w-1/3 lg:w-2/4 xl:w-2/5 gap-6 pt-4">
-                        <div>
-                            <label class="block  mb-1">Free Field1</label>
-                             <input type="text" pInputText id="freeField1" formControlName="freeField1" autocomplete="off" maxlength="90"  
-                              appCharacterFocusTracker (focusChange)="onFocusChange('freeField1', $any($event))" class="w-full border rounded p-2" />
-                              <div class="flex justify-between">
-                                
-                                  <div class="flex-1 text-right " *ngIf="focusStates['freeField1']">
-                                  <small *ngIf="f?.['freeField1']?.value!.length > 0" class="text-gray-400 text-xs">
-                                    <span *ngIf="(f['freeField1'].value!  | characterLength: 90).approachingLimit" class="text-red-400 text-xs">
-                                      Approaching limit!
-                                    </span>
-                                    {{ (f['freeField1'].value! | characterLength: 90).length }}/90
-                                    </small> 
-                                  
-                                  </div>
-                          
-                              </div>
-                        </div>
-                        <div>
-                            <label class="block  mb-1">Free Field2</label>
-                             <input type="text" pInputText id="freeField2" formControlName="freeField2" autocomplete="off" maxlength="90"  
-                              appCharacterFocusTracker (focusChange)="onFocusChange('freeField2', $any($event))" class="w-full border rounded p-2" />
-                              <div class="flex justify-between">
-                                
-                                  <div class="flex-1 text-right " *ngIf="focusStates['freeField2']">
-                                  <small *ngIf="f?.['freeField2']?.value!.length > 0" class="text-gray-400 text-xs">
-                                    <span *ngIf="(f['freeField2'].value!  | characterLength: 90).approachingLimit" class="text-red-400 text-xs">
-                                      Approaching limit!
-                                    </span>
-                                    {{ (f['freeField2'].value! | characterLength: 90).length }}/90
-                                    </small> 
-                                  
-                                  </div>
-                          
-                              </div>
-                        </div>
-                        <div>
-                            <label class="block  mb-1">Free Field3</label>
-                             <input type="text" pInputText id="freeField3" formControlName="freeField3" autocomplete="off" maxlength="90"  
-                              appCharacterFocusTracker (focusChange)="onFocusChange('freeField3', $any($event))" class="w-full border rounded p-2" />
-                              <div class="flex justify-between">
-                                
-                                  <div class="flex-1 text-right " *ngIf="focusStates['freeField3']">
-                                  <small *ngIf="f?.['freeField3']?.value!.length > 0" class="text-gray-400 text-xs">
-                                    <span *ngIf="(f['freeField3'].value!  | characterLength: 90).approachingLimit" class="text-red-400 text-xs">
-                                      Approaching limit!
-                                    </span>
-                                    {{ (f['freeField3'].value! | characterLength: 90).length }}/90
-                                    </small> 
-                                  
-                                  </div>
-                          
-                              </div>
-                        </div>
-                       
-                      </div>
-                </p-tabpanel>
-                <p-tabpanel value="4">
-                    <div class="grid grid-cols-1 sm:w-1/3 lg:w-2/4 xl:w-2/5 gap-6 pt-4 mb-6">
-               
-                        
-                        <div class="lg:col-span-2 md:col-span-3 col-span-1">
-                            <label class="block font-medium mb-1">Note</label>
-                            <textarea class="w-full border rounded p-2" rows="2" formControlName="notes" autocomplete="off" maxlength="90"  
-                              appCharacterFocusTracker (focusChange)="onFocusChange('notes', $any($event))"></textarea>
-                              <div class="flex justify-between">
-                              
-                                  <div class="flex-1 text-right " *ngIf="focusStates['notes']">
-                                  <small *ngIf="f?.['notes']?.value!.length > 0" class="text-gray-400 text-xs">
-                                      <span *ngIf="(f['notes'].value!  | characterLength: 90).approachingLimit" class="text-red-400 text-xs">
-                                      Approaching limit!
-                                      </span>
-                                      {{ (f['notes'].value! | characterLength: 90).length }}/90
-                                      </small> 
-                                      
-                                  </div>
-
-                              </div>
-                          </div>
-                      </div>
-                </p-tabpanel>
-            </p-tabpanels>
-        </p-tabs>
-
-       
+      </div>
     </div>
+    <div class="flex flex-col md:flex-row">
+      <div class="w-full md:w-5/12 flex flex-col gap-3 py-5">
+        <div class="grid grid-cols-1 s gap-6 pt-4">
+          <div>
+            <label for="supplierID" class=" block mb-1">Supplier ID</label>
+            <input type="text" pInputText id="supplierID" formControlName="supplierID" autocomplete="off" maxlength="40"
+              appCharacterFocusTracker (focusChange)="onFocusChange('supplierID', $any($event))"
+              class="w-full border rounded p-2" />
+            <div class="flex justify-between">
+              <div class="flex-1">
+                <small *ngIf="f['supplierID'].invalid && f['supplierID'].touched" class="pt-2 text-xs text-red-500">
+                  {{ getErrorMessage(f['supplierID'], 'Supplier ID') }}
+                </small>
+              </div>
+              <div class="flex-1 text-right " *ngIf="focusStates['supplierID']">
+                <small *ngIf="f?.['supplierID']?.value!.length > 0" class="text-gray-400 text-xs">
+                  <span *ngIf="(f['supplierID'].value!  | characterLength: 40).approachingLimit"
+                    class="text-red-400 text-xs">
+                    Approaching limit!
+                  </span>
+                  {{ (f['supplierID'].value! | characterLength: 40).length }}/40
+                </small>
+
+              </div>
+
+            </div>
+          </div>
+          <div>
+            <label class=" block mb-1">Supplier Name</label>
+            <input type="text" pInputText id="supplierName" formControlName="supplierName" autocomplete="off"
+              maxlength="100" appCharacterFocusTracker (focusChange)="onFocusChange('supplierName', $any($event))"
+              class="w-full border rounded p-2" />
+            <div class="flex justify-between">
+              <div class="flex-1">
+                <small *ngIf="f['supplierName'].invalid && f['supplierName'].touched" class="pt-2 text-xs text-red-500">
+                  {{ getErrorMessage(f['supplierName'], 'Supplier Name') }}
+                </small>
+              </div>
+              <div class="flex-1 text-right " *ngIf="focusStates['supplierName']">
+                <small *ngIf="f?.['supplierName']?.value!.length > 0" class="text-gray-400 text-xs">
+                  <span *ngIf="(f['supplierName'].value!  | characterLength: 80).approachingLimit"
+                    class="text-red-400 text-xs">
+                    Approaching limit!
+                  </span>
+                  {{ (f['supplierName'].value! | characterLength: 100).length }}/100
+                </small>
+
+              </div>
+
+            </div>
+          </div>
+          <div>
+            <label for="supplierTaxID" class=" block mb-1">Supplier TaxID</label>
+            <input type="text" pInputText id="supplierTaxID" formControlName="supplierTaxID" autocomplete="off"
+              maxlength="40" appCharacterFocusTracker (focusChange)="onFocusChange('supplierTaxID', $any($event))"
+              class="w-full border rounded p-2" />
+
+            <div class="flex justify-between">
+
+              <div class="flex-1 text-right " *ngIf="focusStates['supplierTaxID']">
+                <small *ngIf="f?.['supplierTaxID']?.value!.length > 0" class="text-gray-400 text-xs">
+                  <span *ngIf="(f['supplierTaxID'].value!  | characterLength: 40).approachingLimit"
+                    class="text-red-400 text-xs">
+                    Approaching limit!
+                  </span>
+                  {{ (f['supplierTaxID'].value! | characterLength: 100).length }}/100
+                </small>
+
+              </div>
+            </div>
+          </div>
+          <div>
+            <label class=" block mb-1">Entity</label>
+            <p-select class="w-full" formControlName="entityProfileID" [options]="entityOptions" [filter]="true"
+              filterBy="label" [showClear]="false"> </p-select>
+          </div>
+
+          <div>
+            <div class="flex items-center space-x-2">
+              <p-toggleswitch formControlName="isActive" />
+              <label for="isActive" class="">Active</label>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="w-full md:w-1/12">
+        <p-divider layout="vertical"></p-divider>
+      </div>
+      <div class="w-full md:w-12/12 flex flex-col gap-3 py-5">
+        <p-tabs value="1">
+          <p-tablist>
+            <!-- <p-tab value="0"> <i class="pi pi-info"></i> Basic Information</p-tab> -->
+            <p-tab value="1"> <i class="pi pi-address-book"></i> Contact Information</p-tab>
+            <p-tab value="2"> <i class="pi pi-wallet"></i> Account Information</p-tab>
+            <p-tab value="3"><i class="pi pi-plus-circle"></i>Additional Information</p-tab>
+            <p-tab value="4"><i class="pi pi-map"></i>Notes</p-tab>
+          </p-tablist>
+          <p-tabpanels>
+            <p-tabpanel value="0">
+
+
+            </p-tabpanel>
+            <p-tabpanel value="1">
+              <div class="grid grid-cols-1 sm:w-1/3 lg:w-2/4 xl:w-2/5 gap-6 pt-4">
+                <div>
+                  <label class="block  mb-1">Telephone</label>
+                  <input type="text" pInputText id="telephone" formControlName="telephone" autocomplete="off"
+                    maxlength="30" appCharacterFocusTracker (focusChange)="onFocusChange('telephone', $any($event))"
+                    class="w-full border rounded p-2" />
+                  <div class="flex justify-between">
+
+                    <div class="flex-1 text-right " *ngIf="focusStates['telephone']">
+                      <small *ngIf="f?.['telephone']?.value!.length > 0" class="text-gray-400 text-xs">
+                        <span *ngIf="(f['telephone'].value!  | characterLength: 30).approachingLimit"
+                          class="text-red-400 text-xs">
+                          Approaching limit!
+                        </span>
+                        {{ (f['telephone'].value! | characterLength: 30).length }}/30
+                      </small>
+
+                    </div>
+
+                  </div>
+                </div>
+                <div>
+                  <label class="block  mb-1">Email</label>
+                  <input type="email" pInputText id="emailAddress" formControlName="emailAddress" autocomplete="off"
+                    maxlength="90" appCharacterFocusTracker (focusChange)="onFocusChange('emailAddress', $any($event))"
+                    class="w-full border rounded p-2" />
+                  <div class="flex justify-between">
+                    <div class="flex-1">
+                      <small *ngIf="f['emailAddress'].invalid && f['emailAddress'].touched"
+                        class="pt-2 text-xs text-red-500">
+                        {{ getErrorMessage(f['emailAddress'], 'Email Address') }}
+                      </small>
+                    </div>
+                    <div class="flex-1 text-right " *ngIf="focusStates['emailAddress']">
+                      <small *ngIf="f?.['emailAddress']?.value!.length > 0" class="text-gray-400 text-xs">
+                        <span *ngIf="(f['emailAddress'].value!  | characterLength: 90).approachingLimit"
+                          class="text-red-400 text-xs">
+                          Approaching limit!
+                        </span>
+                        {{ (f['emailAddress'].value! | characterLength: 30).length }}/90
+                      </small>
+
+                    </div>
+
+                  </div>
+                </div>
+                <div>
+                  <label class="block  mb-1">Contact</label>
+                  <input type="text" pInputText id="contact" formControlName="contact" autocomplete="off" maxlength="90"
+                    appCharacterFocusTracker (focusChange)="onFocusChange('contact', $any($event))"
+                    class="w-full border rounded p-2" />
+                  <div class="flex justify-between">
+
+                    <div class="flex-1 text-right " *ngIf="focusStates['contact']">
+                      <small *ngIf="f?.['contact']?.value!.length > 0" class="text-gray-400 text-xs">
+                        <span *ngIf="(f['contact'].value!  | characterLength: 90).approachingLimit"
+                          class="text-red-400 text-xs">
+                          Approaching limit!
+                        </span>
+                        {{ (f['contact'].value! | characterLength: 90).length }}/90
+                      </small>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div>
+                  <label class="block  mb-1">Address Line 1</label>
+                  <textarea class="w-full border rounded p-2" rows="2" formControlName="addressLine1" autocomplete="off"
+                    maxlength="90" appCharacterFocusTracker
+                    (focusChange)="onFocusChange('addressLine1', $any($event))"></textarea>
+                  <div class="flex justify-between">
+
+                    <div class="flex-1 text-right " *ngIf="focusStates['addressLine1']">
+                      <small *ngIf="f?.['addressLine1']?.value!.length > 0" class="text-gray-400 text-xs">
+                        <span *ngIf="(f['addressLine1'].value!  | characterLength: 90).approachingLimit"
+                          class="text-red-400 text-xs">
+                          Approaching limit!
+                        </span>
+                        {{ (f['addressLine1'].value! | characterLength: 90).length }}/90
+                      </small>
+
+                    </div>
+
+                  </div>
+                </div>
+                <div>
+                  <label class="block  mb-1">Address Line 2</label>
+                  <textarea class="w-full border rounded p-2" rows="2" formControlName="addressLine2" autocomplete="off"
+                    maxlength="90" appCharacterFocusTracker
+                    (focusChange)="onFocusChange('addressLine2', $any($event))"></textarea>
+                  <div class="flex justify-between">
+
+                    <div class="flex-1 text-right " *ngIf="focusStates['addressLine2']">
+                      <small *ngIf="f?.['addressLine2']?.value!.length > 0" class="text-gray-400 text-xs">
+                        <span *ngIf="(f['addressLine2'].value!  | characterLength: 90).approachingLimit"
+                          class="text-red-400 text-xs">
+                          Approaching limit!
+                        </span>
+                        {{ (f['addressLine2'].value! | characterLength: 90).length }}/90
+                      </small>
+
+                    </div>
+
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block  mb-1">Address Line 3</label>
+                  <textarea class="w-full border rounded p-2" rows="2" formControlName="addressLine3" autocomplete="off"
+                    maxlength="90" appCharacterFocusTracker
+                    (focusChange)="onFocusChange('addressLine3', $any($event))"></textarea>
+                  <div class="flex justify-between">
+
+                    <div class="flex-1 text-right " *ngIf="focusStates['addressLine3']">
+                      <small *ngIf="f?.['addressLine3']?.value!.length > 0" class="text-gray-400 text-xs">
+                        <span *ngIf="(f['addressLine3'].value!  | characterLength: 90).approachingLimit"
+                          class="text-red-400 text-xs">
+                          Approaching limit!
+                        </span>
+                        {{ (f['addressLine3'].value! | characterLength: 90).length }}/90
+                      </small>
+
+                    </div>
+
+                  </div>
+                </div>
+                <div>
+                  <label class="block  mb-1">Address Line 4</label>
+                  <textarea class="w-full border rounded p-2" rows="2" formControlName="addressLine4" autocomplete="off"
+                    maxlength="90" appCharacterFocusTracker
+                    (focusChange)="onFocusChange('addressLine4', $any($event))"></textarea>
+                  <div class="flex justify-between">
+
+                    <div class="flex-1 text-right " *ngIf="focusStates['addressLine4']">
+                      <small *ngIf="f?.['addressLine4']?.value!.length > 0" class="text-gray-400 text-xs">
+                        <span *ngIf="(f['addressLine4'].value!  | characterLength: 90).approachingLimit"
+                          class="text-red-400 text-xs">
+                          Approaching limit!
+                        </span>
+                        {{ (f['addressLine4'].value! | characterLength: 90).length }}/90
+                      </small>
+
+                    </div>
+
+                  </div>
+                </div>
+                <div>
+                  <label class="block  mb-1">Address Line 5</label>
+                  <textarea class="w-full border rounded p-2" rows="2" formControlName="addressLine5" autocomplete="off"
+                    maxlength="90" appCharacterFocusTracker
+                    (focusChange)="onFocusChange('addressLine5', $any($event))"></textarea>
+                  <div class="flex justify-between">
+
+                    <div class="flex-1 text-right " *ngIf="focusStates['addressLine5']">
+                      <small *ngIf="f?.['addressLine5']?.value!.length > 0" class="text-gray-400 text-xs">
+                        <span *ngIf="(f['addressLine5'].value!  | characterLength: 90).approachingLimit"
+                          class="text-red-400 text-xs">
+                          Approaching limit!
+                        </span>
+                        {{ (f['addressLine5'].value! | characterLength: 90).length }}/90
+                      </small>
+
+                    </div>
+
+                  </div>
+                </div>
+                <div>
+                  <label class="block  mb-1">Address Line 6</label>
+                  <textarea class="w-full border rounded p-2" rows="2" formControlName="addressLine6" autocomplete="off"
+                    maxlength="90" appCharacterFocusTracker
+                    (focusChange)="onFocusChange('addressLine6', $any($event))"></textarea>
+                  <div class="flex justify-between">
+
+                    <div class="flex-1 text-right " *ngIf="focusStates['addressLine6']">
+                      <small *ngIf="f?.['addressLine6']?.value!.length > 0" class="text-gray-400 text-xs">
+                        <span *ngIf="(f['addressLine6'].value!  | characterLength: 90).approachingLimit"
+                          class="text-red-400 text-xs">
+                          Approaching limit!
+                        </span>
+                        {{ (f['addressLine6'].value! | characterLength: 90).length }}/90
+                      </small>
+
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6 pt-4">
+
+              </div>
+            </p-tabpanel>
+
+            <p-tabpanel value="2">
+              <div class="grid grid-cols-1 sm:w-1/3 lg:w-2/4 xl:w-2/5 gap-6 pt-4">
+                <div>
+                  <label class=" block mb-1">Account</label>
+                  <p-select class="w-full" formControlName="accountID" [options]="accountsOptions" [filter]="true"
+                    filterBy="label" [showClear]="false"> </p-select>
+                </div>
+                <div>
+                  <label class=" block mb-1">Tax Code</label>
+                  <p-select class="w-full" formControlName="taxCodeID" [options]="taxCodeOptions" [filter]="true"
+                    filterBy="label" [showClear]="false"> </p-select>
+                </div>
+                <div>
+                  <label class=" block mb-1">Currency</label>
+                  <p-select formControlName="currency" [options]="supplierInfoDropdown['currencies']" class="w-full">
+                  </p-select>
+                </div>
+                <div>
+                  <label class="block  mb-1">Payment Term</label>
+                  <p-select formControlName="paymentTerms" [options]="supplierInfoDropdown['paymentTerms']"
+                    class="w-full">
+                  </p-select>
+                </div>
+                <div>
+                  <label class="block font-medium mb-1">Invoice Routing Flow</label>
+                  <p-select class="w-full" formControlName="invRoutingFlowID" [options]="invRoutingFlowOptions"
+                    [filter]="true" filterBy="label" [showClear]="false"> </p-select>
+
+                </div>
+              </div>
+            </p-tabpanel>
+            <p-tabpanel value="3">
+              <div class="grid grid-cols-1 sm:w-1/3 lg:w-2/4 xl:w-2/5 gap-6 pt-4">
+                <div>
+                  <label class="block  mb-1">Free Field1</label>
+                  <input type="text" pInputText id="freeField1" formControlName="freeField1" autocomplete="off"
+                    maxlength="90" appCharacterFocusTracker (focusChange)="onFocusChange('freeField1', $any($event))"
+                    class="w-full border rounded p-2" />
+                  <div class="flex justify-between">
+
+                    <div class="flex-1 text-right " *ngIf="focusStates['freeField1']">
+                      <small *ngIf="f?.['freeField1']?.value!.length > 0" class="text-gray-400 text-xs">
+                        <span *ngIf="(f['freeField1'].value!  | characterLength: 90).approachingLimit"
+                          class="text-red-400 text-xs">
+                          Approaching limit!
+                        </span>
+                        {{ (f['freeField1'].value! | characterLength: 90).length }}/90
+                      </small>
+
+                    </div>
+
+                  </div>
+                </div>
+                <div>
+                  <label class="block  mb-1">Free Field2</label>
+                  <input type="text" pInputText id="freeField2" formControlName="freeField2" autocomplete="off"
+                    maxlength="90" appCharacterFocusTracker (focusChange)="onFocusChange('freeField2', $any($event))"
+                    class="w-full border rounded p-2" />
+                  <div class="flex justify-between">
+
+                    <div class="flex-1 text-right " *ngIf="focusStates['freeField2']">
+                      <small *ngIf="f?.['freeField2']?.value!.length > 0" class="text-gray-400 text-xs">
+                        <span *ngIf="(f['freeField2'].value!  | characterLength: 90).approachingLimit"
+                          class="text-red-400 text-xs">
+                          Approaching limit!
+                        </span>
+                        {{ (f['freeField2'].value! | characterLength: 90).length }}/90
+                      </small>
+
+                    </div>
+
+                  </div>
+                </div>
+                <div>
+                  <label class="block  mb-1">Free Field3</label>
+                  <input type="text" pInputText id="freeField3" formControlName="freeField3" autocomplete="off"
+                    maxlength="90" appCharacterFocusTracker (focusChange)="onFocusChange('freeField3', $any($event))"
+                    class="w-full border rounded p-2" />
+                  <div class="flex justify-between">
+
+                    <div class="flex-1 text-right " *ngIf="focusStates['freeField3']">
+                      <small *ngIf="f?.['freeField3']?.value!.length > 0" class="text-gray-400 text-xs">
+                        <span *ngIf="(f['freeField3'].value!  | characterLength: 90).approachingLimit"
+                          class="text-red-400 text-xs">
+                          Approaching limit!
+                        </span>
+                        {{ (f['freeField3'].value! | characterLength: 90).length }}/90
+                      </small>
+
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </p-tabpanel>
+            <p-tabpanel value="4">
+              <div class="grid grid-cols-1 sm:w-1/3 lg:w-2/4 xl:w-2/5 gap-6 pt-4 mb-6">
+
+
+                <div class="lg:col-span-2 md:col-span-3 col-span-1">
+                  <label class="block font-medium mb-1">Note</label>
+                  <textarea class="w-full border rounded p-2" rows="2" formControlName="notes" autocomplete="off"
+                    maxlength="90" appCharacterFocusTracker
+                    (focusChange)="onFocusChange('notes', $any($event))"></textarea>
+                  <div class="flex justify-between">
+
+                    <div class="flex-1 text-right " *ngIf="focusStates['notes']">
+                      <small *ngIf="f?.['notes']?.value!.length > 0" class="text-gray-400 text-xs">
+                        <span *ngIf="(f['notes'].value!  | characterLength: 90).approachingLimit"
+                          class="text-red-400 text-xs">
+                          Approaching limit!
+                        </span>
+                        {{ (f['notes'].value! | characterLength: 90).length }}/90
+                      </small>
+
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </p-tabpanel>
+          </p-tabpanels>
+        </p-tabs>
+      </div>
+    </div>
+
+
+  </div>
 </form>

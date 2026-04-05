@@ -72,3 +72,21 @@ export interface SearchInvRoutingModel {
   supplier: string;
   matchReference: string;
 }
+
+export interface RoutingFlowLookupDto{
+    invRoutingFlowID: number;
+    invRoutingFlowName: string;
+    supplierName: string;
+    isActive: boolean;
+}
+
+export interface  RoutingFlowLookupQuery {
+  invRoutingFlowID: number;
+  invRoutingFlowName: string;
+  supplierName: string;
+  isActive?: boolean | null;
+  pageNumber: number | 1;
+  pageSize: number | 10;
+  sortField?: string;
+  sortOrder?: number | null;
+}

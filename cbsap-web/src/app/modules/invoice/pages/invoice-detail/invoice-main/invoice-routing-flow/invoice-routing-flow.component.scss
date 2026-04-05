@@ -1,0 +1,39 @@
+.flow-level {
+    border: 1px solid #dadada;
+    border-radius: 14px;
+}
+
+.current-flow-level {
+    // -webkit-box-shadow: 5px 5px 40px -5px #000000;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 0px 8px
+}
+
+.current-flow-level p-avatar {
+    background-color: #e9a041;
+    color: #fff;
+}
+
+.submitted-level p-avatar {
+    background-color: #8bd889;
+    color: #fff;
+}
+
+.routing-flow-icon {
+    font-size: 2rem;
+}
+
+.avatar-with-check {
+  position: relative;          /* make the avatar a positioning context */
+}
+
+.check-icon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font-size: .75rem;           /* smaller than the user icon */
+  background: #fff;            /* optional white circle behind it */
+  border-radius: 50%;
+  color: green;                /* or whatever colour you want */
+  padding: 2px;                /* adjust as needed */
+  border:1px solid;
+}

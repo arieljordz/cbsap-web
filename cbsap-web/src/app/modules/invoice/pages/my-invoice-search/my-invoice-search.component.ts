@@ -2,6 +2,7 @@ import { FormsModule } from '@angular/forms';
 import {
   AfterViewInit,
   Component,
+  LOCALE_ID,
   OnDestroy,
   OnInit,
   TemplateRef,
@@ -102,6 +103,11 @@ export class MyInvoiceSearchComponent
     this.initializeDynamicGrid();
   }
   ngOnInit(): void {
+    this.dynamicGridService.setGridKey("myinvoice-grid");
+    const stored = localStorage.getItem("myinvoice-search");
+    if(stored){
+      this.myInvoiceFilter = JSON.parse(stored);
+    }    
     this.sizes = { name: 'Small', class: 'p-table?-sm' };
   }
 
@@ -116,6 +122,8 @@ export class MyInvoiceSearchComponent
     });
   }
   clear() {
+    localStorage.removeItem("myinvoice-search");
+    localStorage.removeItem("myinvoice-grid");
     this.searchConfig.model.suppName = '';
     this.searchConfig.model.invNo = '';
     this.searchConfig.model.poNo = '';
@@ -188,6 +196,7 @@ export class MyInvoiceSearchComponent
           allow: true,
         },
       ],
+      gridKey: 'myinvoice-grid'
     });
     this.loadData(1);
   }
@@ -223,6 +232,7 @@ export class MyInvoiceSearchComponent
       SortOrder: sortOrder,
     };
     this.dynamicGridService.setLoading(true);
+
     this.searchMyInvoice(query);
   }
 
@@ -253,12 +263,11 @@ export class MyInvoiceSearchComponent
 
   onRowCheckboxChange(checked: boolean, row: any): void {
     //todo: for validate button logic
-    console.log('Checkbox toggled:', checked, row);
   }
 
   editInvoice(invoice: any) {
     const id = invoice.invoiceID;
-
+    localStorage.setItem('myinvoice-search',JSON.stringify(this.myInvoiceFilter));
     this.router.navigate(['invoices', id, 'edit'], {
       state: { returnUrl: this.router.url },
     });

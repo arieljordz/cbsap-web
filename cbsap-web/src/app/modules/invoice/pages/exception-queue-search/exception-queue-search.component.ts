@@ -98,6 +98,11 @@ export class ExceptionQueueSearchComponent
     private datePipe: DatePipe
   ) {}
   ngOnInit(): void {
+    this.dynamicGridService.setGridKey("exception-queue-grid");
+    const stored = localStorage.getItem("exception-queue-search");
+    if(stored){
+      this.myInvoiceFilter = JSON.parse(stored);
+    }
     this.sizes = { name: 'Small', class: 'p-table?-sm' };
   }
   ngOnDestroy(): void {
@@ -119,6 +124,8 @@ export class ExceptionQueueSearchComponent
     });
   }
   clear() {
+    localStorage.removeItem("exception-queue-grid");
+    localStorage.removeItem("exception-queue-search");  
     this.searchConfig.model.suppName = '';
     this.searchConfig.model.invNo = '';
     this.searchConfig.model.poNo = '';
@@ -191,6 +198,7 @@ export class ExceptionQueueSearchComponent
           allow: true,
         },
       ],
+      gridKey: 'exception-queue-grid'
     });
     this.loadData(1);
   }
@@ -256,10 +264,10 @@ export class ExceptionQueueSearchComponent
 
   onRowCheckboxChange(checked: boolean, row: any): void {
     //todo: for validate button logic
-    console.log('Checkbox toggled:', checked, row);
   }
   editInvoice(invoice: any) {
     const id = invoice.invoiceID;
+    localStorage.setItem('exception-queue-search',JSON.stringify(this.myInvoiceFilter));
     // this.router.navigate(['invoices', id, 'edit']);
     this.router.navigate(['invoices', id, 'edit'], {
       state: { returnUrl: this.router.url },

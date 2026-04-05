@@ -12,7 +12,6 @@ export interface EntityProfileDto   {
     invAllowPresetDimension: boolean | null;
     taxDollarAmt: number | null;
     taxPercentageAmt: number | null;
-    invDueDateCalculation: number | null;
     matchingConfigs: EntityMatchingConfigDto[] | null;
    
 }

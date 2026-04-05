@@ -16,10 +16,5 @@
     { "label": "\u00A0", "value": null },
     { "label": "USD", "value": "USD" },
     { "label": "AUD", "value": "AUD" }
-  ],
-  "dueDateCalculations": [
-    { "label": "Scan Date + Payment Terms", "value": 1 },
-    { "label": "CBSAP Insert Date + Payment Terms", "value": 2 },
-    { "label": "Invoice Date + Payment Terms", "value": 3 }
   ]
 }

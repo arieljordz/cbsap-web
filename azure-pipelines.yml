@@ -1,0 +1,45 @@
+trigger:
+  - develop
+
+pool:
+  name: 'ManilaPipelinePool'
+
+variables:
+  outputDir: '$(Build.ArtifactStagingDirectory)/publish'
+  zipFile: '$(Build.ArtifactStagingDirectory)/cbsap-web-client.zip'
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '18.x'
+    displayName: 'Install Node.js'
+
+  - script:
+      npm install -g @angular/cli
+    displayName: 'Install Angular CLI'
+    workingDirectory: 'cbsap-web'
+
+  - script:
+      npm install
+    displayName: 'Install Node modules'
+    workingDirectory: 'cbsap-web'
+
+  - script:
+      npm run build -- --configuration=staging --base-href /cbsap-web/ --output-path=$(outputDir)
+    displayName: 'Build Angular app'
+    workingDirectory: 'cbsap-web'
+
+  - task: ArchiveFiles@2
+    displayName: 'Zip build output'
+    inputs:
+      rootFolderOrFile: '$(outputDir)'
+      includeRootFolder: false
+      archiveFile: '$(zipFile)'
+      replaceExistingArchive: true
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish zipped artifact'
+    inputs:
+      PathtoPublish: '$(zipFile)'
+      ArtifactName: 'cbsap-web-client-drop'
+      publishLocation: 'Container'

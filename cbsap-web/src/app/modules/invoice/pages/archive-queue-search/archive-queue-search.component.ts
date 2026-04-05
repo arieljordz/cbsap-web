@@ -94,6 +94,11 @@ export class ArchiveQueueSearchComponent
     private datePipe: DatePipe
   ) {}
   ngOnInit(): void {
+    this.dynamicGridService.setGridKey("archive-queue-grid");
+    const stored = localStorage.getItem("archive-queue-search");
+    if(stored){
+      this.myInvoiceFilter = JSON.parse(stored);
+    }
     this.sizes = { name: 'Small', class: 'p-table?-sm' };
   }
   ngOnDestroy(): void {
@@ -115,6 +120,8 @@ export class ArchiveQueueSearchComponent
     });
   }
   clear() {
+    localStorage.removeItem("archive-queue-grid");
+    localStorage.removeItem("archive-queue-search");
     this.searchConfig.model.suppName = '';
     this.searchConfig.model.invNo = '';
     this.searchConfig.model.poNo = '';
@@ -188,6 +195,7 @@ export class ArchiveQueueSearchComponent
           allow: false,
         },
       ],
+      gridKey: 'archive-queue-grid'
     });
     this.loadData(1);
   }
@@ -204,6 +212,7 @@ export class ArchiveQueueSearchComponent
     };
 
     this.dynamicGridService.setLoading(true);
+    this.dynamicGridService
     this.searchArchiveInvoice(query);
   }
 
@@ -258,6 +267,7 @@ export class ArchiveQueueSearchComponent
   editInvoice(invoice: any) {
     const id = invoice.invoiceID;
     // this.router.navigate(['invoices', id, 'edit']);
+    localStorage.setItem('archive-queue-search',JSON.stringify(this.myInvoiceFilter));
     this.router.navigate(['invoices', id, 'edit'], {
       state: { returnUrl: this.router.url },
     });
