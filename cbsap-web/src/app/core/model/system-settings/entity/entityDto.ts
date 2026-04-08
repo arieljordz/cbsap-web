@@ -14,5 +14,6 @@ export interface EntityProfileDto   {
     taxPercentageAmt: number | null;
    invDueDateCalculation: number | null;
     matchingConfigs: EntityMatchingConfigDto[] | null;
+    automaticGoodsDelivered: boolean;
     
 }

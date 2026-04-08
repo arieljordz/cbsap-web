@@ -162,7 +162,7 @@ export class EntityDetailsComponent implements OnInit {
   onSubmit(): void {
     const formValue: EntityProfileDto =
       this.entityForm.getRawValue() as EntityProfileDto;
-
+    console.log('FORM VALUE:', formValue); 
     if (this.entityForm.valid) {
       if (this.entityProfileID === 0) {
         this.addNewEntity(formValue);
@@ -264,9 +264,11 @@ export class EntityDetailsComponent implements OnInit {
         const entity = response.responseData;
         this.entityForm.patchValue({
           ...entity,
+          // automaticGoodsDelivered: entity?.automaticGoodsDelivered ?? false,
           matchingConfigs: [],
         });
 
+        console.log('Loaded Entity for Edit:', entity);
         this.f['entityName'].disable();
         this.f['entityCode'].disable();
 
