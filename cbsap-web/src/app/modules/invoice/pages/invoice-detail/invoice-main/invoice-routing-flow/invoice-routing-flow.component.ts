@@ -277,4 +277,11 @@ export class InvoiceRoutingFlowComponent
   }
 
   confirmRoleSelction() {}
+
+  disableAddRole(){
+    const permissions = localStorage.getItem('user_permissions');
+    const _permissions = permissions ? JSON.parse(permissions) : [];
+    console.log(_permissions.includes('CanModifyInvFlow'));
+    return !_permissions.includes('CanModifyInvFlow');
+  }
 }

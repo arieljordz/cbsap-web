@@ -98,7 +98,7 @@ export function createInvInfoForm(): InvInfoFormGroup {
     approvedUser: new FormControl<string | null>(''),
     keywordID: new FormControl<number | null>(null),
     keyword: new FormControl<string | null>(null),
-    invRoutingFlowID: new FormControl<number | null>(null, [Validators.required]),
+    invRoutingFlowID: new FormControl<number | null>(null),
     invRoutingFlowName: new FormControl<string | null>(null),
     freeFields: new FormArray<FreeFieldsFormGroup>([]),
     spareAmount: new FormArray<SpareAmountFormGroup>([]),

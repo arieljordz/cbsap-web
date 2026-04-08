@@ -18,10 +18,10 @@
             <input type="hidden" formControlName="supplierInfoID" />
             <label for="suppName" class="col-span-12 md:col-span-4 font-medium">Supplier Name</label>
             <div class="col-span-12 md:col-span-8">
-              <p-inputgroup>
-                <input id="suppName" type="text" pInputText formControlName="suppName" size="small" class="w-full" />
+              <p-inputgroup >
+                <input id="suppName" type="text" pInputText formControlName="suppName" size="small" class="w-full" [readonly]="isReadOnly('suppName')" [ngClass]="{ 'readonly-input': isReadOnly('suppName') }"/>
                 <p-inputgroup-addon>
-                  <p-button variant="text" severity="secondary" icon="pi pi-search" size="small"
+                  <p-button variant="text" severity="secondary" icon="pi pi-search" size="small" [disabled]="!hasPermission('CanModifysuppName')"
                     (click)="assignSupplier()"/>
                 </p-inputgroup-addon>
               </p-inputgroup>
@@ -36,7 +36,7 @@
             <label for="paymentTerm" class="col-span-12 md:col-span-4 font-medium">Payment Term</label>
             <div class="col-span-12 md:col-span-8">
               <p-select formControlName="paymentTerm" [options]="invInfoDropdown['paymentTerms']" 
-                class="w-full">
+                class="w-full" [ngClass]="{ 'readonly-select': isReadOnly('paymentTerm') }">
               </p-select>
             </div>
           </div>
@@ -53,7 +53,7 @@
             <label for="suppBankAccount" class="col-span-12 md:col-span-4 font-medium">Supplier Bank Account</label>
             <div class="col-span-12 md:col-span-8">
               <input id="suppBankAccount" type="text" pInputText formControlName="suppBankAccount" 
-                class="w-full" />
+                class="w-full" [readonly]="isReadOnly('suppBankAccount')" [ngClass]="{ 'readonly-input': isReadOnly('suppBankAccount') }"/>
             </div>
           </div>
         </div>  
@@ -83,16 +83,16 @@
           <label for="entity" class="col-span-12 md:col-span-4 font-medium">Entity</label>
           <div class="col-span-12 md:col-span-8">
             <p-select class="w-full" formControlName="entityProfileID"  [options]="entityOptions"
-              [filter]="true" filterBy="label" [showClear]="false"> </p-select>
+              [filter]="true" filterBy="label" [showClear]="false" [ngClass]="{ 'readonly-select': isReadOnly('entityProfileID') }"> </p-select>
           </div>
         </div>
         <div class="grid grid-cols-12 items-center gap-2">
           <label for="poNo" class="col-span-12 md:col-span-4 font-medium">Purchase Order No</label>
           <div class="col-span-12 md:col-span-8">
             <p-inputgroup>
-              <input id="poNo" type="text" pInputText formControlName="poNo" class="w-full" />
+              <input id="poNo" type="text" pInputText formControlName="poNo" class="w-full" [readonly]="isReadOnly('poNo')" [ngClass]="{ 'readonly-input': isReadOnly('poNo') }"/>
               <p-inputgroup-addon>
-                <p-button variant="text" severity="secondary" icon="pi pi-search" size="small"
+                <p-button variant="text" severity="secondary" icon="pi pi-search" size="small" [disabled]="!hasPermission('CanModifypoNo')"
                   (click)="assignPurchaseOrder()"></p-button>
               </p-inputgroup-addon>
             </p-inputgroup>
@@ -103,7 +103,7 @@
         <div class="grid grid-cols-12 items-center gap-2">
           <label for="invoiceNo" class="col-span-12 md:col-span-4 font-medium">Invoice No</label>
           <div class="col-span-12 md:col-span-8">
-            <input id="invoiceNo" type="text" pInputText formControlName="invoiceNo"  class="w-full" />
+            <input id="invoiceNo" type="text" pInputText formControlName="invoiceNo"  class="w-full" [readonly]="isReadOnly('invoiceNo')" [ngClass]="{ 'readonly-input': isReadOnly('invoiceNo') }"/>
             <div class="mt-1 flex justify-between items-center text-xs text-gray-500" *ngIf="f['invoiceNo'].invalid && f['invoiceNo'].touched">
               <small class="text-red-500">
                 {{ getErrorMessage(f['invoiceNo'], 'Invoice No ') }}
@@ -115,9 +115,9 @@
           <label for="grNo" class="col-span-12 md:col-span-4 font-medium">Good Receipt No</label>
           <div class="col-span-12 md:col-span-8">
             <p-inputgroup>
-              <input id="grNo" type="text" pInputText formControlName="grNo"  class="w-full" />
+              <input id="grNo" type="text" pInputText formControlName="grNo"  class="w-full" [readonly]="isReadOnly('grNo')" [ngClass]="{ 'readonly-input': isReadOnly('grNo') }"/>
             <p-inputgroup-addon>
-            <p-button variant="text" severity="secondary" icon="pi pi-search" size="small"
+            <p-button variant="text" severity="secondary" icon="pi pi-search" size="small" [disabled]="!hasPermission('CanModifygrNo')"
             (click)="assignGoodReceiptNo()"></p-button>
             </p-inputgroup-addon>
             </p-inputgroup>
@@ -131,7 +131,7 @@
               </label>
               <div class="col-span-12 md:col-span-8 w-full">
                 <p-datepicker formControlName="invoiceDate" [showIcon]="true" dateFormat="dd/mm/yy"
-                  styleClass="w-full" inputStyleClass="w-full" />
+                  styleClass="w-full" inputStyleClass="w-full" [ngClass]="{ 'readonly-datepicker': isReadOnly('invoiceDate') }"/>
                 <div class="mt-1 flex justify-between items-center text-xs text-gray-500" *ngIf="f['invoiceDate'].invalid && f['invoiceDate'].touched">
                   <small  class="text-red-500">
                     {{ getErrorMessage(f['invoiceDate'], 'Invoice Date ') }}
@@ -143,7 +143,7 @@
           <label for="email" class="col-span-12 md:col-span-4 font-medium">Due Date</label>
           <div class="col-span-12 md:col-span-8">
             <p-datepicker formControlName="dueDate"  [showIcon]="true" dateFormat="dd/mm/yy"
-              styleClass="w-full" inputStyleClass="w-full" />
+              styleClass="w-full" inputStyleClass="w-full" [ngClass]="{ 'readonly-datepicker': isReadOnly('dueDate') }"/>
           </div>          
         </div>
         
@@ -176,7 +176,7 @@
           <label for="netAmount" class="col-span-12 md:col-span-4 font-medium">Net Amount</label>
           <div class="col-span-12 md:col-span-8 ">
             <p-inputnumber formControlName="netAmount" inputId="netAmount" mode="decimal" [minFractionDigits]="2"
-               class="w-full" (onInput)="onAmountsChange()" inputStyleClass="w-full text-right" />
+               class="w-full" (onInput)="onAmountsChange()" inputStyleClass="w-full text-right" [readonly]="isReadOnly('netAmount')" [ngClass]="{ 'readonly-number': isReadOnly('netAmount') }"/>
             <div class="mt-1 flex justify-between items-center text-xs text-gray-500">
               <small *ngIf="f['netAmount'].invalid && f['netAmount'].touched" class="text-red-500">
                 {{ getErrorMessage(f['netAmount'], 'Net Amount ') }}
@@ -189,7 +189,7 @@
           <label for="taxCode" class="col-span-12 md:col-span-4 font-medium">Tax Code</label>
           <div class="col-span-12 md:col-span-8">
             <p-select class="w-full" formControlName="taxCodeID" [options]="taxCodeOptions" [filter]="true"
-              filterBy="label" [showClear]="false"> </p-select>
+              filterBy="label" [showClear]="false" [ngClass]="{ 'readonly-select': isReadOnly('taxCodeID') }"> </p-select>
             <div class="mt-1 flex justify-between items-center text-xs text-gray-500">
               <small *ngIf="f['taxCodeID'].invalid && f['taxCodeID'].touched" class="text-red-500">
                 {{ getErrorMessage(f['taxCodeID'], 'Tax Code ') }}
@@ -204,7 +204,7 @@
             <label for="taxAmount" class="col-span-12 md:col-span-4 font-medium">Tax Amount</label>
             <div class="col-span-12 md:col-span-8">
               <p-inputnumber formControlName="taxAmount" inputId="taxAmount" mode="decimal" [minFractionDigits]="2"
-                class="w-full" (onInput)="onAmountsChange()" inputStyleClass="w-full text-right" />
+                class="w-full" (onInput)="onAmountsChange()" inputStyleClass="w-full text-right" [readonly]="isReadOnly('taxAmount')" [ngClass]="{ 'readonly-number': isReadOnly('taxAmount') }"/>
               <div class="mt-1 flex justify-between items-center text-xs text-gray-500">
                 <small *ngIf="f['taxAmount'].invalid && f['taxAmount'].touched" class="text-red-500">
                   {{ getErrorMessage(f['taxAmount'], 'Tax Amount') }}
@@ -217,7 +217,7 @@
             <label for="currency" class="col-span-12 md:col-span-4 font-medium">Currency</label>
             <div class="col-span-12 md:col-span-8">
               <p-select formControlName="currency" [options]="invInfoDropdown['currencies']"
-                class="w-full">
+                class="w-full" [ngClass]="{ 'readonly-select': isReadOnly('currency') }">
               </p-select>
               <div class="mt-1 flex justify-between items-center text-xs text-gray-500">
                 <small *ngIf="f['currency'].invalid && f['currency'].touched" class="text-red-500">
@@ -235,7 +235,7 @@
             <label for="totalAmount" class="col-span-12 md:col-span-4 font-medium">Total Amount</label>
             <div class="col-span-12 md:col-span-8">
               <p-inputnumber formControlName="totalAmount" inputId="totalAmount" mode="decimal" [minFractionDigits]="2"
-                class="w-full" (onInput)="onAmountsChange()" inputStyleClass="w-full text-right" />
+                class="w-full" (onInput)="onAmountsChange()" inputStyleClass="w-full text-right" [readonly]="isReadOnly('totalAmount')" [ngClass]="{ 'readonly-number': isReadOnly('totalAmount') }"/>
               <div class="mt-1 flex justify-between items-center text-xs text-gray-500">
                 <small *ngIf="f['totalAmount'].invalid && f['totalAmount'].touched" class="text-red-500">
                   {{ getErrorMessage(f['totalAmount'], 'Total Amount ') }}
@@ -264,10 +264,10 @@
           </div>-->
             <div class="col-span-12 md:col-span-8">
               <p-inputgroup>
-                <input id="invRoutingFlowName" type="text" pInputText formControlName="invRoutingFlowName" class="w-full" />
+                <input id="invRoutingFlowName" type="text" pInputText formControlName="invRoutingFlowName" class="w-full" [readonly]="isReadOnly('invRoutingFlowName')" [ngClass]="{ 'readonly-input': isReadOnly('invRoutingFlowName') }"/>
                 <p-inputgroup-addon>
                   <p-button variant="text" severity="secondary" icon="pi pi-search" size="small"
-                    (click)="assignRoutingFlow()" [disabled]="disableBrowseBtn()"></p-button>
+                    (click)="assignRoutingFlow()" [disabled]="!hasPermission('CanModifyinvRoutingFlowName')"></p-button>
                 </p-inputgroup-addon>
               </p-inputgroup>
             </div>
@@ -284,10 +284,10 @@
             <label for="note" class="col-span-12 md:col-span-4 font-medium">Keyword</label>
             <div class="col-span-12 md:col-span-8">
               <p-inputgroup>
-                <input id="keyword" type="text" pInputText formControlName="keyword" class="w-full" />
+                <input id="keyword" type="text" pInputText formControlName="keyword" class="w-full" [readonly]="isReadOnly('keyword')" [ngClass]="{ 'readonly-input': isReadOnly('keyword') }"/>
                 <p-inputgroup-addon>
                   <p-button variant="text" severity="secondary" icon="pi pi-search" size="small"
-                    (click)="assignKeyword()" [disabled]="disableBrowseBtn()"></p-button>
+                    (click)="assignKeyword()" [disabled]="!hasPermission('CanModifykeyword')"></p-button>
                 </p-inputgroup-addon>
               </p-inputgroup>
             </div>

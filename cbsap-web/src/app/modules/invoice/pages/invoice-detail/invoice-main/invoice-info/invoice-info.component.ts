@@ -74,6 +74,7 @@ import { InvoiceValidationMessageComponent } from '../invoice-validation-message
 import { SearchGoodsReceiptQuery } from '@core/model/goods-receipt/search-goods-receipt.query';
 import { SearchGoodsReceiptLookupDto } from '@core/model/goods-receipt';
 import { InvoiceQueue } from '@core/enums';
+import { DueDateCalculationDto }  from '@core/model/system-settings/entity/entity-duedate.calculationDto';
 
 @Component({
   selector: 'app-invoice-info',
@@ -106,7 +107,6 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
 
   invoiceID: number = 0;
    @Output() invoiceDataLoaded = new EventEmitter<InvInfoDto>();
-
   @Input() messages: string[] = [];
   @Input() invoiceValidationHeader: string = '';
   @Input() invoiceId?: number;
@@ -157,6 +157,10 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
   goodsReceiptData: SearchGoodsReceiptLookupDto[] = [];
   selectedGoodsReceipt?: SearchGoodsReceiptLookupDto
 
+  createdDate: Date = new Date();  
+  invDueDateCalculation: number = 1;
+  defaultInvoiceDueDays: number = 0;
+
   constructor(
     private lookUpOptionService: LookupOptionsService,
     private invDetailService: InvoiceDetailService,
@@ -189,6 +193,8 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
 
     }
 
+    //this.disabledFieldsInException();
+
     this.f['dueDate'].valueChanges
       .pipe(
         startWith(this.f['dueDate'].value),
@@ -198,6 +204,17 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       .subscribe(() => {
         this.computeDaysTillDue();
       });
+
+      this.f['paymentTerm'].valueChanges
+      .pipe(
+        startWith(this.f['paymentTerm'].value),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.updateDueDate();
+      });
+  
 
       this.invInfoForm.get('keyword')!.valueChanges.pipe(
         map(v => (v ?? '').trim()),
@@ -211,6 +228,23 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
           //this.routingFlowName = '';
         }
       });
+
+      this.invInfoForm.get('invRoutingFlowName')!.valueChanges.pipe(
+        map(v => (v ?? '').trim()),
+        debounceTime(300),
+        distinctUntilChanged(),
+        skip(1)
+      ).subscribe(value => {
+        if(value === ''){
+          //this.f['invRoutingFlowID'].setValue(null);
+          this.f['invRoutingFlowName'].setValue('');
+          //this.routingFlowName = '';
+        }
+      });
+
+
+      //this.f['invRoutingFlowID'].setValue(routingFlow.invRoutingFlowID);
+      //this.f['invRoutingFlowName'].setValue(routingFlow.invRoutingFlowName);
   }
 
 
@@ -234,8 +268,68 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  private updateDueDate() {
+    const FormValue = this.invInfoForm.getRawValue();
+    const dto: DueDateCalculationDto = {
+      InvoiceDate: FormValue.invoiceDate ?? new Date(),
+      ScanDate: FormValue.scanDate ?? new Date(),
+      PaymentTerm: Number(FormValue.paymentTerm) || 0
+  };
+  try {
+  const dueDate = this.computeInvoiceDueDate(
+    dto,
+    this.createdDate,
+    this.invDueDateCalculation,
+    this.defaultInvoiceDueDays
+  );
 
-  
+   this.invInfoForm.patchValue(
+    { dueDate: dueDate },
+    { emitEvent: false } // prevent infinite loop
+   );
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+computeInvoiceDueDate(
+    invoice: DueDateCalculationDto,
+    createdDate: Date,
+    calculationMethod: number,
+    defaultDueDays: number
+  ): Date {
+    const invoiceDate = invoice.InvoiceDate ? new Date(invoice.InvoiceDate) : null;
+    const scanDate = invoice.ScanDate ? new Date(invoice.ScanDate) : null;
+ 
+    let baseDate: Date | null = null;
+ 
+    switch (calculationMethod) {
+      case 1: // Scan Date + Payment Terms
+        baseDate = scanDate;
+        break;
+      case 2: // CBSAP Insert Date + Payment Terms
+        baseDate = createdDate;
+        break;
+      case 3: // Invoice Date + Payment Terms
+        baseDate = invoiceDate;
+        break;
+      default:
+        throw new Error('Invalid due date calculation method');
+    }
+ 
+    if (!baseDate) {
+      baseDate = new Date();
+    }
+ 
+    const paymentTermDays =
+      invoice.PaymentTerm != null && invoice.PaymentTerm > 0
+        ? invoice.PaymentTerm
+        : defaultDueDays;
+ 
+    const dueDate = new Date(baseDate);
+    dueDate.setDate(dueDate.getDate() + paymentTermDays);
+    return dueDate;
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['invoiceId'] && !changes['invoiceId'].firstChange) {
@@ -245,8 +339,9 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
         this.resetFormState();
         this.loadInvoiceData(this.invoiceID);
       }            
-    }    
-  }
+    }  
+  }  
+  
   
 
   private resetFormState(): void {
@@ -299,6 +394,7 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
         return;
       }
       this.selectedRoutingFlow = routingFlow;
+      
       this.f['invRoutingFlowID'].setValue(routingFlow.invRoutingFlowID);
       this.f['invRoutingFlowName'].setValue(routingFlow.invRoutingFlowName);
     });
@@ -353,8 +449,8 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
 
 
       if(this.f['keywordID'].value == null && this.queueroute !== InvoiceQueue.MyInvoices){
-        this.f['invRoutingFlowName'].setValue(this.selectedSupplier?.invoiceRoutingFlowName || null);
-        this.f['invRoutingFlowID'].setValue(this.selectedSupplier?.invoiceRoutingFlowID || null);
+          //this.f['invRoutingFlowName'].setValue(this.selectedSupplier?.invoiceRoutingFlowName || null);
+          //this.f['invRoutingFlowID'].setValue(this.selectedSupplier?.invoiceRoutingFlowID || null);
       }
     });
   }
@@ -363,22 +459,43 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
      return (this.queueroute === InvoiceQueue.MyInvoices)
   }
 
+  hasPermission(permission: string): boolean {
+    const stored = localStorage.getItem('user_permissions');
+    const permissionControl = stored ? JSON.parse(stored) : [];
+    return permissionControl.includes(permission);
+  }
 
-  disabledFieldsInException() {
-    const shouldDisable = this.queueroute === InvoiceQueue.MyInvoices;
-    const controls = ['keyword','invRoutingFlowName'];
+
+
+  readOnlyFields = new Set<string>();
+
+  disabledFieldsInException(): void {
+    const controls: string[] = [];
+
+    const _control = localStorage.getItem('user_permissions');
+    const permissionControl = _control ? JSON.parse(_control) : [];
+
+    permissionControl.forEach((perm: string) => {
+      if (perm) {
+        controls.push(perm.replace(/^CanModify/, '').trim());
+      }
+    });
+
+    Object.keys(this.invInfoForm.controls).forEach(field => {
+      this.readOnlyFields.add(field);
+    });
 
     controls.forEach(name => {
-      const ctrl = this.invInfoForm.get(name);
-      if (!ctrl) return;
-
-      if (shouldDisable) {
-        ctrl.disable({ emitEvent: false, onlySelf: true });
-      } else {
-        ctrl.enable({ emitEvent: false, onlySelf: true });
+      if (this.invInfoForm.get(name)) {
+        this.readOnlyFields.delete(name);
       }
     });
   }
+
+  isReadOnly(field: string): boolean {
+    return this.readOnlyFields.has(field);
+  }
+
 
 
   searchRoutingFlow(searchQuery: RoutingFlowLookupQuery){
@@ -456,8 +573,10 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
       this.selectedKeyword = keyword;
       this.f['keyword'].setValue(keyword.keywordName);
       this.f['keywordID'].setValue(keyword.keywordID);
-      this.f['invRoutingFlowID'].setValue(keyword.invoiceRoutingFlowID);
-      this.f['invRoutingFlowName'].setValue(keyword.invoiceRoutingFlowName);
+      if (this.f['invRoutingFlowName'].value === '') {
+          //this.f['invRoutingFlowID'].setValue(keyword.invoiceRoutingFlowID);
+          //this.f['invRoutingFlowName'].setValue(keyword.invoiceRoutingFlowName);
+      }
     });
   }
 
@@ -761,38 +880,43 @@ private searchGoodReceiptNos(searchQuery: SearchGoodsReceiptQuery): void {
         takeUntil(this.destroy$)
       )
       .subscribe(([invoice, entityOptions, dropdown, taxCodeLookUpOptions]) => {
-        this.invInfoForm.patchValue({
+        const patchValue = {
           ...invoice,
-          invoiceDate: invoice.invoiceDate
-            ? new Date(invoice.invoiceDate)
-            : null,
+            invoiceDate: invoice.invoiceDate ? new Date (invoice.invoiceDate) : null,
           dueDate: invoice.dueDate ? new Date(invoice.dueDate) : null,
-          scanDate: invoice.scanDate ? new Date(invoice.invoiceDate) : null,
-        });
+      
+          scanDate: invoice.scanDate ? new Date (invoice.scanDate) : null,
+      };
+      this.invInfoForm.patchValue(patchValue);
+ 
+        this.createdDate = invoice.createdDate ? new Date(invoice.createdDate) : new Date();
+        this.invDueDateCalculation = invoice.invDueDateCalculation ?? 1;
+        this.defaultInvoiceDueDays = invoice.defaultInvoiceDueInDays ?? 0;
+ 
+        this.updateDueDate();
 
         this.entityOptions = entityOptions;
         this.taxCodeOptions = taxCodeLookUpOptions;
         this.invInfoDropdown = {
-          currencies: dropdown.currencies,
-          paymentTerms: dropdown.paymentTerms,
+          currencies: dropdown.currencies ?? [],
+          paymentTerms: dropdown.paymentTerms ?? [],
         };
        
-
         this.invoiceDataLoaded.emit(invoice);
 
         this.formFreeFields.clear();
-        invoice?.freeFields.forEach((freeField) => {
+        invoice?.freeFields?.forEach(freeField => {
           this.formFreeFields.push(createFreeFieldFormGroup(freeField));
         });
+
         this.formSpareAmountFields.clear();
-        invoice?.spareAmounts.forEach((freeField) => {
-          this.formSpareAmountFields.push(
-            createSpareAmountFormGroup(freeField)
-          );
+        invoice?.spareAmounts?.forEach(spareField => {
+            this.formSpareAmountFields.push(createSpareAmountFormGroup(spareField));
         });
+        
 
         //
-        let amounts: AmountDto = this.amountValues();
+        const amounts: AmountDto = this.amountValues();
         this.amounts.emit({ ...amounts });
       });
   }
@@ -811,6 +935,7 @@ private searchGoodReceiptNos(searchQuery: SearchGoodsReceiptQuery): void {
     //this.freeFields.splice(index, 1);
     this.formFreeFields.removeAt(index);
   }
+
   onAddSpareAmountField() {
     // this.spareAmountFields.push({ value: '' });
     const index = this.formSpareAmountFields.length + 1;
@@ -902,6 +1027,16 @@ private searchGoodReceiptNos(searchQuery: SearchGoodsReceiptQuery): void {
   onAmountsChange() {
     let amounts: AmountDto = this.amountValues();
     this.amounts.emit({ ...amounts });
+  }
+
+  refresh(){
+      this.initiliazeDropdown();
+      const hydratedInvoiceId = this.invoiceId ?? this.invoiceID;
+      if (hydratedInvoiceId) {
+        this.invoiceID = hydratedInvoiceId;
+        this.loadInvoiceData(this.invoiceID);
+        //this.loadComments(this.invoiceID);
+      }
   }
 
   private amountValues(): AmountDto {

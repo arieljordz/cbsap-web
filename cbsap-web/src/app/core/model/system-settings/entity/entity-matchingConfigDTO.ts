@@ -1,7 +1,7 @@
 export interface EntityMatchingConfigDto  {
     matchingConfigID: number;
     entityProfileID: number;
-    configType: 'POMT' |'PO' | 'GR';
+    configType:  'PO' | 'GR';
     matchingLevel: string | null;
     invoiceMatchBasis: string | null;
 

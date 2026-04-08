@@ -123,7 +123,7 @@
               severity="secondary"
               icon="pi pi-plus"
               type="button"
-             
+              [disabled]="disableAddRole()"
              
               pTooltip="Add Role"
               (click)="searchRole(i + 1)"
@@ -135,4 +135,6 @@
         </div>
       </div>
     </div>
+</form>
+</p-panel>
   

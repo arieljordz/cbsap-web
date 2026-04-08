@@ -5,8 +5,10 @@
     [rowsPerPageOptions]="[10,25,50]"
     [scrollable]="true"
     paginatorDropdownAppendTo="body"
-    styleClass="p-datatable-gridlines">
- 
+    styleClass="p-datatable-gridlines"
+    sortField= "actionDate"
+    [sortOrder]="-1">
+     
     <!-- HEADER -->
 <ng-template pTemplate="header">
 <tr>
@@ -18,12 +20,8 @@
               Action
 <p-sortIcon field="activity"></p-sortIcon>
 </th>
-<th pSortableColumn="table">
-        Table
-<p-sortIcon field="table"></p-sortIcon>
-</th>
 <th pSortableColumn="column">
-        Column
+        Field
 <p-sortIcon field="column"></p-sortIcon>
 </th>
 <th pSortableColumn="activityClass">
@@ -50,12 +48,11 @@
 <tr>
 <td>{{row.actionDate | date:'dd/MM/yyyy HH:mm:ss' }}</td>
 <td>{{row.action}}</td>
-<td>{{row.table}}</td>
 <td>{{row.column}}</td>
 <td>{{row.activityClass}}</td>
 <td>{{row.prevValue}}</td>
 <td>{{row.newValue}}</td>
-<td>{{row.ActionedBy}}</td>
+<td>{{row.actionedBy}}</td>
 </tr>
 </ng-template>
  

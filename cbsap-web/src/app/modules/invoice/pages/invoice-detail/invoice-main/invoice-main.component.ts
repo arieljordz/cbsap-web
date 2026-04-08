@@ -742,6 +742,7 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
           this.invoiceTotalAmount = invoiceForm.totalAmount;
           this.keywordID = invoiceForm.keywordID;
           this.supplierInfoID = invoiceForm.supplierInfoID;
+          this.invInvComp.refresh();
           this.reloadPermissions();
           this.message.showToast(
             MessageSeverity.success.toString(),
@@ -778,17 +779,29 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       },
       error: (error: ResponseResult<InvValidationResponseDto>) => {
+        console.log(error.responseData!);
         const validateResponse = error.responseData!;
-        const { validationMessage, validationHeader } =
-          this.extractValidationDetails(validateResponse);
-        this.invSubmissionMessages = validationMessage;
-        this.invoiceSubmissionnHeader = validationHeader;
+        if(validateResponse.queueType != null){
+          const { validationMessage, validationHeader } =
+            this.extractValidationDetails(validateResponse);
+          this.invSubmissionMessages = validationMessage;
+          this.invoiceSubmissionnHeader = validationHeader;
 
-        this.OpenInvoiceValidation(
-          this.invSubmissionMessages,
-          'Submit Action',
-          validationHeader
-        );
+          this.OpenInvoiceValidation(
+            this.invSubmissionMessages,
+            'Submit Action',
+            validationHeader
+          );
+        }else{
+          this.message.showToast(
+            MessageSeverity.warn.toString(),
+            'Submit',
+            validateResponse.failureMessages,
+            2000
+          );
+        }
+
+
         this.loaderService.hide();
       },
       complete: () => {},
