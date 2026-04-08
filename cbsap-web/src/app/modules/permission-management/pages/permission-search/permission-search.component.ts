@@ -140,6 +140,10 @@ export class PermissionSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const stored = localStorage.getItem('permission-search');
+    if(stored){
+      this.searchPermissionModel = JSON.parse(stored);
+    }
     this.columns = this.gridService.permissionManagementColumn();
     this.sizes = { name: 'Small', class: 'p-table?-sm' };
   }
@@ -151,6 +155,8 @@ export class PermissionSearchComponent implements OnInit, OnDestroy {
   }
 
   clear() {
+    localStorage.removeItem('permission-search');
+    localStorage.removeItem('permission-grid');
     this.searchPermissionModel = {
       permissionID: null,
       permissionName: '',
@@ -240,6 +246,7 @@ export class PermissionSearchComponent implements OnInit, OnDestroy {
 
   editPermission(permission: any): void {
     const id = permission.permissionID;
+    localStorage.setItem('permission-search',JSON.stringify(this.searchPermissionModel));
     this.router.navigate(['permission-management/edit-permission', id]);
   }
 

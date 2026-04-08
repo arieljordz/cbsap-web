@@ -134,7 +134,7 @@
         </div>
 
         <!-- Match Reference -->
-        <div class="mb-2">
+        <!--<div class="mb-2">
           <label for="matchRef" class="block mb-1 font-medium">Keyword</label>
           <input
             id="matchRef"
@@ -177,8 +177,54 @@
               </small>
             </div>
           </div>
+        </div>-->
+        <div class="mb-2">
+            <label for="matchReference" class="block mb-1 font-medium">Keyword</label>
+            <div class="w-full">
+              <p-inputgroup>
+                <input id="keyword" type="text" pInputText formControlName="matchReference" class="w-full" />
+                <p-inputgroup-addon>
+                  <p-button variant="text" severity="secondary" icon="pi pi-search" size="small"
+                      (click)="assignKeyword()"></p-button>
+                  </p-inputgroup-addon>
+              </p-inputgroup>
+            </div>
+                      <div class="flex justify-between">
+            <div class="flex-1">
+              <small
+                *ngIf="
+                  f['matchReference'].invalid && f['matchReference'].touched
+                "
+                class="pt-2 text-xs text-red-500"
+              >
+                {{ getErrorMessage(f["matchReference"], "Keyword") }}
+              </small>
+            </div>
+            <div
+              class="flex-1 text-right"
+              *ngIf="focusStates['invRoutingFlowName']"
+            >
+              <small
+                *ngIf="f?.['invRoutingFlowName']?.value!.length > 0"
+                class="text-gray-400 text-xs"
+              >
+                <span
+                  *ngIf="
+                    (f['invRoutingFlowName'].value! | characterLength : 100)
+                      .approachingLimit
+                  "
+                  class="text-red-400 text-xs"
+                >
+                  Approaching limit!
+                </span>
+                {{
+                  (f["invRoutingFlowName"].value! | characterLength : 30)
+                    .length
+                }}/30
+              </small>
+            </div>
+          </div>            
         </div>
-
         <!-- Active -->
         <div>
           <div class="flex items-center space-x-2">
@@ -229,7 +275,7 @@
               class="flex flex-col items-center w-full"
             >
               <div
-                class="flex items-center justify-between bg-gray-100 p-3 rounded shadow-sm w-full"
+                class="flex items-center justify-between flow-level p-4 w-full"
               >
                 <div class="text-center flex-1">
                   <div class="font-semibold">
@@ -250,10 +296,10 @@
 
               <div class="flex items-center justify-center mt-2">
                 <p-button
-                  severity="contrast"
+                  severity="secondary"
                   type="button"
                   [rounded]="true"
-                  class="w-[100px] text-white text-sm text-center"
+                  class="text-white text-sm text-center"
                   pTooltip="Add Role"
                   (click)="searchRole(i + 1)"
                   size="small"

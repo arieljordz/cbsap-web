@@ -15,7 +15,7 @@ export interface DynamicGridColumn {
     | 'actionButtons'
     | 'checkbox'
     | 'tag';
-  filterType?: 'text' | 'number' | 'boolean' | 'date-range';
+  filterType?: 'text' | 'number' | 'boolean'| "date-range";
   customTemplate?: TemplateRef<any>;
   buttonConfig?: {
     label: string;
@@ -47,6 +47,8 @@ export interface GridConfig<T> {
   actions?: GridAction[];
   loading?: boolean;
   rowClick?: RowGridAction[];
+  rowDblClick?: RowGridAction[];
+  gridKey?: string;
 }
 
 export interface BasePaginationQuery {

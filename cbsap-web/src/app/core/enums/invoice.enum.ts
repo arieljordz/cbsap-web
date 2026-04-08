@@ -37,3 +37,9 @@ export enum InvoiceActionButton {
   PurchaseOrder = 'purchaseOrder',
   Cancel = 'cancel',
 }
+
+export enum FlowStatus{
+  Pending = 0,
+  Assigned = 1,
+  Submitted = 2
+}

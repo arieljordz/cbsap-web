@@ -79,18 +79,18 @@ export class InvoiceActionsComponent {
         action: InvoiceActionButton.Submit,
         permission: Permission.CanSubmitInvoice,
       },     
-      {
-        label: 'Add Comment',
-        icon: 'pi pi-comments',
-        command: () => this.onOpenAddComment(),
-        visibleIn: [
-          InvoiceQueue.MyInvoices,
-          InvoiceQueue.ExceptionQueue,
-          InvoiceQueue.RejectionQueue,
-          InvoiceQueue.ArchiveQueue,
-        ],
-        action: InvoiceActionButton.AddComment,
-      },
+     // {
+     //   label: 'Add Comment',
+      //  icon: 'pi pi-comments',
+     //   command: () => this.onOpenAddComment(),
+     //   visibleIn: [
+         // InvoiceQueue.MyInvoices,
+      //    InvoiceQueue.ExceptionQueue,
+     //     InvoiceQueue.RejectionQueue,
+     //     InvoiceQueue.ArchiveQueue,
+     //   ],
+     //   action: InvoiceActionButton.AddComment,
+    //  },
       {
         label: 'More ..',
         icon: 'pi pi-bars',

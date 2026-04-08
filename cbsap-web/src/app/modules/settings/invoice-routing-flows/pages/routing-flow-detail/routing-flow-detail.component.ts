@@ -17,21 +17,26 @@ import {
   RoutingFlowLevelFormGroup,
 } from '@core/model/invoicing/invoicing.index';
 import { RoleDTO } from '@core/model/roles-management';
-
+import { Keyword, KeywordGridQuery } from '@core/model/keyword-management';
+import { SelectTableComponent } from '@shared/popup/select-table/select-table.component';
 import {
   AlertService,
   InvRoutingFlowService,
   LookupOptionsService,
   ValidationService,
 } from '@core/services/index';
+import {
+  GridService,
+  KeywordService
+} from '@core/services';
 import { getErrorMessage } from '@core/utils';
 import { CharacterFocusTrackerDirective } from '@shared/directives/character-focus-tracker.directive';
 import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
 import { CharacterLengthPipe } from '@shared/pipes/character-length.pipe';
 import { RoutingflowRoleSelectorComponent } from '@shared/popup/routingflow-role-selector/routingflow-role-selector.component';
 import { ConfirmationService, SelectItem } from 'primeng/api';
-import { DialogService } from 'primeng/dynamicdialog';
-import { combineLatest, Subject, takeUntil } from 'rxjs';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { combineLatest, Subject, takeUntil,BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-routing-flow-detail',
@@ -61,7 +66,12 @@ export class RoutingFlowDetailComponent implements OnInit, OnDestroy {
   supplierOptions?: SelectItem[] = [];
   rolesOptions?: SelectItem[] = [];
   selectedRole: RoleDTO[] = [];
-
+  private destroySubject: Subject<void> = new Subject();
+  private keywordDataList$ = new BehaviorSubject<Keyword[]>([]);
+  private keywordTotalRecord$ = new BehaviorSubject<number>(0);
+  keywordTotalRecords = 0;
+  keywordData: Keyword[] = [];
+  selectedKeyword?: Keyword;
   currentLevelIndex: number | null = null;
 
   constructor(
@@ -72,7 +82,9 @@ export class RoutingFlowDetailComponent implements OnInit, OnDestroy {
     private message: AlertService,
     private activeRoute: ActivatedRoute,
     private router: Router,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private keywordService: KeywordService,
+    private gridService: GridService,
   ) {
     this.invRoutingFlowForm = createInvRoutingFlowForm();
     this.invRoutingFlowID = Number(
@@ -195,13 +207,26 @@ export class RoutingFlowDetailComponent implements OnInit, OnDestroy {
       accept: () => {
         this.invRoutingFlowService
           .deletetInvRoutingFlow(this.invRoutingFlowID)
-          .subscribe((response) => {
-            if (response.isSuccess) {
+          .subscribe({
+            next: (response) =>{
+                if(response.isSuccess){
+                  this.message.showToast(
+                  MessageSeverity.success.toString(),
+                  'Routing Flow Deletion',
+                  'Routing Flow has been successfully deleted',
+                  2000
+                );
+              }
+            },
+            error:(error: ResponseResult<boolean>) => {
               this.message.showToast(
-                MessageSeverity.success,
-                'Invoice Routing Flow Deletion',
-                'Invoice Routing Flow has successfully deleted'
+                MessageSeverity.error.toString(),
+                'Error on Routing Flow deletion',
+                error.messages?.[0],
+                2000
               );
+            },
+            complete: () => {
               this.closeDialog();
             }
           });
@@ -328,6 +353,85 @@ export class RoutingFlowDetailComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+    private buildKeywordGridQuery(filters: any = {}): KeywordGridQuery {
+      const normalizedActive =
+        filters.isActive === undefined || filters.isActive === null
+          ? null
+          : filters.isActive;
+  
+      return {
+        keywordName: filters.keywordName?.trim() ?? '',
+        entityName: filters.entityName?.trim() ?? '',
+        invoiceRoutingFlowName: filters.invoiceRoutingFlowName?.trim() ?? '',
+        isActive: normalizedActive,
+        pageNumber: filters.pageNumber ?? 1,
+        pageSize: filters.pageSize ?? 10,
+        sortField: filters.sortField,
+        sortOrder: filters.sortOrder,
+      };
+    }
+
+
+    private searchKeyword(searchQuery: KeywordGridQuery): void {
+      this.keywordService
+        .getKeywords(searchQuery)
+        .pipe(takeUntil(this.destroySubject))
+        .subscribe({
+          next: (res) => {
+            if (!res.isSuccess || !res.responseData) {
+              return;
+            }
+            this.keywordData = res.responseData.data ?? [];
+            this.keywordTotalRecords = res.responseData.totalCount ?? 0;
+            this.keywordDataList$.next(this.keywordData);
+            this.keywordTotalRecord$.next(this.keywordTotalRecords);
+          },
+          error: () => {},
+        });
+    }    
+
+
+    assignKeyword(): void {
+      const initialQuery = this.buildKeywordGridQuery({
+        pageNumber: 1,
+        pageSize: 5,
+      });
+      this.searchKeyword(initialQuery);
+  
+      const ref: DynamicDialogRef = this.dialogService.open(
+        SelectTableComponent,
+        {
+          header: 'Keyword Lookup',
+          contentStyle: { overflow: 'auto' },
+          baseZIndex: 10000,
+          modal: true,
+          closable: true,
+          data: {
+            multiple: false,
+            columns: this.gridService.keywordSelectTableGrid(),
+            data$: this.keywordDataList$,
+            totalRecords$: this.keywordTotalRecord$,
+            selectedRows: this.selectedKeyword ? [this.selectedKeyword] : [],
+            rowDisablePredicate: (row: Keyword) => !row?.isActive,
+            onSearch: (filters: any) => {
+              const query = this.buildKeywordGridQuery(filters);
+              this.searchKeyword(query);
+            },
+          },
+        }
+      );
+  
+      ref.onClose.subscribe((selected) => {
+        const keyword = Array.isArray(selected) ? selected?.[0] : selected;
+        if (!keyword) {
+          return;
+        }
+        this.selectedKeyword = keyword;
+        this.f['matchReference'].setValue(keyword.keywordName);
+        //this.f['keywordID'].setValue(keyword.keywordID);
+      });
+    }
 
   updateLevels() {
     this.routingFlowLevels.controls.forEach((group, i) => {

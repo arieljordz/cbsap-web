@@ -78,6 +78,7 @@ export class DynamicGridComponent<T> implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
   }
+
   ngOnInit(): void {
     this.subscription = this.dynamicGridService.gridConfig$.subscribe(
       (config) => {
@@ -88,6 +89,26 @@ export class DynamicGridComponent<T> implements OnInit, OnDestroy {
     if (!this.tableStyle) {
       this.tableStyle = { 'min-width': '50rem' };
     }
+  }
+
+  ngAfterViewInit(): void{
+    const parsed = JSON.parse(localStorage.getItem(this.config?.gridKey || '') || '{}');
+    this.sortField = parsed.sortField ?? '';
+    this.sortOrder = parsed.sortOrder ?? 1;
+    this.pageSize = parsed.rows ?? 10;
+    this.pageNumber = parsed.first / parsed.rows;
+    var first = parsed.first;
+
+    const initialEvent = {
+      first: first,
+      rows: this.pageSize,
+      sortField: this.sortField,
+      sortOrder: this.sortOrder,
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize
+    };
+
+    this.loadData(initialEvent);
   }
 
   loadData(event: any): void {
@@ -104,7 +125,6 @@ export class DynamicGridComponent<T> implements OnInit, OnDestroy {
       this.sortOrder =
         typeof event.sortOrder === 'number' ? event.sortOrder : this.sortOrder;
     }
-
     if (this.config) {
       this.config.sortField = this.sortField;
       this.config.sortOrder = this.sortOrder;

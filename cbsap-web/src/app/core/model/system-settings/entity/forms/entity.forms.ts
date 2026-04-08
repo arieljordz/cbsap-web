@@ -4,7 +4,7 @@ import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
 export type MatchingConfigFormGroup = FormGroup<{
     matchingConfigID: FormControl<number>;
     entityProfileID: FormControl<number>;
-    configType: FormControl<'POMT' | 'PO' | 'GR'>;
+    configType: FormControl<'PO' | 'GR'>;
     matchingLevel: FormControl<string | null>;
     invoiceMatchBasis: FormControl<string | null>;
     dollarAmt: FormControl<number | null>;
@@ -29,6 +29,7 @@ export type EntityProfileFormGroup = FormGroup<{
   invDueDateCalculation: FormControl<number | null>;
   createdDate: FormControl<Date | null>;
   matchingConfigs: FormArray<MatchingConfigFormGroup>;
+  automaticGoodsDelivered: FormControl<boolean>;
 }>;
 
 
@@ -60,7 +61,8 @@ export function createMatchingConfigGroup(config?: Partial<EntityMatchingConfigD
       taxPercentageAmt: new FormControl<number | null >(null),
       invDueDateCalculation: new FormControl<number | null >(null),
       createdDate: new FormControl<Date | null>(null),
-      matchingConfigs: new FormArray<MatchingConfigFormGroup>([])
+      matchingConfigs: new FormArray<MatchingConfigFormGroup>([]),
+      automaticGoodsDelivered: new FormControl(false, { nonNullable: true }),
     });
   }
 

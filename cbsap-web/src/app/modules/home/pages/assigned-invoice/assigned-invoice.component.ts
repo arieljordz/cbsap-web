@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DialogService } from 'primeng/dynamicdialog';
-import { filter, Subject, takeUntil } from 'rxjs';
+import { distinctUntilChanged, filter, Subject, takeUntil } from 'rxjs';
 import { TableColumn, ResponseResult } from 'src/app/core/model/common';
 import { AssignedInvoice, AssignedInvoiceResult } from 'src/app/core/model/dashboard/assigned-invoice.model';
 
@@ -53,18 +53,20 @@ export class AssignedInvoiceComponent implements OnInit {
 
   ngOnInit(): void {
     this.getAssignedInvoice();
-
+    const srRaw = localStorage.getItem("sr") || "";
+    const sr = Number(srRaw.replace(/"/g, ""));
+    const prevStoredRole = sr ? Number(sr) : 0;
     this.menuService.currentRole$
-          .pipe(
-            filter((role) => role !== null),
-            takeUntil(this.destroySubject)
-          )
-          .subscribe((role) => {
-            setTimeout(() => {
-              this.refresh();
-            },1500);
-            return role;
-          });
+      .pipe(
+        filter((role) => role !== null),
+        distinctUntilChanged(),
+        takeUntil(this.destroySubject)
+      )
+      .subscribe((role) => {
+        if (role !== prevStoredRole) {
+          setTimeout(() => this.refresh(), 1500);
+        }
+      });
   }
 
   refresh() {

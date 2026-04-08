@@ -170,7 +170,6 @@ export class DimensionComponent implements OnInit, OnDestroy {
       dimensionName: filters?.dimensionName ?? '',
       active: filters?.active ?? null,
     };
-    console.log(this.dimensionSearchModel)
 
     this.triggeredBySearch = true;
     this.pageNumber = 1;

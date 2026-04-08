@@ -13,6 +13,7 @@ import {
   SearchField,
 } from '@core/model/quick-search/QuickSearchModel';
 import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
+import { __setFunctionName } from 'tslib';
 
 @Component({
   selector: 'app-quick-search',
@@ -25,11 +26,12 @@ export class QuickSearchComponent<T extends Record<string, any>>
   implements OnInit
 {
   @Input() fields: SearchField<T>[] = [];
-
+  @Input() searchKey?: string
   @Input() actionButtons: {
     search?: boolean;
     clear?: boolean;
     export?: boolean;
+    advancedSearch?:boolean;
     custom?: CustomButton[];
   } = { search: true, clear: true, export: false };
 
@@ -64,6 +66,7 @@ export class QuickSearchComponent<T extends Record<string, any>>
   }
   
   private initializedFields() {
+    const parsed = JSON.parse(localStorage.getItem(this.searchKey || '') || '{}');
     for (const field of this.fields) {
       const key = field.key;
       if (field.fieldType === 'dropdown' &&
@@ -72,5 +75,12 @@ export class QuickSearchComponent<T extends Record<string, any>>
         this.model[key] = field.options[0]?.value;
       }
     }
+    if(parsed.length != 0){
+        for (const [key, value] of Object.entries(parsed)) {
+           const _field = this.fields.find(f => f.key == key);
+          (this.model as any)[key] = value;
+        }
+    }
   }
+
 }

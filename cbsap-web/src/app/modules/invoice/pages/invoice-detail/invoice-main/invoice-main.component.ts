@@ -1,4 +1,4 @@
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { AfterViewInit, Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -15,12 +15,16 @@ import {
   AmountDto,
   InvInfoDto,
   InvValidationResponseDto,
+  InvoiceCommentDto,
   InvoiceDto,
+  LoadInvoiceCommentQuery,
+  LoadInvoiceCommentsDto,
 } from '@core/model/invoicing/invoicing.index';
 import {
   AlertService,
   AuthService,
   CustomConfirmDialogService,
+  GridService,
   InvoiceDetailService,
   InvoiceFormService,
   LoaderService,
@@ -46,6 +50,7 @@ import { PoMatchingComponent } from '../../purchase-order/po-matching/po-matchin
 import { PoLinesSharedService } from '@core/services/purchase-order/po-lines-shared.service';
 import { DynamicGridService } from '@core/services/shared/dynamic-grid.service';
 import { LockingService } from '@core/services/locking/invoice-locking.service';
+import { GridConfig } from '@core/model/dynamic-grid/grid.config';
 @Component({
   selector: 'app-invoice-main',
   standalone: true,
@@ -67,6 +72,7 @@ import { LockingService } from '@core/services/locking/invoice-locking.service';
 
     NgClass,
     NgIf,
+    NgFor,
   ],
   templateUrl: './invoice-main.component.html',
   styleUrl: './invoice-main.component.scss',
@@ -113,6 +119,24 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
   hasNextInvoice: boolean | null = null;
   hasPreviousInvoice: boolean | null = null;
 
+  isShowComments: boolean = true;
+  totalRecords: number = 0;
+  pageNumber: number = 0;
+  pageSize:number = 10;
+  loading: boolean = true;
+  visible: boolean = false;
+  sortField?: string = '';
+  sortOrder:number = 1;
+  gridConfig: GridConfig<LoadInvoiceCommentsDto> | null = null;
+  invoiceComments: LoadInvoiceCommentsDto[] = [];
+  submitComment: string = '';
+  addCommentDto: InvoiceCommentDto = {
+    invoiceCommentID: 0,
+    comment: null,
+    invoiceID: 0
+  };
+
+  private destroySubject: Subject<void> = new Subject();
   private sub = new Subscription();
   private openCommentDialogSub = new Subscription();
   private openInvAttachmentDialogSub = new Subscription();
@@ -144,7 +168,9 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
     private loaderService: LoaderService,
     private authService: AuthService,
     private poLinesSharedService: PoLinesSharedService,
-    private invFormService:InvoiceFormService
+    private invFormService:InvoiceFormService,
+    private gridService: GridService,
+    private dynamicGridService: DynamicGridService<LoadInvoiceCommentsDto>
   ) {
     this.invoiceID = Number(this.activeRoute.snapshot.params['id'] ?? 0);
   }
@@ -189,6 +215,8 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit(): void {
     this.listenToInvoiceChanges();
     this.initializeMain();
+    this.initializeDynamicGrid();
+    
   }
 
   onTabSelect(event: any) {
@@ -714,6 +742,7 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
           this.invoiceTotalAmount = invoiceForm.totalAmount;
           this.keywordID = invoiceForm.keywordID;
           this.supplierInfoID = invoiceForm.supplierInfoID;
+          this.invInvComp.refresh();
           this.reloadPermissions();
           this.message.showToast(
             MessageSeverity.success.toString(),
@@ -750,17 +779,29 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       },
       error: (error: ResponseResult<InvValidationResponseDto>) => {
+        console.log(error.responseData!);
         const validateResponse = error.responseData!;
-        const { validationMessage, validationHeader } =
-          this.extractValidationDetails(validateResponse);
-        this.invSubmissionMessages = validationMessage;
-        this.invoiceSubmissionnHeader = validationHeader;
+        if(validateResponse.queueType != null){
+          const { validationMessage, validationHeader } =
+            this.extractValidationDetails(validateResponse);
+          this.invSubmissionMessages = validationMessage;
+          this.invoiceSubmissionnHeader = validationHeader;
 
-        this.OpenInvoiceValidation(
-          this.invSubmissionMessages,
-          'Submit Action',
-          validationHeader
-        );
+          this.OpenInvoiceValidation(
+            this.invSubmissionMessages,
+            'Submit Action',
+            validationHeader
+          );
+        }else{
+          this.message.showToast(
+            MessageSeverity.warn.toString(),
+            'Submit',
+            validateResponse.failureMessages,
+            2000
+          );
+        }
+
+
         this.loaderService.hide();
       },
       complete: () => {},
@@ -859,7 +900,7 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
       header: 'Invoice Activity Log',
       modal: true,
       closable: true,
-      width: '800px',
+      width: '70vw',
 
       data: { invoiceID: this.invoiceID },
       style: { minHeight: '200px' },
@@ -1041,5 +1082,128 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
       `No ${direction.toLowerCase()} invoice for this status/queue.`,
       3000
     );
+  }
+
+
+private initializeDynamicGrid() {
+    const columns = this.gridService.loadInvoiceCommentsColumn();
+    this.dynamicGridService.setConfig({
+      columns,
+      data: [],
+      totalRecords: 0,
+      pageSize: 10,
+      pageNumber: 1,
+      sortField: '',
+      sortOrder: -1,
+      loading: false,
+      rowClick: [
+        {
+          allow: false,
+        },
+      ],
+    });
+    if (this.isShowComments) this.loadData(1);
+  }
+ 
+  loadData(pageNumber: number) {
+    // this.isShowComments = true;
+    const query: LoadInvoiceCommentQuery = {
+      InvoiceID: this.invoiceID,
+      PageNumber: pageNumber,
+      PageSize: this.gridConfig?.pageSize ?? 10,
+      SortField: this.gridConfig?.sortField ?? '',
+      SortOrder: this.gridConfig?.sortOrder ?? -1,
+    };
+    // this.dynamicGridService.setLoading(true);
+    this.searchRejectedInvoice2(query);
+  }
+ 
+  onLazyLoad(event: any): void {
+    const pageNumber = event.pageNumber;
+    const rows = event.pageSize ?? 10;
+    const sortField = event.sortField || '';
+    const sortOrder = event.sortOrder ?? -1;
+ 
+    const query: LoadInvoiceCommentQuery = {
+      InvoiceID: this.invoiceID,
+      PageNumber: pageNumber,
+      PageSize: rows,
+      SortField: sortField,
+      SortOrder: sortOrder,
+    };
+    this.dynamicGridService.setLoading(true);
+    this.searchRejectedInvoice(query);
+  }
+ 
+  searchRejectedInvoice(query: LoadInvoiceCommentQuery) {
+    query.InvoiceID = this.invoiceID || 0;
+ 
+    this.invDetail
+      .loadInvoiceComments(query)
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe({
+        next: (res) => {
+          if (res.isSuccess) {
+            this.dynamicGridService.updateData(
+              res.responseData?.data ?? [],
+              res.responseData?.totalCount ?? 0,
+              query.PageSize
+            );
+            this.totalRecords = res.responseData?.totalCount ?? 0;
+          }
+        },
+        error: () => {
+          this.dynamicGridService.setLoading(false);
+        },
+      }
+    );
+  }
+ 
+  searchRejectedInvoice2(query: LoadInvoiceCommentQuery) {
+    query.InvoiceID = this.invoiceID || 0;
+ 
+    this.invDetail
+      .loadInvoiceComments(query)
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe({
+        next: (res) => {
+          if (res.isSuccess) {
+            this.totalRecords = res.responseData?.totalCount ?? 0;
+            this.invoiceComments = res.responseData?.data ?? [];
+            console.log('Total Records:', this.totalRecords);
+            console.log('Total ResponseData:', this.invoiceComments);
+          }
+        },
+        error: () => {
+          console.error('Error loading invoice comments');
+        },
+      });
+  }
+ 
+  onAddComment() {
+    if (this.submitComment.trim()) {
+      this.addCommentDto.comment = this.submitComment;
+      this.addCommentDto.invoiceID = this.invoiceID || 0;
+      this.addCommentDto.invoiceCommentID = 0;
+ 
+      this.invDetail.saveinvoiceComment(this.addCommentDto).subscribe({
+        next: (response) => {
+          if (response.isSuccess) {
+            this.submitComment = '';
+          }
+        },
+        error: (error: ResponseResult<boolean>) => {
+          this.message.showToast(
+            MessageSeverity.error.toString(),
+            'Error on Adding Comment',
+            error.messages?.[0],
+            2000
+          );
+        },
+        complete: () => {
+          this.loadData(1);
+        },
+      });
+    }
   }
 }

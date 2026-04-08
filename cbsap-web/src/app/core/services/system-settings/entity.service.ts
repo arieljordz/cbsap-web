@@ -25,6 +25,7 @@ export class EntityService {
     invoiceMatchBasis: SelectItem[];
     allowPresets: SelectItem[];
     dueDateCalculations: SelectItem[];
+
   }>;
 
   constructor(
