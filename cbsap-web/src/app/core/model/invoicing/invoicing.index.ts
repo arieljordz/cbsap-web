@@ -20,3 +20,6 @@ export * from './invoice-status-change/invoice-status.change.config';
 export * from './invoice-status-change/invoice-status-change.form';
 
 export * from './invoice-activity-log/invoice-activity-log.dto';
+
+export * from '../invoicing/invoice-routing-flow/commands/assign-role-command';
+export * from '../invoicing/invoice-routing-flow/commands/remove-assigned-role-command';
