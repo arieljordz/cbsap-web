@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse, INV_ROUTINGFLOW } from '@core/constants';
 import { Pagination, ResponseResult } from '@core/model/common';
+import { AssignRoleCommand } from '@core/model/invoicing/invoice-routing-flow/commands/assign-role-command';
+import { RemoveAssignedRoleCommand } from '@core/model/invoicing/invoice-routing-flow/commands/remove-assigned-role-command';
 import {
   InvoiceRoutingFlowDto,
   InvRoutingFlowExportQuery,
@@ -157,6 +159,31 @@ export class InvRoutingFlowService {
       )
       .pipe(
         catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+        })
+      );
+  }
+   
+  assignRole(
+    assignRoleCommand: AssignRoleCommand
+  ): Observable<ResponseResult<string>> {
+    return this.resultHttpClient
+      .post<string>(`${INV_ROUTINGFLOW}/roles/assign`, assignRoleCommand, true)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+        })
+      );
+  }
+
+  removeAssignedRole(
+    removeRoleCommand: RemoveAssignedRoleCommand
+  ): Observable<ResponseResult<string>> {
+    return this.resultHttpClient
+      .post<string>(`${INV_ROUTINGFLOW}/roles/remove`, removeRoleCommand, true)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error removing assigned role', error);
           return throwError(() => error);
         })
       );
