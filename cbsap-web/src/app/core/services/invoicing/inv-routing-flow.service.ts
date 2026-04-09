@@ -163,30 +163,29 @@ export class InvRoutingFlowService {
         })
       );
   }
+   
   assignRole(
-    assignRoleCommand: AssignRoleCommand
-  ): Observable<ResponseResult<string>> {
-    return this.resultHttpClient
-      .post<string>(`${INV_ROUTINGFLOW}/roles/assign`, assignRoleCommand, true)
-      .pipe(
-        catchError((error: HttpErrorResponse) => {
-          return throwError(() => error);
-        })
-      );
-  }
+    assignRoleCommand: AssignRoleCommand
+  ): Observable<ResponseResult<string>> {
+    return this.resultHttpClient
+      .post<string>(`${INV_ROUTINGFLOW}/roles/assign`, assignRoleCommand, true)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+        })
+      );
+  }
 
- 
-
-  removeAssignedRole(
-    removeRoleCommand: RemoveAssignedRoleCommand
-  ): Observable<ResponseResult<string>> {
-    return this.resultHttpClient
-      .post<string>(`${INV_ROUTINGFLOW}/roles/remove`, removeRoleCommand, true)
-      .pipe(
-        catchError((error: HttpErrorResponse) => {
-          console.error('Error removing assigned role', error);
-          return throwError(() => error);
-        })
-      );
-  }
+  removeAssignedRole(
+    removeRoleCommand: RemoveAssignedRoleCommand
+  ): Observable<ResponseResult<string>> {
+    return this.resultHttpClient
+      .post<string>(`${INV_ROUTINGFLOW}/roles/remove`, removeRoleCommand, true)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error removing assigned role', error);
+          return throwError(() => error);
+        })
+      );
+  }
 }

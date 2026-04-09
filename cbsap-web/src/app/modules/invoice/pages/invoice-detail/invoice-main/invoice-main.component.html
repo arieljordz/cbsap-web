@@ -92,7 +92,7 @@
             <i class="pi pi-info-circle"></i>
             <span class="font-bold whitespace-nowrap">Invoice Information</span>
           </p-tab>
-          <p-tab value="1" class="flex items-center !gap-2" [disabled]="disableInvoiceLineAllocation()">
+          <p-tab value="1" class="flex items-center !gap-2">
             <i class="pi pi-list"></i>
             <span class="font-bold whitespace-nowrap"
               >Invoice Line Allocation</span
@@ -172,7 +172,7 @@
                       [invoiceID]="invoiceID"
                       [keywordID]="keywordID"
                       [supplierInfoID]="supplierInfoID"
-                      [invoiceStatus]="invoiceStatus"
+                      [invoiceStatus]="invoiceStatus" 
                     ></app-invoice-routing-flow>
                  
                 </p>
