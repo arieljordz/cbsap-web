@@ -5,8 +5,7 @@ export interface ExportInvoiceInquiryQuery {
   InvoiceNumber?: string | null;
   PONumber?: string | null;
   Status?: number | null;
-  ScanDateFrom?: string | Date | null;
-  ScanDateTo?: string | Date | null;
-  InvoiceDateFrom?: string | Date | null;
-  InvoiceDateTo?: string | Date | null;
+  ScanDateRange?: [Date, Date] | null;
+  InvoiceDateRange?: [Date, Date] | null;
+
 }

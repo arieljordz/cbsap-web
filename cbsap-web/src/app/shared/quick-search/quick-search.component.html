@@ -30,10 +30,22 @@
         ></p-dropdown>
 
         <p-datepicker
-          *ngIf="field.fieldType === 'calendar'"
+          *ngIf="field.fieldType === 'calendar' && field.range"
+          [(ngModel)]="model[field.key.toString()]"
+          selectionMode="range"
+          [showIcon]="true"
+          dateFormat="mm/dd/yy"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          (keydown.enter)="search()"
+          [id]="field.key.toString()"
+        ></p-datepicker>
+
+        <p-datepicker
+          *ngIf="field.fieldType === 'calendar' && !field.range"
           [(ngModel)]="model[field.key.toString()]"
           [showIcon]="true"
-          dateFormat="dd/mm/yy"
+          dateFormat="mm/dd/yy"
           styleClass="w-full"
           inputStyleClass="w-full"
           (keydown.enter)="search()"
