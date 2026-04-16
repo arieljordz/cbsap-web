@@ -111,7 +111,7 @@
             </div>
             <button
               (click)="removeLevel(i)"
-              [disabled]="isLockedStatus()"
+              [disabled]="!canRemoveLevel(i)"
               class="text-gray-600 text-sm flex items-center ml-4"
               pTooltip="Remove Role"
               *ngIf="routingFlowLevels.length !== 1"
@@ -125,7 +125,7 @@
               severity="secondary"
               icon="pi pi-plus"
               type="button"
-              [disabled]="isLockedStatus()"
+              [disabled]="!canAddLevel(i)"
               pTooltip="Add Role"
               (click)="searchRole(i + 1)"
               size="small"
