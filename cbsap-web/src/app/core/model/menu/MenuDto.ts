@@ -1,4 +1,4 @@
-import { MenuItemDto } from "./MenuItemDTO";
+import { MenuItemDto } from "./MenuItemDto";
 
 export interface MenuDto {
     label: string;

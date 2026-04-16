@@ -342,4 +342,33 @@ export class InvoiceRoutingFlowComponent
     ].includes(this.invoiceStatus!);
   }
 
+  isRestrictedMidEditStatus(): boolean {
+    return [
+      InvoiceStatusEnum.ForApproval,
+      InvoiceStatusEnum.ApprovalOnHold,
+      InvoiceStatusEnum.Exception,
+      InvoiceStatusEnum.ExceptionOnHold
+    ].includes(this.invoiceStatus!);
+  }
+
+  canRemoveLevel(index: number): boolean {
+    if (this.isLockedStatus()) return false;
+
+    if (this.isRestrictedMidEditStatus()) {
+      return index === this.routingFlowLevels.length - 1;
+    }
+
+    return true;
+  }
+
+  canAddLevel(index: number): boolean {
+    if (this.isLockedStatus()) return false;
+
+    if (this.isRestrictedMidEditStatus()) {
+      return index === this.routingFlowLevels.length - 1;
+    }
+
+    return true;
+  }
+
 }
