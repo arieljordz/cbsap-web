@@ -1381,4 +1381,83 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
       },
     ];
   }
+
+    /** Invoice Inquiry Grid Column */
+  invoiceInquiryGridColumn(): TableColumn[] {
+    return [
+      {
+        field: 'invoiceID',
+        header: 'Invoice ID',
+        sort: true,
+        isSearchFilter: true,
+        type: 'text',
+      },
+
+      {
+        field: 'supplierName',
+        header: 'Supplier Name',
+        sort: true,
+        isSearchFilter: true,
+        type: 'text',
+      },
+      {
+        field: 'invoiceDate',
+        header: 'Invoice Date',
+        sort: true,
+        isSearchFilter: true,
+        type: 'date',
+        pipe: 'date',
+      },
+      {
+        field: 'invoiceNumber',
+        header: 'Invoice Number',
+        sort: true,
+        isSearchFilter: true,
+        type: 'text',
+      },
+      {
+        field: 'poNumber',
+        header: 'PO Number',
+        sort: true,
+        isSearchFilter: true,
+        type: 'text',
+      },
+      {
+        field: 'dueDate',
+        header: 'Due Date',
+        sort: true,
+        isSearchFilter: true,
+        type: 'date',
+        pipe: 'date',
+      },
+      {
+        field: 'grossAmount',
+        header: 'Gross Amount',
+        sort: true,
+        isSearchFilter: true,
+        type: 'text',
+      },
+      {
+        field: 'nextRole',
+        header: 'Next Role',
+        sort: true,
+        isSearchFilter: true,
+      },
+      {
+        field: 'exceptionReason',
+        header: 'Exception Reason',
+        sort: true,
+        isSearchFilter: true,
+        type: 'text',
+      },
+      {
+        field: 'status',
+        header: 'Status',
+        sort: true,
+        isSearchFilter: true,
+        type: 'text',
+      },
+    ];
+  }
+
 }
