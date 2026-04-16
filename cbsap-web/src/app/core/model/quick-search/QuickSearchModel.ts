@@ -6,6 +6,7 @@ export interface SearchField<T> {
   type: 'text' | 'number' | 'date' | 'bool'; // input types
   fieldType: 'input' | 'dropdown' | 'calendar';
   options?: SelectItem[]; // updated to use SelectItem from PrimeNG
+  range?: boolean;
 }
 
 export type ButtonSeverity =

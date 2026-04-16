@@ -47,10 +47,8 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
       InvoiceNumber: '',
       PONumber: '',
       Status: null,
-      ScanDateFrom: null,
-      ScanDateTo: null,
-      InvoiceDateFrom: null,
-      InvoiceDateTo: null,
+      ScanDateRange: null,
+      InvoiceDateRange: null,
     };
   }
 
@@ -90,16 +88,26 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
     { key: 'SupplierName', label: 'Supplier Name', type: 'text', fieldType: 'input' },
     { key: 'InvoiceNumber', label: 'Invoice Number', type: 'text', fieldType: 'input' },
     { key: 'PONumber', label: 'PO Number', type: 'text', fieldType: 'input' },
-    { key: 'ScanDateFrom', label: 'Scan Date From', type: 'date', fieldType: 'input' },
-    { key: 'ScanDateTo', label: 'Scan Date To', type: 'date', fieldType: 'input' },
-    { key: 'InvoiceDateFrom', label: 'Invoice Date From', type: 'date', fieldType: 'input' },
-    { key: 'InvoiceDateTo', label: 'Invoice Date To', type: 'date', fieldType: 'input' },
     {
       key: 'Status',
       label: 'Status',
       type: 'number',
       fieldType: 'dropdown',
       options: getInvoiceStatusFilterOptions(),
+    },
+    {
+      key: 'ScanDateRange', 
+      label: 'Scan Date',
+      type: 'date',
+      fieldType: 'calendar',
+      range: true 
+    },
+    {
+      key: 'InvoiceDateRange',
+      label: 'Invoice Date',
+      type: 'date',
+      fieldType: 'calendar',
+      range: true
     },
   ];
 
@@ -167,7 +175,33 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
   private buildSearchQuery(): SearchInvoiceInquiryQuery {
     const filters: any = { ...this.invoiceInquirySearchFilters };
 
-    this.normalizeDates(filters);
+    if (Array.isArray(filters.ScanDateRange)) {
+      const [from, to] = filters.ScanDateRange;
+
+      filters.ScanDateFrom = from
+        ? this.datePipe.transform(from, 'yyyy-MM-dd')
+        : null;
+
+      filters.ScanDateTo = to
+        ? this.datePipe.transform(to, 'yyyy-MM-dd')
+        : null;
+
+      delete filters.ScanDateRange;
+    }
+
+    if (Array.isArray(filters.InvoiceDateRange)) {
+      const [from, to] = filters.InvoiceDateRange;
+
+      filters.InvoiceDateFrom = from
+        ? this.datePipe.transform(from, 'yyyy-MM-dd')
+        : null;
+
+      filters.InvoiceDateTo = to
+        ? this.datePipe.transform(to, 'yyyy-MM-dd')
+        : null;
+
+      delete filters.InvoiceDateRange;
+    }
 
     Object.keys(filters).forEach(key => {
       if (filters[key] == null || filters[key] === '') {
@@ -183,21 +217,6 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
 
       invoiceInquirySearchDto: filters || {}
     };
-  }
-
-  private normalizeDates(filters: any): void {
-    const dateFields = [
-      'ScanDateFrom',
-      'ScanDateTo',
-      'InvoiceDateFrom',
-      'InvoiceDateTo'
-    ];
-
-    dateFields.forEach(field => {
-      if (filters[field] instanceof Date) {
-        filters[field] = this.datePipe.transform(filters[field], 'yyyy-MM-dd');
-      }
-    });
   }
 
   searchInvoiceInquiry(): void {
@@ -232,16 +251,36 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
 
     this.loading = true;
 
-    let exportInvoiceInquiryQuery: ExportInvoiceInquiryQuery = {
-      SupplierName: this.invoiceInquirySearchFilters.SupplierName,
-      InvoiceNumber: this.invoiceInquirySearchFilters.InvoiceNumber,
-      PONumber: this.invoiceInquirySearchFilters.PONumber,
-      Status: this.invoiceInquirySearchFilters.Status,
-      ScanDateFrom: this.invoiceInquirySearchFilters.ScanDateFrom,
-      ScanDateTo: this.invoiceInquirySearchFilters.ScanDateTo,
-      InvoiceDateFrom: this.invoiceInquirySearchFilters.InvoiceDateFrom,
-      InvoiceDateTo: this.invoiceInquirySearchFilters.InvoiceDateTo
-    };
+  let exportInvoiceInquiryQuery: any = {
+    SupplierName: this.invoiceInquirySearchFilters.SupplierName,
+    InvoiceNumber: this.invoiceInquirySearchFilters.InvoiceNumber,
+    PONumber: this.invoiceInquirySearchFilters.PONumber,
+    Status: this.invoiceInquirySearchFilters.Status,
+  };
+
+  if (this.invoiceInquirySearchFilters.ScanDateRange) {
+    const [from, to] = this.invoiceInquirySearchFilters.ScanDateRange;
+
+    exportInvoiceInquiryQuery.ScanDateFrom = from
+      ? this.datePipe.transform(from, 'yyyy-MM-dd')
+      : null;
+
+    exportInvoiceInquiryQuery.ScanDateTo = to
+      ? this.datePipe.transform(to, 'yyyy-MM-dd')
+      : null;
+  }
+
+  if (this.invoiceInquirySearchFilters.InvoiceDateRange) {
+    const [from, to] = this.invoiceInquirySearchFilters.InvoiceDateRange;
+
+    exportInvoiceInquiryQuery.InvoiceDateFrom = from
+      ? this.datePipe.transform(from, 'yyyy-MM-dd')
+      : null;
+
+    exportInvoiceInquiryQuery.InvoiceDateTo = to
+      ? this.datePipe.transform(to, 'yyyy-MM-dd')
+      : null;
+  }
 
     if (!this.invoiceInquirySearchFilters.SupplierName) {
       delete exportInvoiceInquiryQuery.SupplierName;
