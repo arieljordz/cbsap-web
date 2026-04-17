@@ -333,7 +333,7 @@ export class InvoiceRoutingFlowComponent
     return !_permissions.includes('CanModifyInvFlow');
   }
 
-  isLockedStatus(): boolean {
+  isRestrictedLockedStatus(): boolean {
     return [
       InvoiceStatusEnum.ReadyForExport,
       InvoiceStatusEnum.Exported,
@@ -351,18 +351,43 @@ export class InvoiceRoutingFlowComponent
     ].includes(this.invoiceStatus!);
   }
 
+  private readonly blockedFlowStatuses = new Set<FlowStatus>([
+    FlowStatus.Submitted,
+    FlowStatus.Assigned
+  ]);
+
+  private isSingleRoleLevel(): boolean {
+    return this.routingFlowLevels.length === 1;
+  }
+
   canRemoveLevel(index: number): boolean {
-    if (this.isLockedStatus()) return false;
+    const level = this.routingFlowLevels.at(index).value;
+
+    if (level.flowStatus == null) return false;
+
+    if (this.isSingleRoleLevel()) return true;
+
+    if (this.blockedFlowStatuses.has(level.flowStatus)) return false;
+
+    if (this.isRestrictedLockedStatus()) return false;
 
     if (this.isRestrictedMidEditStatus()) {
       return index === this.routingFlowLevels.length - 1;
     }
-
+    
     return true;
   }
 
   canAddLevel(index: number): boolean {
-    if (this.isLockedStatus()) return false;
+    const level = this.routingFlowLevels.at(index).value;
+
+    if (level.flowStatus == null) return false;
+    
+    if (this.isSingleRoleLevel()) return true;
+
+    if (this.blockedFlowStatuses.has(level.flowStatus)) return false;
+
+    if (this.isRestrictedLockedStatus()) return false;
 
     if (this.isRestrictedMidEditStatus()) {
       return index === this.routingFlowLevels.length - 1;
