@@ -98,7 +98,8 @@ export class InvoiceStatusChangeComponent implements OnInit, OnDestroy {
     if (this.invAddReasonForm.valid) {
       switch (this.action) {
         case InvoiceActionButton.Hold:
-          this.Holdinvoice(formValue);
+        case InvoiceActionButton.Unhold:
+          this.changeHoldState(formValue);
           break;
         case InvoiceActionButton.Reject:
           this.rejectInvoice(formValue);
@@ -115,8 +116,8 @@ export class InvoiceStatusChangeComponent implements OnInit, OnDestroy {
     }
   }
 
-  private Holdinvoice(formValue: InvStatusChangeDto) {
-    this.invDetail.forHold(formValue).subscribe({
+  private changeHoldState(formValue: InvStatusChangeDto) {
+    this.invDetail.changeHoldState(formValue).subscribe({
       next: (response) => {
         if (response.isSuccess) {
         }

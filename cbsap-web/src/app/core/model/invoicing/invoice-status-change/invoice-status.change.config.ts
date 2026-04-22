@@ -19,6 +19,11 @@ export const QueueActionConfigMap: Partial<
       buttonLabel: 'Put on Approval Hold',
       color: 'warn',
     },
+    [InvoiceActionButton.Unhold]: {
+      status: InvoiceStatusEnum.ForApproval,
+      buttonLabel: 'Un-hold Invoice',
+      color: 'success',
+    },
     [InvoiceActionButton.RouteToException]: {
       status: InvoiceStatusEnum.Exception,
       buttonLabel: 'Route to Exception',
@@ -30,6 +35,11 @@ export const QueueActionConfigMap: Partial<
       status: InvoiceStatusEnum.ExceptionOnHold,
       buttonLabel: 'Put on Hold',
       color: 'warn',
+    },
+    [InvoiceActionButton.Unhold]: {
+      status: InvoiceStatusEnum.Exception,
+      buttonLabel: 'Un-hold Invoice',
+      color: 'success',
     },
     [InvoiceActionButton.Reject]: {
       status: InvoiceStatusEnum.Rejected,

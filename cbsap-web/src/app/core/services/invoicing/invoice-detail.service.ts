@@ -410,9 +410,23 @@ export class InvoiceDetailService {
         })
       );
   }
+
   forHold(dto: InvStatusChangeDto): Observable<ResponseResult<boolean>> {
     return this.resultHttpClient
       .put<boolean>(`${INV_ENPOINT.FOR_HOLD}`, dto, true)
+      .pipe(
+        map((response) => {
+          return response;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+        })
+      );
+  }
+
+  changeHoldState(dto: InvStatusChangeDto): Observable<ResponseResult<boolean>> {
+    return this.resultHttpClient
+      .put<boolean>(`${INV_ENPOINT.CHANGE_HOLD_STATE}`, dto, true)
       .pipe(
         map((response) => {
           return response;

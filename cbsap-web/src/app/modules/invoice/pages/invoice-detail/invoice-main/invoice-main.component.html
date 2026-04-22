@@ -33,13 +33,13 @@
           />
           <p-button
             [raised]="true"
-            *ngIf="isVisibleFor(InvoiceActionButton.Hold)"
-            label="Hold"
-            icon="pi pi-pause"
+            *ngIf="isVisibleFor(InvoiceActionButton.Hold) || isVisibleFor(InvoiceActionButton.Unhold)"
+            [label]="isHeld ? 'Un-hold' : 'Hold'"
+            [icon]="isHeld ? 'pi pi-play' : 'pi pi-pause'"
             [rounded]="true"
-            severity="warn"
+            [severity]="isHeld ? 'warn' : 'warn'"
             size="small"
-            (click)="onHold()"
+            (click)="onToggleHold()"
           />
           <p-button
             [raised]="true"

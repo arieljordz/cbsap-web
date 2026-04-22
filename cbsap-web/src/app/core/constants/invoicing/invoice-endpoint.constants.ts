@@ -36,6 +36,7 @@ export const INV_ENPOINT = {
   VALIDATE_INVOICE: `${inv_base_endpoint}/validate`,
   ROUTE_TO_EXCEPTION: `${inv_base_endpoint}/routeToException`,
   FOR_HOLD: `${inv_base_endpoint}/forhold`,
+  CHANGE_HOLD_STATE: `${inv_base_endpoint}/changeHoldState`,
   ADD_COMMENTS: `${inv_base_endpoint}/addinvoicecomment`,
   UPLOAD_ATTACHMENT: `${inv_base_endpoint}/upload`,
   DOWNLOAD_ATTACHMENT: (InvoiceAttachnmentID: number) =>
