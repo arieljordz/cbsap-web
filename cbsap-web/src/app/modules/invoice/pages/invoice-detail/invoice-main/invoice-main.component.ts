@@ -136,6 +136,8 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
     invoiceID: 0
   };
 
+  isHeld: boolean = false;
+
   private destroySubject: Subject<void> = new Subject();
   private sub = new Subscription();
   private openCommentDialogSub = new Subscription();
@@ -430,19 +432,23 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  onHold() {
+  onToggleHold() {
+    const action = this.isHeld
+      ? InvoiceActionButton.Unhold
+      : InvoiceActionButton.Hold;
+
     this.invDetail.getInvoiceStatus(this.invoiceID).subscribe({
       next: (response) => {
         if (response.isSuccess) {
           const ref = this.dialogService.open(InvoiceStatusChangeComponent, {
-            header: 'Hold invoice',
+            header: this.isHeld ? 'Un-hold invoice' : 'Hold invoice',
             modal: true,
             closable: true,
             width: '800px',
             data: {
               invoiceID: this.invoiceID,
               queue: response.responseData?.queue,
-              action: InvoiceActionButton.Hold,
+              action: action,
             },
             style: { minHeight: '200px' },
             baseZIndex: 1200,
@@ -455,15 +461,7 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
             }
           });
         }
-      },
-      error: (error: ResponseResult<boolean>) => {
-        this.message.showToast(
-          MessageSeverity.error.toString(),
-          'Invoice Hold ',
-          error.messages?.[0],
-          2000
-        );
-      },
+      }
     });
   }
 
@@ -610,6 +608,15 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
     }, 1000);
   }
 
+  private updateHoldState(status?: InvoiceStatusEnum | null): boolean {
+    if (!status) return false;
+
+    return [
+      InvoiceStatusEnum.ApprovalOnHold,
+      InvoiceStatusEnum.ExceptionOnHold
+    ].includes(status);
+  }
+
   getInvoiceStatus() {
     this.invDetail
       .getInvoiceStatus(this.invoiceID)
@@ -624,7 +631,7 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
             this.status = statusInfo.label;
             this.queueroute = response.responseData?.queue;
             this.invoiceStatus = response.responseData?.status;
-
+            this.isHeld = this.updateHoldState(this.invoiceStatus);
           }
         },
         error: (error: ResponseResult<boolean>) => {
