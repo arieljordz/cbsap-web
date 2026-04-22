@@ -160,6 +160,7 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
   createdDate: Date = new Date();  
   invDueDateCalculation: number = 1;
   defaultInvoiceDueDays: number = 0;
+  nextRole:string = "";
 
   constructor(
     private lookUpOptionService: LookupOptionsService,
@@ -862,6 +863,7 @@ private searchGoodReceiptNos(searchQuery: SearchGoodsReceiptQuery): void {
         switchMap((response: ResponseResult<InvInfoDto>) => {
           if (response?.isSuccess && response.responseData) {
             const invoice = response.responseData;
+            this.nextRole = invoice.nextRole ?? "";
             this.queueroute = invoice.queueType ?? this.queueroute;
             this.disabledFieldsInException();
             this.routingFlowName = invoice.routingFlowName;

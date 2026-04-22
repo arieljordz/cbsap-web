@@ -62,7 +62,7 @@ export function createMatchingConfigGroup(config?: Partial<EntityMatchingConfigD
       invDueDateCalculation: new FormControl<number | null >(null),
       createdDate: new FormControl<Date | null>(null),
       matchingConfigs: new FormArray<MatchingConfigFormGroup>([]),
-      automaticGoodsDelivered: new FormControl(false, { nonNullable: true }),
+      automaticGoodsDelivered: new FormControl(false,{nonNullable: true}),
     });
   }
 

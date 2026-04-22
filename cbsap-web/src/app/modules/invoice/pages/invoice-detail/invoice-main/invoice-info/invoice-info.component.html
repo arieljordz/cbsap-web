@@ -275,7 +275,7 @@
           <div class="grid grid-cols-12 items-center gap-2">
           <label class="col-span-12 md:col-span-4 font-medium">Next Role</label>
           <div class="col-span-12 md:col-span-8">
-            <input type="text" disabled pInputText  class="w-full" />
+            <input type="text" disabled pInputText  class="w-full"   [(ngModel)]="nextRole"   [ngModelOptions]="{ standalone: true }"/>
           </div>
         </div>
       </div>

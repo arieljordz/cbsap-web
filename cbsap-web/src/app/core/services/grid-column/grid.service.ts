@@ -161,12 +161,6 @@ export class GridService {
   assignedInvoiceColumn(): TableColumn[] {
     return [
       {
-        field: 'queue',
-        header: 'Queue',
-        sort: false,
-        isSearchFilter: false,
-      },
-      {
         field: 'supplierName',
         header: 'Supplier Name',
         sort: false,
