@@ -191,16 +191,15 @@ export class RoleService {
   }
 
   exportRoles(exportTaxCodesQuery: ExportRolesQuery): Observable<ResponseResult<Blob>> {
-    return this.excelService
-      .exportExcelReport(
-        `${ROLE_MANAGEMENT}/download?${this.httpClient.serialiazeQueryString(exportTaxCodesQuery)}`,
-        true
-      )
-      .pipe(
-        catchError((error: HttpErrorResponse) => {
-          return throwError(() => error);
-        })
-      );
-  }
-   
+      return this.excelService
+        .exportExcelReport(
+          `${ROLE_MANAGEMENT}/download?${this.httpClient.serialiazeQueryString(exportTaxCodesQuery)}`,
+          true
+        )
+        .pipe(
+          catchError((error: HttpErrorResponse) => {
+            return throwError(() => error);
+          })
+        );
+    }
 }

@@ -708,11 +708,20 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
       next: (response) => {
         if (response.isSuccess) {
           const submitresponse = response.responseData!;
-
+          if(submitresponse === null){
+            this.message.showToast(
+              MessageSeverity.success.toString(),
+              'Approve',
+              'Invoice successfully approved for payment',
+              2000
+            );
+          }
           const { validationMessage, validationHeader } =
             this.extractValidationDetails(submitresponse, response.messages!);
           this.invSubmissionMessages = validationMessage;
           this.invoiceSubmissionnHeader = validationHeader;
+
+
 
           this.OpenInvoiceValidation(
             this.invSubmissionMessages,
@@ -731,6 +740,10 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
       },
       complete: () => {
         this.getInvoiceStatus();
+        this.invroutingFlowComp.invoiceID = invoiceForm.invoiceID;
+        this.invroutingFlowComp.keywordID = invoiceForm.keywordID;
+        this.invroutingFlowComp.supplierInfoID = invoiceForm.supplierInfoID;
+        this.invroutingFlowComp.loadInvoiceRoutingFlow();
       },
     });
   }
@@ -948,7 +961,7 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
       draggable: false,
       baseZIndex: 1200,
     });
-
+    
     ref.onClose.subscribe((result) => {
       if (result) {
         if (title === 'Submit Action') {
@@ -1206,4 +1219,9 @@ private initializeDynamicGrid() {
       });
     }
   }
+
+  disableInvoiceLineAllocation(){
+    return !this.authService.userHasPermission(Permission.CanModifyInvoiceLine);
+  }
+
 }

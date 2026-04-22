@@ -75,7 +75,7 @@
                 type="button"
                 [rounded]="true"
                 pTooltip="Add Role"
-                [disabled]="isRestrictedLockedStatus()"
+                [disabled]="isLockedStatus()"
                 (click)="searchRole()"
                 rounded="true"
                 size="small"><i class="pi pi-plus"></i> Add Role</p-button>
@@ -126,10 +126,12 @@
               icon="pi pi-plus"
               type="button"
               [disabled]="!canAddLevel(i)"
+             
               pTooltip="Add Role"
               (click)="searchRole(i + 1)"
               size="small"
             >
+             
             </p-button>
           </div>
         </div>

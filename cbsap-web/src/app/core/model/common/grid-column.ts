@@ -9,14 +9,4 @@ export interface TableColumn {
   dataType?: string;
   customTemplate?: TemplateRef<any>;
   editable?: boolean;
-  pipe?: string;
-  type?:
-    | 'text'
-    | 'number'
-    | 'date'
-    | 'custom'
-    | 'button'
-    | 'actionButtons'
-    | 'checkbox'
-    | 'tag';
 }

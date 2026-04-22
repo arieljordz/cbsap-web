@@ -66,21 +66,24 @@ export class RoutingflowRoleSelectorComponent implements OnInit, OnDestroy {
   submit() {
     if (this.roleSelectorForm.invalid) return;
 
-    const assignRoleCommand = {
-      roleID: this.f['selectedRoleID'].value,
-      invoiceID: this.config.data?.invoiceID,
-      level: this.config.data?.level,
-    };
 
-    this.invRoutingFlowService.assignRole(assignRoleCommand).subscribe({
-      next: (res) => {
-        console.log('Role assigned successfully', res);
-        this.dialogRef.close(assignRoleCommand.roleID);
-      },
-      error: (err) => {
-        console.error('Failed to assign role', err);
-      },
-    });
+
+ const assignRoleCommand = {
+ roleID: this.f['selectedRoleID'].value,
+ invoiceID: this.config.data?.invoiceID,
+ level: this.config.data?.level,
+};
+
+
+ this.invRoutingFlowService.assignRole(assignRoleCommand).subscribe({
+ next: (res) => {
+ console.log('Role assigned successfully', res);
+ this.dialogRef.close(assignRoleCommand.roleID);
+ },
+ error: (err) => {
+ console.error('Failed to assign role', err);
+ },
+ });
   }
-
+  
 }

@@ -4,7 +4,7 @@ import { distinctUntilChanged, filter, Subject, takeUntil } from 'rxjs';
 import { TableColumn, ResponseResult } from 'src/app/core/model/common';
 import { AssignedInvoice, AssignedInvoiceResult } from 'src/app/core/model/dashboard/assigned-invoice.model';
 
-import { GridService, MenuService } from 'src/app/core/services';
+import { GridService, MenuService, AuthService } from 'src/app/core/services';
 import { DashboardService } from 'src/app/core/services/dashboard/dashboard.service';
 import { TableModule, TableRowSelectEvent } from 'primeng/table';
 import { PrimeTemplate } from 'primeng/api';
@@ -48,7 +48,8 @@ export class AssignedInvoiceComponent implements OnInit {
     private dashboardService: DashboardService,
     private gridService: GridService,
     private router:Router,
-    private menuService:MenuService
+    private menuService:MenuService,
+    private authService:AuthService
   ) {}
 
   ngOnInit(): void {
@@ -76,7 +77,14 @@ export class AssignedInvoiceComponent implements OnInit {
   }
 
   onRowSelect($event: TableRowSelectEvent) {
-    this.editInvoice($event.data);
+    const roleId = $event.data?.assignedRoleId;
+    const role = $event.data?.assignedRole;
+    this.menuService.setRole(roleId);
+    this.authService.switchRole(roleId).subscribe({
+      next: (response) => {
+          this.editInvoice($event.data);
+      }
+    });
   }
 
   editInvoice(invoice: any) {
@@ -98,6 +106,7 @@ export class AssignedInvoiceComponent implements OnInit {
       .subscribe({
         next: (result: ResponseResult<AssignedInvoiceResult>) => {
           if (result.isSuccess) {
+            console.log(result.responseData!.invoices);
             this.assignedInvoices = result.responseData!.invoices;
             this.overdueCount = result.responseData!.overdueCount;
             this.allCount = result.responseData!.totalCount;

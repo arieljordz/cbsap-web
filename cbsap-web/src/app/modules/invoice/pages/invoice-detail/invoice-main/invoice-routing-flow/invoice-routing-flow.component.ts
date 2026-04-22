@@ -1,6 +1,7 @@
 import { NgForOf, NgIf } from '@angular/common';
 import {
   Component,
+  input,
   Input,
   OnChanges,
   OnDestroy,
@@ -8,7 +9,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { FormArray, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { FlowStatus, InvoiceStatusEnum } from '@core/enums';
+import { FlowStatus, InvoiceStatusEnum} from '@core/enums';
 import {
   createInvInfoRoutingLevelForm,
   createInvRoutingFlowLevelFormGroup,
@@ -16,6 +17,7 @@ import {
   InvInfoRoutingLevelFormGroup,
 } from '@core/model/invoicing/invoice/invoice-routing-levels.form';
 import {
+  createInvRoutingFlowForm,
   InvoiceRoutingFlowSelectTableDto,
   SearchInvRoutingFlowDto,
   SearchInvRoutingFlowQuery,
@@ -35,7 +37,7 @@ import {
   DialogService,
   DynamicDialogRef,
 } from 'primeng/dynamicdialog';
-import { BehaviorSubject, combineLatest, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, from, pipe, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-invoice-routing-flow',
@@ -69,7 +71,6 @@ export class InvoiceRoutingFlowComponent
   @Input() keywordID: number | null = null;
   @Input() supplierInfoID: number | null = null;
   @Input() invoiceStatus?: InvoiceStatusEnum | null;
-
   currentLevelIndex: number | null = null;
 
   constructor(
@@ -184,15 +185,20 @@ export class InvoiceRoutingFlowComponent
         const routingLevels = res.responseData ?? [];
 
         // Sort by level ascending
-        routingLevels.sort((a, b) => (a.level ?? 0) - (b.level ?? 0));
+        routingLevels.sort((a, b) => (a.level ?? 0) - (b.level ?? 0))
 
+        
         this.routingFlowLevels.clear();
+      
 
-        routingLevels.forEach((level) => {
-          this.routingFlowLevels.push(createInvRoutingFlowLevelFormGroup(level));
+
+          routingLevels.forEach((level) => {
+            this.routingFlowLevels.push(createInvRoutingFlowLevelFormGroup(level));
+
+          
         });
 
-        // Ensure levels in FormArray are sequential (1,2,3,...)
+        //Ensure levels in FormArray are sequential (1.2,3,....)
         this.updateLevels();
       }
     });
@@ -240,40 +246,48 @@ export class InvoiceRoutingFlowComponent
 
   removeLevel(index: number) {
     const levelFormGroup = this.routingFlowLevels.at(index);
-    const { roleID, level } = levelFormGroup.value;
+ const { roleID, level } = levelFormGroup.value;
 
-    if (!roleID || !level) {
-      // If not yet saved in backend, just remove locally
-      this.removeLevelLocally(index);
-      return;
-    }
 
-    // Prepare command for backend
-    const removeCommand = {
-      invoiceID: this.invoiceID,
-      roleID,
-      level,
-    };
 
-    // Call backend to remove level
-    this.invRoutingFlowService
-      .removeAssignedRole(removeCommand)
-      .pipe(takeUntil(this.destroySubject))
-      .subscribe({
-        next: (res) => {
-          if (res.isSuccess) {
-            this.removeLevelLocally(index);
-          } else {
-            console.error('Failed to delete level from backend', res);
-          }
-        },
-        error: (err) => {
-          console.error('Error deleting level from backend', err);
-        },
-      });
+ if (!roleID || !level) {
+ // If not yet saved in backend, just remove locally
+ this.removeLevelLocally(index);
+ return;
+ }
+
+
+
+ // Prepare command for backend
+ const removeCommand = {
+ invoiceID: this.invoiceID,
+ roleID,
+ level,
+ };
+
+
+
+ // Call backend to remove level
+ this.invRoutingFlowService
+ .removeAssignedRole(removeCommand)
+ .pipe(takeUntil(this.destroySubject))
+ .subscribe({
+ next: (res) => {
+ if (res.isSuccess) {
+ this.removeLevelLocally(index);
+ } else {
+ console.error('Failed to delete level from backend', res);
+ }
+ },
+ error: (err) => {
+ console.error('Error deleting level from backend', err);
+  },
+  });
   }
 
-  private removeLevelLocally(index: number) {
+
+
+ private removeLevelLocally(index: number) {
     this.routingFlowLevels.removeAt(index);
     this.updateLevels();
   }
@@ -300,19 +314,17 @@ export class InvoiceRoutingFlowComponent
 
     ref.onClose.subscribe((result: number) => {
       if (result !== undefined) {
-        const position = index ?? roles.length; // insert at position or end
+        
+        const position = index ?? roles.length;// insert at position or end
 
-        // create new level with temporary level = 0
         const newLevel = createInvRoutingFlowLevelFormGroup({
           roleID: result,
           level: 0,
         });
-
-        // insert at desired position
+        
         this.routingFlowLevels.insert(position, newLevel);
 
         this.updateLevels();
-
         this.routingFlowLevels.markAsTouched();
       }
     });
@@ -329,71 +341,50 @@ export class InvoiceRoutingFlowComponent
   disableAddRole(){
     const permissions = localStorage.getItem('user_permissions');
     const _permissions = permissions ? JSON.parse(permissions) : [];
-    // console.log(_permissions.includes('CanModifyInvFlow'));
+   // console.log(_permissions.includes('CanModifyInvFlow'));
     return !_permissions.includes('CanModifyInvFlow');
   }
 
-  isRestrictedLockedStatus(): boolean {
+  isLockedStatus(): boolean {
     return [
       InvoiceStatusEnum.ReadyForExport,
       InvoiceStatusEnum.Exported,
       InvoiceStatusEnum.Approved,
       InvoiceStatusEnum.Archived
-    ].includes(this.invoiceStatus!);
+    ].includes(this.invoiceStatus!) && this.disableAddRole();
   }
+ 
+  isRestrictedMidEditStatus(): boolean {
 
-  // isRestrictedMidEditStatus(): boolean {
-  //   return [
-  //     InvoiceStatusEnum.ForApproval,
-  //     InvoiceStatusEnum.ApprovalOnHold,
-  //     InvoiceStatusEnum.Exception,
-  //     InvoiceStatusEnum.ExceptionOnHold
-  //   ].includes(this.invoiceStatus!);
-  // }
+    return [
 
-  private readonly blockedFlowStatuses = new Set<FlowStatus>([
-    FlowStatus.Submitted,
-    FlowStatus.Assigned
-  ]);
+      InvoiceStatusEnum.ForApproval,
+      InvoiceStatusEnum.ApprovalOnHold,
+      InvoiceStatusEnum.Exception,
+      InvoiceStatusEnum.ExceptionOnHold
+    ].includes(this.invoiceStatus!);
 
-  private isSingleRoleLevel(): boolean {
-    return this.routingFlowLevels.length === 1;
   }
 
   canRemoveLevel(index: number): boolean {
-    const level = this.routingFlowLevels.at(index).value;
+    if (this.isLockedStatus()) return false;
 
-    if (level.flowStatus == null) return false;
+    if (this.isRestrictedMidEditStatus()) {
+      return index === this.routingFlowLevels.length - 1;
+    }
 
-    if (this.isSingleRoleLevel()) return true;
-
-    if (this.blockedFlowStatuses.has(level.flowStatus)) return false;
-
-    if (this.isRestrictedLockedStatus()) return false;
-
-    // if (this.isRestrictedMidEditStatus()) {
-    //   return index === this.routingFlowLevels.length - 1;
-    // }
-    
     return true;
   }
 
   canAddLevel(index: number): boolean {
-    const level = this.routingFlowLevels.at(index).value;
+    if (this.isLockedStatus()) return false;
 
-    if (level.flowStatus == null) return false;
-    
-    if (this.isSingleRoleLevel()) return true;
-
-    if (this.blockedFlowStatuses.has(level.flowStatus)) return false;
-
-    if (this.isRestrictedLockedStatus()) return false;
-
-    // if (this.isRestrictedMidEditStatus()) {
-    //   return index === this.routingFlowLevels.length - 1;
-    // }
+    if (this.isRestrictedMidEditStatus()) {
+      return index === this.routingFlowLevels.length - 1;
+    }
 
     return true;
   }
+    
 
 }

@@ -36,6 +36,7 @@ export interface InvInfoDto {
   createdDate: Date;
   invDueDateCalculation:number;
   defaultInvoiceDueInDays: number;
+  nextRole: string;
 }
 
 export interface FreeFieldDto {

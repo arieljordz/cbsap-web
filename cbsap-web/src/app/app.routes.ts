@@ -144,14 +144,6 @@ export const appRoutes: Routes = [
       ),
   },
   {
-    path: 'invoice-inquiry',
-    component: ContentLayoutComponent,
-    loadChildren: () =>
-      import('@modules/reports/invoice-inquiry/invoice-inquiry.routes').then(
-        (r) => r.INVOICE_INQUIRY_ROUTES
-      ),
-  },
-  {
     path: '**',
     redirectTo: '/auth/login',
     pathMatch: 'full',
