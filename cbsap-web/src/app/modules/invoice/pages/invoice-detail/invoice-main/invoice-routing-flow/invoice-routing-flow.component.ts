@@ -342,18 +342,8 @@ export class InvoiceRoutingFlowComponent
     ].includes(this.invoiceStatus!);
   }
 
-  // isRestrictedMidEditStatus(): boolean {
-  //   return [
-  //     InvoiceStatusEnum.ForApproval,
-  //     InvoiceStatusEnum.ApprovalOnHold,
-  //     InvoiceStatusEnum.Exception,
-  //     InvoiceStatusEnum.ExceptionOnHold
-  //   ].includes(this.invoiceStatus!);
-  // }
-
   private readonly blockedFlowStatuses = new Set<FlowStatus>([
-    FlowStatus.Submitted,
-    FlowStatus.Assigned
+    FlowStatus.Submitted
   ]);
 
   private isSingleRoleLevel(): boolean {
@@ -371,10 +361,6 @@ export class InvoiceRoutingFlowComponent
 
     if (this.isRestrictedLockedStatus()) return false;
 
-    // if (this.isRestrictedMidEditStatus()) {
-    //   return index === this.routingFlowLevels.length - 1;
-    // }
-    
     return true;
   }
 
@@ -388,10 +374,6 @@ export class InvoiceRoutingFlowComponent
     if (this.blockedFlowStatuses.has(level.flowStatus)) return false;
 
     if (this.isRestrictedLockedStatus()) return false;
-
-    // if (this.isRestrictedMidEditStatus()) {
-    //   return index === this.routingFlowLevels.length - 1;
-    // }
 
     return true;
   }
