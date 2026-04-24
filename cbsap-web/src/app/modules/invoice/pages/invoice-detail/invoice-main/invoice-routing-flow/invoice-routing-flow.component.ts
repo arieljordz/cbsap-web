@@ -333,20 +333,26 @@ export class InvoiceRoutingFlowComponent
     return !_permissions.includes('CanModifyInvFlow');
   }
 
-  isRestrictedLockedStatus(): boolean {
-    return [
-      InvoiceStatusEnum.ReadyForExport,
-      InvoiceStatusEnum.Exported,
-      InvoiceStatusEnum.Approved,
-      InvoiceStatusEnum.Archived
-    ].includes(this.invoiceStatus!);
-  }
+  private readonly lockedInvoiceStatuses = new Set<InvoiceStatusEnum>([
+    InvoiceStatusEnum.ReadyForExport,
+    InvoiceStatusEnum.Exported,
+    InvoiceStatusEnum.Approved,
+    InvoiceStatusEnum.Archived
+  ]);
 
-  private readonly blockedFlowStatuses = new Set<FlowStatus>([
+  private readonly nonEditableFlowStatuses = new Set<FlowStatus>([
     FlowStatus.Submitted
   ]);
 
-  private isSingleRoleLevel(): boolean {
+  private readonly nonRemovableFlowStatuses = new Set<FlowStatus>([
+    FlowStatus.Assigned
+  ]);
+
+  isInvoiceLocked(): boolean {
+    return this.lockedInvoiceStatuses.has(this.invoiceStatus!);
+  }
+
+  hasSingleLevel(): boolean {
     return this.routingFlowLevels.length === 1;
   }
 
@@ -355,11 +361,13 @@ export class InvoiceRoutingFlowComponent
 
     if (level.flowStatus == null) return false;
 
-    if (this.isSingleRoleLevel()) return true;
+    if (this.nonRemovableFlowStatuses.has(level.flowStatus)) return false;
 
-    if (this.blockedFlowStatuses.has(level.flowStatus)) return false;
+    if (this.nonEditableFlowStatuses.has(level.flowStatus)) return false;
 
-    if (this.isRestrictedLockedStatus()) return false;
+    if (this.isInvoiceLocked()) return false;
+
+    if (this.hasSingleLevel()) return true;
 
     return true;
   }
@@ -368,12 +376,12 @@ export class InvoiceRoutingFlowComponent
     const level = this.routingFlowLevels.at(index).value;
 
     if (level.flowStatus == null) return false;
-    
-    if (this.isSingleRoleLevel()) return true;
 
-    if (this.blockedFlowStatuses.has(level.flowStatus)) return false;
+    if (this.nonEditableFlowStatuses.has(level.flowStatus)) return false;
 
-    if (this.isRestrictedLockedStatus()) return false;
+    if (this.isInvoiceLocked()) return false;
+
+    if (this.hasSingleLevel()) return true;
 
     return true;
   }
