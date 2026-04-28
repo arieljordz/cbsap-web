@@ -3,10 +3,12 @@ import { SelectItem } from 'primeng/api';
 export interface SearchField<T> {
   key: keyof T;
   label: string;
-  type: 'text' | 'number' | 'date' | 'bool'; // input types
-  fieldType: 'input' | 'dropdown' | 'calendar';
-  options?: SelectItem[]; // updated to use SelectItem from PrimeNG
+  type: 'text' | 'number' | 'date' | 'bool';
+  fieldType: 'input' | 'dropdown' | 'calendar' | 'multiselect'; 
+  options?: SelectItem[];
   range?: boolean;
+  row?: number;
+  filter?: boolean;
 }
 
 export type ButtonSeverity =

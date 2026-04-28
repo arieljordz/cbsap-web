@@ -5,54 +5,72 @@ import { Router } from '@angular/router';
 import { MessageSeverity } from '@core/constants';
 import { getInvoiceStatusFilterOptions } from '@core/constants/common/invoice-status-filter.options';
 import { TableColumn } from '@core/model/common/grid-column';
-import { SearchField, CustomButton } from '@core/model/quick-search/QuickSearchModel';
+import {
+  SearchField,
+  CustomButton,
+} from '@core/model/quick-search/QuickSearchModel';
 import { Pagination, ResponseResult } from '@core/model/common';
 import {
   InvoiceInquirySearchDto,
-  InvoiceInquirySearchFilters
+  InvoiceInquirySearchFilters,
 } from '@core/model/reports/invoice-inquiry/invoice-inquiry-searchDto';
 import {
   ExportInvoiceInquiryQuery,
-  SearchInvoiceInquiryQuery
+  SearchInvoiceInquiryQuery,
 } from '@core/model/reports/invoice-inquiry/invoice-inquiry.index';
 import {
   AlertService,
   InvoiceInquiryService,
   ExcelService,
   GridService,
+  LookupOptionsService,
 } from '@core/services';
 import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
 import { QuickSearchComponent } from '@shared/quick-search/quick-search.component';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, SelectItem } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Subject, takeUntil } from 'rxjs';
+
+type DateFieldKeys =
+  | 'InvoiceDateFrom' | 'InvoiceDateTo'
+  | 'InvoiceDueDateFrom' | 'InvoiceDueDateTo'
+  | 'PaymentDateFrom' | 'PaymentDateTo'
+  | 'ScanDateFrom' | 'ScanDateTo';
 
 @Component({
   selector: 'invoice-inquiry-search',
   standalone: true,
-  providers: [AlertService, DatePipe, ConfirmationService, InvoiceInquiryService],
+  providers: [AlertService, DatePipe, ConfirmationService, InvoiceInquiryService, LookupOptionsService],
   imports: [CommonModule, FormsModule, PrimeImportsModule, NgClass, NgFor, NgIf, QuickSearchComponent],
   templateUrl: './invoice-inquiry-search.component.html',
   styleUrl: './invoice-inquiry-search.component.scss',
 })
-export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
 
+export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
   @ViewChild('dtSearchInvoiceInquiryPagination') table: Table | undefined;
 
   private destroySubject: Subject<void> = new Subject();
 
   private getDefaultFilters(): InvoiceInquirySearchFilters {
     return {
-      SupplierName: '',
+      SupplierInfoID: null,
       InvoiceNumber: '',
       PONumber: '',
+      Role: '',
       Status: null,
-      ScanDateRange: null,
-      InvoiceDateRange: null,
+      InvoiceDateFrom: null,
+      InvoiceDateTo: null,
+      InvoiceDueDateFrom: null,
+      InvoiceDueDateTo: null,
+      PaymentDateFrom: null,
+      PaymentDateTo: null,
+      ScanDateFrom: null,
+      ScanDateTo: null,
     };
   }
 
-  invoiceInquirySearchFilters: InvoiceInquirySearchFilters = this.getDefaultFilters();
+  invoiceInquirySearchFilters: InvoiceInquirySearchFilters =
+    this.getDefaultFilters();
 
   invoiceInquirypagination: InvoiceInquirySearchDto[] = [];
   columns: TableColumn[] = [];
@@ -84,32 +102,8 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
     ],
   };
 
-  invoiceInquiryFields: SearchField<InvoiceInquirySearchFilters>[] = [
-    { key: 'SupplierName', label: 'Supplier Name', type: 'text', fieldType: 'input' },
-    { key: 'InvoiceNumber', label: 'Invoice Number', type: 'text', fieldType: 'input' },
-    { key: 'PONumber', label: 'PO Number', type: 'text', fieldType: 'input' },
-    {
-      key: 'Status',
-      label: 'Status',
-      type: 'number',
-      fieldType: 'dropdown',
-      options: getInvoiceStatusFilterOptions(),
-    },
-    {
-      key: 'ScanDateRange', 
-      label: 'Scan Date',
-      type: 'date',
-      fieldType: 'calendar',
-      range: true 
-    },
-    {
-      key: 'InvoiceDateRange',
-      label: 'Invoice Date',
-      type: 'date',
-      fieldType: 'calendar',
-      range: true
-    },
-  ];
+  invoiceInquiryFields: SearchField<InvoiceInquirySearchFilters>[] = [];
+  supplierOptions: SelectItem[] = [];
 
   constructor(
     private router: Router,
@@ -117,14 +111,40 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
     private invoiceInquiryService: InvoiceInquiryService,
     private message: AlertService,
     private excelService: ExcelService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private lookUpOptionService: LookupOptionsService,
   ) {}
 
   ngOnInit(): void {
-    this.clear();
-    this.loadStoredFilters();
+    this.lookUpOptionService.supplierLookUpOptions$
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe((suppliers) => {
+        this.supplierOptions = suppliers;
+        this.invoiceInquiryFields = this.buildInvoiceInquiryFields();
+      });
+
     this.initializeGrid();
+    this.loadStoredFilters();
+    this.clear();
     this.searchInvoiceInquiry();
+  }
+
+  private buildInvoiceInquiryFields(): SearchField<InvoiceInquirySearchFilters>[] {
+    return [
+      { key: 'SupplierInfoID', label: 'Supplier Name', type: 'number', fieldType: 'dropdown', options: this.supplierOptions, filter: true, row: 1 },
+      { key: 'InvoiceNumber', label: 'Invoice Number', type: 'text', fieldType: 'input', row: 1 },
+      { key: 'PONumber', label: 'PO Number', type: 'text', fieldType: 'input', row: 1 },
+      { key: 'Role', label: 'Role', type: 'text', fieldType: 'input', row: 1 },
+      { key: 'Status', label: 'Status', type: 'number', fieldType: 'multiselect', options: getInvoiceStatusFilterOptions(), filter: false, row: 1 },
+      { key: 'InvoiceDateFrom', label: 'Invoice Date', type: 'date', fieldType: 'input', range: true, row: 2 },
+      { key: 'InvoiceDateTo', label: '\u00A0', type: 'date', fieldType: 'input', range: true, row: 2 },
+      { key: 'InvoiceDueDateFrom', label: 'Invoice Due Date', type: 'date', fieldType: 'input', range: true, row: 2, },
+      { key: 'InvoiceDueDateTo', label: '\u00A0', type: 'date', fieldType: 'input', range: true, row: 2 },
+      { key: 'PaymentDateFrom', label: 'Payment Date', type: 'date', fieldType: 'input', range: true, row: 2 },
+      { key: 'PaymentDateTo', label: '\u00A0', type: 'date', fieldType: 'input', range: true, row: 2 },
+      { key: 'ScanDateFrom', label: 'Scan Date', type: 'date', fieldType: 'input', range: true, row: 2 },
+      { key: 'ScanDateTo', label: '\u00A0', type: 'date', fieldType: 'input', range: true, row: 2 },
+    ];
   }
 
   ngOnDestroy(): void {
@@ -169,61 +189,100 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
   }
 
   private persistFilters(): void {
-    localStorage.setItem('invoice-inquiry-search', JSON.stringify(this.invoiceInquirySearchFilters));
+    localStorage.setItem(
+      'invoice-inquiry-search',
+      JSON.stringify(this.invoiceInquirySearchFilters),
+    );
+  }
+
+  private formatDate(value: Date | string | null | undefined): string | null {
+    if (!value) return null;
+    return this.datePipe.transform(new Date(value), 'yyyy-MM-dd');
+  }
+
+  private mapDateFields(
+    filters: InvoiceInquirySearchFilters,
+    target: Partial<InvoiceInquirySearchFilters>
+  ) {
+    const dateFields = [
+      'InvoiceDate',
+      'InvoiceDueDate',
+      'PaymentDate',
+      'ScanDate',
+    ] as const;
+
+    dateFields.forEach((field) => {
+      const fromKey = `${field}From` as DateFieldKeys;
+      const toKey = `${field}To` as DateFieldKeys;
+
+      target[fromKey] = this.formatDate(filters[fromKey]);
+      target[toKey] = this.formatDate(filters[toKey]);
+    });
+  }
+
+  private removeEmpty(obj: any) {
+    return Object.fromEntries(
+      Object.entries(obj).filter(
+        ([_, value]) =>
+          value !== null &&
+          value !== undefined &&
+          value !== '' &&
+          !(Array.isArray(value) && value.length === 0)
+      )
+    );
   }
 
   private buildSearchQuery(): SearchInvoiceInquiryQuery {
-    const filters: any = { ...this.invoiceInquirySearchFilters };
+    const base: any = {
+      SupplierInfoID: this.invoiceInquirySearchFilters.SupplierInfoID,
+      InvoiceNumber: this.invoiceInquirySearchFilters.InvoiceNumber,
+      PONumber: this.invoiceInquirySearchFilters.PONumber,
+      Role: this.invoiceInquirySearchFilters.Role,
+      Status: this.invoiceInquirySearchFilters.Status,
+    };
 
-    if (Array.isArray(filters.ScanDateRange)) {
-      const [from, to] = filters.ScanDateRange;
+    this.mapDateFields(this.invoiceInquirySearchFilters, base);
 
-      filters.ScanDateFrom = from
-        ? this.datePipe.transform(from, 'yyyy-MM-dd')
-        : null;
+    const cleaned = this.sanitizeFilters(base);
 
-      filters.ScanDateTo = to
-        ? this.datePipe.transform(to, 'yyyy-MM-dd')
-        : null;
-
-      delete filters.ScanDateRange;
-    }
-
-    if (Array.isArray(filters.InvoiceDateRange)) {
-      const [from, to] = filters.InvoiceDateRange;
-
-      filters.InvoiceDateFrom = from
-        ? this.datePipe.transform(from, 'yyyy-MM-dd')
-        : null;
-
-      filters.InvoiceDateTo = to
-        ? this.datePipe.transform(to, 'yyyy-MM-dd')
-        : null;
-
-      delete filters.InvoiceDateRange;
-    }
-
-    Object.keys(filters).forEach(key => {
-      if (filters[key] == null || filters[key] === '') {
-        delete filters[key];
-      }
-    });
+    const finalFilters = this.removeEmpty(cleaned);
 
     return {
       PageNumber: this.pageNumber,
       PageSize: this.pageSize,
       SortField: this.sortField,
       SortOrder: this.sortOrder,
-
-      invoiceInquirySearchDto: filters || {}
+      invoiceInquirySearchDto: finalFilters,
     };
+  }
+
+  private sanitizeFilters(filters: any) {
+    const cleanedFilters = { ...filters };
+
+    Object.keys(cleanedFilters).forEach((key) => {
+      const value = cleanedFilters[key];
+
+      if (Array.isArray(value)) {
+        let cleanedArray = value.filter((v) => v !== '__ALL__');
+
+        // convert strings to numbers
+        cleanedArray = cleanedArray.map((v) =>
+          typeof v === 'string' ? Number(v) : v,
+        );
+
+        // optional: treat "all selected" as null
+        cleanedFilters[key] = cleanedArray.length > 0 ? cleanedArray : null;
+      }
+    });
+
+    return cleanedFilters;
   }
 
   searchInvoiceInquiry(): void {
     this.loading = true;
 
     const query = this.buildSearchQuery();
-    
+
     this.invoiceInquiryService
       .searchInvoiceInquiry(query)
       .pipe(takeUntil(this.destroySubject))
@@ -244,74 +303,51 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
       this.message.showToast(
         MessageSeverity.warn,
         'Warning ',
-        'Please hit search button before exporting data'
+        'Please hit search button before exporting data',
       );
       return;
     }
 
     this.loading = true;
 
-  let exportInvoiceInquiryQuery: any = {
-    SupplierName: this.invoiceInquirySearchFilters.SupplierName,
-    InvoiceNumber: this.invoiceInquirySearchFilters.InvoiceNumber,
-    PONumber: this.invoiceInquirySearchFilters.PONumber,
-    Status: this.invoiceInquirySearchFilters.Status,
-  };
+    const rawFilters: InvoiceInquirySearchFilters = {
+      ...this.invoiceInquirySearchFilters,
+    };
 
-  if (this.invoiceInquirySearchFilters.ScanDateRange) {
-    const [from, to] = this.invoiceInquirySearchFilters.ScanDateRange;
+    const exportQuery = this.buildExportQuery(rawFilters);
 
-    exportInvoiceInquiryQuery.ScanDateFrom = from
-      ? this.datePipe.transform(from, 'yyyy-MM-dd')
-      : null;
-
-    exportInvoiceInquiryQuery.ScanDateTo = to
-      ? this.datePipe.transform(to, 'yyyy-MM-dd')
-      : null;
-  }
-
-  if (this.invoiceInquirySearchFilters.InvoiceDateRange) {
-    const [from, to] = this.invoiceInquirySearchFilters.InvoiceDateRange;
-
-    exportInvoiceInquiryQuery.InvoiceDateFrom = from
-      ? this.datePipe.transform(from, 'yyyy-MM-dd')
-      : null;
-
-    exportInvoiceInquiryQuery.InvoiceDateTo = to
-      ? this.datePipe.transform(to, 'yyyy-MM-dd')
-      : null;
-  }
-
-    if (!this.invoiceInquirySearchFilters.SupplierName) {
-      delete exportInvoiceInquiryQuery.SupplierName;
-    }
-    if (!this.invoiceInquirySearchFilters.InvoiceNumber) {
-      delete exportInvoiceInquiryQuery.InvoiceNumber;
-    }
-    if (!this.invoiceInquirySearchFilters.PONumber) {
-      delete exportInvoiceInquiryQuery.PONumber;
-    }
-    if (!this.invoiceInquirySearchFilters.Status) {
-      delete exportInvoiceInquiryQuery.Status;
-    }
     this.invoiceInquiryService
-      .exportInvoiceInquiry(exportInvoiceInquiryQuery)
+      .exportInvoiceInquiry(exportQuery)
       .pipe(takeUntil(this.destroySubject))
       .subscribe({
         next: (result: ResponseResult<Blob>) => {
-          if (result.isSuccess) {
-            if (result.responseData) {
-              const blob = result.responseData;
-              this.excelService.saveFile(blob, this.getTimestampedFileName());
-            } else {
-            }
-            this.loading = false;
+          if (result.isSuccess && result.responseData) {
+            this.excelService.saveFile(
+              result.responseData,
+              this.getTimestampedFileName(),
+            );
           }
+          this.loading = false;
         },
         error: (error) => this.onError(error),
       });
   }
-  
+
+  private buildExportQuery(filters: InvoiceInquirySearchFilters): any {
+    const base: any = {
+      SupplierInfoID: filters.SupplierInfoID,
+      InvoiceNumber: filters.InvoiceNumber,
+      PONumber: filters.PONumber,
+      Role: filters.Role,
+      Status: filters.Status,
+    };
+
+    this.mapDateFields(filters, base);
+
+    const cleaned = this.sanitizeFilters(base);
+    return this.removeEmpty(cleaned);
+  }
+
   onLazyLoad(event: any): void {
     this.sortField = event.sortField || undefined;
     this.sortOrder = event.sortOrder || 1;
