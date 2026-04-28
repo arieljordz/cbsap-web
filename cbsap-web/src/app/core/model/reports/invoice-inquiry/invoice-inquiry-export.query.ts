@@ -4,8 +4,19 @@ export interface ExportInvoiceInquiryQuery {
   SupplierName?: string | null;
   InvoiceNumber?: string | null;
   PONumber?: string | null;
-  Status?: number | null;
-  ScanDateRange?: [Date, Date] | null;
-  InvoiceDateRange?: [Date, Date] | null;
+  Role?: string | null;
+  Status: number[] | null;
+  
+  InvoiceDateFrom: Date | string | null;
+  InvoiceDateTo: Date | string | null;
+
+  InvoiceDueDateFrom: Date | string | null;
+  InvoiceDueDateTo: Date | string | null;
+
+  PaymentDateFrom: Date | string | null;
+  PaymentDateTo: Date | string | null;
+
+  ScanDateFrom: Date | string | null;
+  ScanDateTo: Date | string | null;
 
 }

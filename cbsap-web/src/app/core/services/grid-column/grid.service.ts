@@ -1444,24 +1444,26 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         type: 'text',
       },
       {
+        field: 'paymentDate',
+        header: 'Payment Date',
+        sort: true,
+        isSearchFilter: true,
+        type: 'date',
+        pipe: 'date',
+      },
+      {
+        field: 'scanDate',
+        header: 'Scan Date',
+        sort: true,
+        isSearchFilter: true,
+        type: 'date',
+        pipe: 'date',
+      },
+      {
         field: 'nextRole',
-        header: 'Next Role',
+        header: 'Role',
         sort: true,
         isSearchFilter: true,
-      },
-      {
-        field: 'exceptionReason',
-        header: 'Exception Reason',
-        sort: true,
-        isSearchFilter: true,
-        type: 'text',
-      },
-      {
-        field: 'status',
-        header: 'Status',
-        sort: true,
-        isSearchFilter: true,
-        type: 'text',
       },
     ];
   }
