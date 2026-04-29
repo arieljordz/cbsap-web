@@ -4,11 +4,12 @@ export interface SearchField<T> {
   key: keyof T;
   label: string;
   type: 'text' | 'number' | 'date' | 'bool';
-  fieldType: 'input' | 'dropdown' | 'calendar' | 'multiselect'; 
+  fieldType: 'input' | 'dropdown' | 'calendar' | 'multiselect' | 'range'; 
   options?: SelectItem[];
   range?: boolean;
   row?: number;
   filter?: boolean;
+  colSpan?: number;
 }
 
 export type ButtonSeverity =
