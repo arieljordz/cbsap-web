@@ -150,4 +150,20 @@ export class QuickSearchComponent<
     // Manual selection
     this.model[field.key as keyof T] = cleanedValue as any;
   }
+  
+  isRange(field: SearchField<T>): boolean {
+    return field.fieldType === 'range';
+  }
+
+  isRangeStart(field: SearchField<T>): boolean {
+    return this.isRange(field) && field.key.toString().endsWith('From');
+  }
+
+  isRangeEnd(field: SearchField<T>): boolean {
+    return this.isRange(field) && field.key.toString().endsWith('To');
+  }
+
+  getRangePairKey(field: SearchField<T>): keyof T {
+    return field.key.toString().replace('From', 'To') as keyof T;
+  }
 }

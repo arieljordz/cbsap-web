@@ -131,19 +131,19 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
 
   private buildInvoiceInquiryFields(): SearchField<InvoiceInquirySearchFilters>[] {
     return [
-      { key: 'SupplierInfoID', label: 'Supplier Name', type: 'number', fieldType: 'dropdown', options: this.supplierOptions, filter: true, row: 1 },
-      { key: 'InvoiceNumber', label: 'Invoice Number', type: 'text', fieldType: 'input', row: 1 },
-      { key: 'PONumber', label: 'PO Number', type: 'text', fieldType: 'input', row: 1 },
-      { key: 'Role', label: 'Role', type: 'text', fieldType: 'input', row: 1 },
-      { key: 'Status', label: 'Status', type: 'number', fieldType: 'multiselect', options: getInvoiceStatusFilterOptions(), filter: false, row: 1 },
-      { key: 'InvoiceDateFrom', label: 'Invoice Date', type: 'date', fieldType: 'input', range: true, row: 2 },
-      { key: 'InvoiceDateTo', label: '\u00A0', type: 'date', fieldType: 'input', range: true, row: 2 },
-      { key: 'InvoiceDueDateFrom', label: 'Invoice Due Date', type: 'date', fieldType: 'input', range: true, row: 2, },
-      { key: 'InvoiceDueDateTo', label: '\u00A0', type: 'date', fieldType: 'input', range: true, row: 2 },
-      { key: 'PaymentDateFrom', label: 'Payment Date', type: 'date', fieldType: 'input', range: true, row: 2 },
-      { key: 'PaymentDateTo', label: '\u00A0', type: 'date', fieldType: 'input', range: true, row: 2 },
-      { key: 'ScanDateFrom', label: 'Scan Date', type: 'date', fieldType: 'input', range: true, row: 2 },
-      { key: 'ScanDateTo', label: '\u00A0', type: 'date', fieldType: 'input', range: true, row: 2 },
+      { key: 'SupplierInfoID', label: 'Supplier Name', type: 'number', fieldType: 'dropdown', options: this.supplierOptions, filter: true, colSpan: 2, row: 1 },
+      { key: 'InvoiceNumber', label: 'Invoice Number', type: 'text', fieldType: 'input', colSpan: 2, row: 1 },
+      { key: 'PONumber', label: 'PO Number', type: 'text', fieldType: 'input', colSpan: 2, row: 1 },
+      { key: 'Role', label: 'Role', type: 'text', fieldType: 'input', colSpan: 2, row: 1 },
+      { key: 'Status', label: 'Status', type: 'number', fieldType: 'multiselect', options: getInvoiceStatusFilterOptions(), filter: false, colSpan: 2, row: 1 },
+      { key: 'InvoiceDateFrom', label: 'Invoice Date', type: 'date', fieldType: 'range', colSpan: 2,row: 2 },
+      { key: 'InvoiceDateTo', label: '\u00A0', type: 'date', fieldType: 'range', colSpan: 2, row: 2 },
+      { key: 'InvoiceDueDateFrom', label: 'Invoice Due Date', type: 'date', fieldType: 'range', colSpan: 2, row: 2 },
+      { key: 'InvoiceDueDateTo', label: '\u00A0', type: 'date', fieldType: 'range', colSpan: 2, row: 2 },
+      { key: 'PaymentDateFrom', label: 'Payment Date', type: 'date', fieldType: 'range', colSpan: 2, row: 2 },
+      { key: 'PaymentDateTo', label: '\u00A0', type: 'date', fieldType: 'range', colSpan: 2, row: 2 },
+      { key: 'ScanDateFrom', label: 'Scan Date', type: 'date', fieldType: 'range', colSpan: 2, row: 2 },
+      { key: 'ScanDateTo', label: '\u00A0', type: 'date', fieldType: 'range', colSpan: 2, row: 2 },
     ];
   }
 
