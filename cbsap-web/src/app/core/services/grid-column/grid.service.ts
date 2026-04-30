@@ -1460,10 +1460,18 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         pipe: 'date',
       },
       {
+        field: 'status',
+        header: 'Status',
+        sort: true,
+        isSearchFilter: true,
+        type: 'text',
+      },
+      {
         field: 'nextRole',
         header: 'Role',
         sort: true,
         isSearchFilter: true,
+        type: 'text',
       },
     ];
   }
