@@ -56,7 +56,7 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
       SupplierInfoID: null,
       InvoiceNumber: '',
       PONumber: '',
-      Role: '',
+      RoleID: null,
       Status: null,
       InvoiceDateFrom: null,
       InvoiceDateTo: null,
@@ -104,6 +104,7 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
 
   invoiceInquiryFields: SearchField<InvoiceInquirySearchFilters>[] = [];
   supplierOptions: SelectItem[] = [];
+  roleOptions: SelectItem[] = [];
 
   constructor(
     private router: Router,
@@ -123,6 +124,13 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
         this.invoiceInquiryFields = this.buildInvoiceInquiryFields();
       });
 
+    this.lookUpOptionService.rolesLookUpOptions$
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe((roles) => {
+        this.roleOptions = roles;
+        this.invoiceInquiryFields = this.buildInvoiceInquiryFields();
+      });
+
     this.initializeGrid();
     this.loadStoredFilters();
     this.clear();
@@ -134,7 +142,7 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
       { key: 'SupplierInfoID', label: 'Supplier Name', type: 'number', fieldType: 'dropdown', options: this.supplierOptions, filter: true, colSpan: 2, row: 1 },
       { key: 'InvoiceNumber', label: 'Invoice Number', type: 'text', fieldType: 'input', colSpan: 2, row: 1 },
       { key: 'PONumber', label: 'PO Number', type: 'text', fieldType: 'input', colSpan: 2, row: 1 },
-      { key: 'Role', label: 'Role', type: 'text', fieldType: 'input', colSpan: 2, row: 1 },
+      { key: 'RoleID', label: 'Role', type: 'number', fieldType: 'dropdown', options: this.roleOptions, filter: true, colSpan: 2, row: 1 },
       { key: 'Status', label: 'Status', type: 'number', fieldType: 'multiselect', options: getInvoiceStatusFilterOptions(), filter: false, colSpan: 2, row: 1 },
       { key: 'InvoiceDateFrom', label: 'Invoice Date', type: 'date', fieldType: 'range', colSpan: 2,row: 2 },
       { key: 'InvoiceDateTo', label: '\u00A0', type: 'date', fieldType: 'range', colSpan: 2, row: 2 },
@@ -237,7 +245,7 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
       SupplierInfoID: this.invoiceInquirySearchFilters.SupplierInfoID,
       InvoiceNumber: this.invoiceInquirySearchFilters.InvoiceNumber,
       PONumber: this.invoiceInquirySearchFilters.PONumber,
-      Role: this.invoiceInquirySearchFilters.Role,
+      RoleID: this.invoiceInquirySearchFilters.RoleID,
       Status: this.invoiceInquirySearchFilters.Status,
     };
 
@@ -338,7 +346,7 @@ export class InvoiceInquirySearchComponent implements OnInit, OnDestroy {
       SupplierInfoID: filters.SupplierInfoID,
       InvoiceNumber: filters.InvoiceNumber,
       PONumber: filters.PONumber,
-      Role: filters.Role,
+      RoleID: filters.RoleID,
       Status: filters.Status,
     };
 
