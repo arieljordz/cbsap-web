@@ -1467,7 +1467,7 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         type: 'text',
       },
       {
-        field: 'nextRole',
+        field: 'role',
         header: 'Role',
         sort: true,
         isSearchFilter: true,
