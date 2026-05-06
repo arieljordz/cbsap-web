@@ -50,11 +50,13 @@ export class InvoiceValidationResponseComponent implements OnInit {
       return;
     }
 
+    const isDuplicate = this.getIsDuplicateInvoice();
+
     const invoiceStatusChangeDTO: InvStatusChangeDto = {
       invoiceID: this.invoiceID,
-      status: InvoiceStatusEnum.ForApproval,
-      reason: '"Invoice is Force to Submit from Exception Queue',
-    };
+      status:  isDuplicate ? InvoiceStatusEnum.Rejected : InvoiceStatusEnum.ForApproval,
+      reason: isDuplicate ? 'Duplicate Invoice' : 'Invoice is Force to Submit from Exception Queue',
+      };
 
     this.invDetail.forceToSubmit(invoiceStatusChangeDTO).subscribe({
       next: (response) => {
@@ -74,6 +76,11 @@ export class InvoiceValidationResponseComponent implements OnInit {
     
     switch (action.toLowerCase()) {
       case InvoiceActionButton.Submit:
+
+        if (this.getIsDuplicateInvoice()) {
+          return 'Duplicate Invoice detected. This will be routed to Reject Queue.';
+        }
+        
         if(this.getHasMissingRoutingFlow()){
           return 'Invoice is missing a role/Routing Flow and cannot be forced/submitted.';
         }
@@ -102,6 +109,12 @@ export class InvoiceValidationResponseComponent implements OnInit {
     return this.messages?.some(msg =>
 
     msg.includes('Invoice has a missing routing flow')
+    ) ?? false;
+  }
+
+  getIsDuplicateInvoice(): boolean {
+    return this.messages?.some(msg =>
+      msg.includes('Potential Duplicate')
     ) ?? false;
   }
 }
