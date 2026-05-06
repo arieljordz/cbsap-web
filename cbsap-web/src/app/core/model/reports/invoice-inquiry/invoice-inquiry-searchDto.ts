@@ -8,7 +8,7 @@ export interface InvoiceInquirySearchDto {
   poNumber?: string;
   dueDate?: string;
   grossAmount: string;
-  nextRole?: string;
+  role?: string;
   exceptionReason?: string;
   status?: InvoiceStatusEnum | null;
 }
@@ -17,7 +17,7 @@ export interface InvoiceInquirySearchFilters {
   SupplierInfoID?: number | null;
   InvoiceNumber?: string | null;
   PONumber?: string | null;
-  Role?: string | null;
+  RoleID?: number | null;
   Status: number[] | null;
   
   InvoiceDateFrom: Date | string | null;
