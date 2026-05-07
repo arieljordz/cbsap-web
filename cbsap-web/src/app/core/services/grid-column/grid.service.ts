@@ -1473,6 +1473,13 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         isSearchFilter: true,
         type: 'text',
       },
+      {
+        field: 'approvedBy',
+        header: 'Approved By',
+        sort: true,
+        isSearchFilter: true,
+        type: 'text',
+      },
     ];
   }
 
