@@ -90,6 +90,7 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
   invoiceID: number = 0;
   keywordID:number | null = 0;
   supplierInfoID:number | null = 0;
+  entityProfileID:number | null = 0;
 
   invoiceTotalAmount: number = 0;
   authorisationLimit: number = this.authService.authorisationLimit;
@@ -301,6 +302,7 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
     this.queueroute = invoice.queueType ?? this.queueroute;
     this.keywordID = invoice.keywordID;
     this.supplierInfoID = invoice.supplierInfoID;
+    this.entityProfileID = invoice.entityProfileID;
     this.getInvoiceStatus();
     this.reloadPermissions();
   }
