@@ -42,6 +42,7 @@ import { InvInfoRoutingLevelDto } from '@core/model/invoicing/invoice/invoice-ro
 import { InvoiceQueue, InvoiceStatusEnum } from '@core/enums';
 import { SearchGoodsReceiptQuery } from '@core/model/goods-receipt/search-goods-receipt.query';
 import { SearchGoodsReceiptLookupDto } from '@core/model/goods-receipt/search-goods-receipt.dto';
+import { getRule } from '@primeng/themes';
 
 @Injectable({
   providedIn: 'root',
@@ -226,17 +227,75 @@ export class InvoiceDetailService {
       );
   }
 
+  
+
+getGridPageDetails(queueType?: InvoiceQueue): string {
+  let gridDetails = '';
+
+  switch (queueType) {
+    case InvoiceQueue.MyInvoices:
+      gridDetails = localStorage.getItem('myinvoice-grid') ?? '';
+      break;
+
+    case InvoiceQueue.ExceptionQueue:
+      gridDetails = localStorage.getItem('exception-queue-grid') ?? '';
+      break;
+
+    case InvoiceQueue.RejectionQueue:
+      gridDetails = localStorage.getItem('reject-queue-grid') ?? '';
+      break; 
+
+    default:
+      gridDetails = '';
+  }
+
+  return gridDetails;
+}
+
+
+  getGridFilterDetails(queueType?: InvoiceQueue){
+      let filterDetails = '';
+
+    switch (queueType) {
+      case InvoiceQueue.MyInvoices:
+        filterDetails = localStorage.getItem('myinvoice-search') ?? '';
+        break;
+
+      case InvoiceQueue.ExceptionQueue:
+        filterDetails = localStorage.getItem('exception-queue-search') ?? '';
+        break;
+
+      case InvoiceQueue.RejectionQueue:
+        filterDetails = localStorage.getItem('reject-queue-search') ?? '';
+        break;
+
+      default:
+        filterDetails = '';
+    }
+
+    return filterDetails;
+  }
+
+
   getNextInvoiceId(
     invoiceID: number,
     statusType?: InvoiceStatusEnum | null,
     queueType?: InvoiceQueue | null
   ): Observable<ResponseResult<number | null>> {
-    const query: Record<string, number> = {};
+    const query: Record<string, string> = {};
     if (statusType !== undefined && statusType !== null) {
-      query['statusType'] = statusType;
+      query['statusType'] = statusType.toString(); //number
     }
     if (queueType !== undefined && queueType !== null) {
-      query['queueType'] = queueType;
+      query['queueType'] = queueType.toString(); //number
+    }
+
+    if (queueType !== undefined && queueType !== null) {
+      query['gridFilter'] = this.getGridFilterDetails(queueType); //string
+    }
+
+    if (queueType !== undefined && queueType !== null) {
+      query['gridRowDetails'] = this.getGridPageDetails(queueType); //string
     }
 
     const baseUrl = INV_ENPOINT.GET_NEXT_INVOICE(invoiceID);
@@ -262,12 +321,20 @@ export class InvoiceDetailService {
     statusType?: InvoiceStatusEnum | null,
     queueType?: InvoiceQueue | null
   ): Observable<ResponseResult<number | null>> {
-    const query: Record<string, number> = {};
+    const query: Record<string, string> = {};
     if (statusType !== undefined && statusType !== null) {
-      query['statusType'] = statusType;
+      query['statusType'] = statusType.toString(); //number
     }
     if (queueType !== undefined && queueType !== null) {
-      query['queueType'] = queueType;
+      query['queueType'] = queueType.toString(); //number
+    }
+
+    if (queueType !== undefined && queueType !== null) {
+      query['gridFilter'] = this.getGridFilterDetails(queueType); //string
+    }
+
+    if (queueType !== undefined && queueType !== null) {
+      query['gridRowDetails'] = this.getGridPageDetails(queueType); //string
     }
 
     const baseUrl = INV_ENPOINT.GET_PREVIOUS_INVOICE(invoiceID);
@@ -410,6 +477,7 @@ export class InvoiceDetailService {
         })
       );
   }
+
   forHold(dto: InvStatusChangeDto): Observable<ResponseResult<boolean>> {
     return this.resultHttpClient
       .put<boolean>(`${INV_ENPOINT.FOR_HOLD}`, dto, true)
@@ -422,6 +490,19 @@ export class InvoiceDetailService {
         })
       );
   }
+
+  changeHoldState(dto: InvStatusChangeDto): Observable<ResponseResult<boolean>> {
+    return this.resultHttpClient
+   .put<boolean>(`${INV_ENPOINT.CHANGE_HOLD_STATE}`, dto, true)
+    .pipe(
+      map((response) => {
+        return response;
+        }),
+        catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+        })
+        );
+       }
 
   routeToException(
     dto: InvStatusChangeDto

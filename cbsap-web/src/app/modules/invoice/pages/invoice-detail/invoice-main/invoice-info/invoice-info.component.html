@@ -1,8 +1,5 @@
 <form [formGroup]="invInfoForm">
-  <div class="mb-4" *ngIf="messages.length > 0">      
-      <app-invoice-validation-message [messages]="messages" [invoiceValidationHeader]="invoiceValidationHeader">
-      </app-invoice-validation-message>
-    </div>
+
   <p-panel [toggleable]="true" styleClass="mb-4 panel-items">
     <ng-template #header>
       <div class="flex items-center gap-2">

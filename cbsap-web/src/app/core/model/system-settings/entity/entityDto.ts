@@ -15,5 +15,8 @@ export interface EntityProfileDto   {
    invDueDateCalculation: number | null;
     matchingConfigs: EntityMatchingConfigDto[] | null;
     automaticGoodsDelivered: boolean;
+    invoiceNetLessThanPO: boolean;
+    invoiceNetGreaterThanPO: boolean;
+    invoiceRequiredToBeCoded :boolean;
     
 }

@@ -1,6 +1,5 @@
-
-export interface RemoveAssignedRoleCommand {
-  invoiceID: number;
-  roleID: number;
-  level: number;
+export interface RemoveAssignedRoleCommand{
+    invoiceID: number;
+    roleID: number;
+    level:number;
 }

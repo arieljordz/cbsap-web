@@ -24,6 +24,7 @@ export enum InvoiceQueue {
 export enum InvoiceActionButton {
   Approve = 'approve',
   Hold = 'hold',
+  Unhold = 'unhold',
   Reject = 'reject',
   RouteToException = 'routeToException',
   Reactivate = 'reactivate',

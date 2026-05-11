@@ -117,4 +117,22 @@ export class LookupOptionsService {
     ),
     shareReplay(1)
   );
+
+  getRolesByEntityIDLookUpOptions(entityId: number) {
+        return this.lookUpService
+          .getRolesByEntityIDLookUps(entityId)
+        .pipe(
+        map((roles) =>
+         roles.isSuccess
+            ? [
+             { label: '\u00A0', value: null },
+               ...(roles.responseData ?? []).map((role) => ({
+                label: role.roleName,
+            value: role.roleID,
+          })),
+        ]
+    : []
+    )
+   );
+  }
 }

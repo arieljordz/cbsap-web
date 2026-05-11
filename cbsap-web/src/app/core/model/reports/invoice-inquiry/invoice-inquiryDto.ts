@@ -1,6 +1,7 @@
 import { InvoiceStatusEnum } from "@core/enums/invoice.enum";
 
-export interface InvoiceInquiryDto   {
+export interface InvoiceInquiryDto { 
+
     invoiceID: number;
     supplierName?: string;
     invoiceDate?: string;
@@ -11,4 +12,5 @@ export interface InvoiceInquiryDto   {
     nextRole?: string;
     exceptionReason?: string;
     status?: InvoiceStatusEnum | null;
+    
 }

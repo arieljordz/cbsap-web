@@ -30,6 +30,9 @@ export type EntityProfileFormGroup = FormGroup<{
   createdDate: FormControl<Date | null>;
   matchingConfigs: FormArray<MatchingConfigFormGroup>;
   automaticGoodsDelivered: FormControl<boolean>;
+  invoiceNetLessThanPO: FormControl<boolean>;
+  invoiceNetGreaterThanPO: FormControl<boolean>;
+  invoiceRequiredToBeCoded: FormControl<boolean>;
 }>;
 
 
@@ -63,6 +66,9 @@ export function createMatchingConfigGroup(config?: Partial<EntityMatchingConfigD
       createdDate: new FormControl<Date | null>(null),
       matchingConfigs: new FormArray<MatchingConfigFormGroup>([]),
       automaticGoodsDelivered: new FormControl(false,{nonNullable: true}),
+      invoiceNetLessThanPO: new FormControl(false,{nonNullable: true}),
+      invoiceNetGreaterThanPO: new FormControl(false,{nonNullable: true}),
+      invoiceRequiredToBeCoded : new FormControl(false,{nonNullable: true}),
     });
   }
 
