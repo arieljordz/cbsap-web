@@ -114,7 +114,7 @@ export class InvoiceValidationResponseComponent implements OnInit {
 
   getIsDuplicateInvoice(): boolean {
     return this.messages?.some(msg =>
-      msg.includes('Potential Duplicate')
+      msg.includes('Duplicate Invoice')
     ) ?? false;
   }
 }
