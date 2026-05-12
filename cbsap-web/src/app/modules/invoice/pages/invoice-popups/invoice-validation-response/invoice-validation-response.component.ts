@@ -27,7 +27,6 @@ import {
 })
 export class InvoiceValidationResponseComponent implements OnInit {
   messages: string[] = [];
-  infoMessages: string[] = [];
   action!: InvoiceActionButton;
   promptMsg: string = '';
   invoiceID!: number;
@@ -40,7 +39,6 @@ export class InvoiceValidationResponseComponent implements OnInit {
   ) {}
   ngOnInit(): void {
     this.messages = (this.config.data?.messages as string[]) ?? [];
-    this.infoMessages = (this.config.data?.infoMessages as string[]) ?? [];
     this.action = (this.config.data?.action as InvoiceActionButton) ?? null;
     this.invoiceID = (this.config.data?.invoiceID as number) ?? 0;
 
@@ -56,9 +54,9 @@ export class InvoiceValidationResponseComponent implements OnInit {
 
     const invoiceStatusChangeDTO: InvStatusChangeDto = {
       invoiceID: this.invoiceID,
-      status: isDuplicate ? InvoiceStatusEnum.Rejected : InvoiceStatusEnum.ForApproval,
+      status:  isDuplicate ? InvoiceStatusEnum.Rejected : InvoiceStatusEnum.ForApproval,
       reason: isDuplicate ? 'Duplicate Invoice' : 'Invoice is Force to Submit from Exception Queue',
-    };
+      };
 
     this.invDetail.forceToSubmit(invoiceStatusChangeDTO).subscribe({
       next: (response) => {
@@ -74,14 +72,15 @@ export class InvoiceValidationResponseComponent implements OnInit {
     this.dialogRef.close(true);
   }
 
- 
   validationInfo(action: InvoiceActionButton): string {
     
     switch (action.toLowerCase()) {
       case InvoiceActionButton.Submit:
+
         if (this.getIsDuplicateInvoice()) {
-          return 'Duplicate Invoice detected. This will be routed to reject Queue';
+          return 'Duplicate Invoice detected. This will be routed to Reject Queue.';
         }
+        
         if(this.getHasMissingRoutingFlow()){
           return 'Invoice is missing a role/Routing Flow and cannot be forced/submitted.';
         }
@@ -90,9 +89,7 @@ export class InvoiceValidationResponseComponent implements OnInit {
 
 
       case InvoiceActionButton.Approve:
-        if (this.messages.length == 0 && this.infoMessages.length > 0){
-            return ' The invoice was successfully approved but contains important information.';
-        }
+
         return ' The invoice contains errors and is not able to be approved.';
 
       default:
@@ -115,14 +112,9 @@ export class InvoiceValidationResponseComponent implements OnInit {
     ) ?? false;
   }
 
-   getIsDuplicateInvoice(): boolean {
-
-    return this.messages?.some(Msg =>
-      Msg.includes('Duplicate Invoice')
-      
+  getIsDuplicateInvoice(): boolean {
+    return this.messages?.some(msg =>
+      msg.includes('Duplicate Invoice')
     ) ?? false;
-   }
-
-
-
+  }
 }
