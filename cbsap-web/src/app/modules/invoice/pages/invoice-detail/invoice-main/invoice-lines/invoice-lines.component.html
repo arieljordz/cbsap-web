@@ -12,7 +12,7 @@
       *ngIf="isAddAllocationLineVisible"
       [disabled]="disableInvoiceLineAllocation()"
     >
-    <i class="pi pi-plus"></i>
+      <i class="pi pi-plus"></i>
       <span class="font-bold"> Add Invoice Line</span>
     </button>
   </div>
@@ -45,7 +45,6 @@
           <th class="min-w-[100px] whitespace-nowrap hidden">Amount</th>
           <th class="min-w-[180px] whitespace-normal break-words">Note</th>
           <th class="w-32 whitespace-nowrap">Actions</th>
-
         </tr>
       </ng-template>
 
@@ -85,7 +84,7 @@
 
             <!-- Account-->
 
-          <!--  <td>
+            <!--  <td>
               <ng-container *ngIf="editingRowIndex === ri; else showAccount">
                 <p-input-group>
                   <input
@@ -114,12 +113,11 @@
 
             <!-- Account-->
 
-              <td>
+            <td>
               <ng-container *ngIf="editingRowIndex === ri; else showAccount">
                 <p-select
                   class="w-full"
                   formControlName="account"
-                
                   [options]="accountOptions"
                   [filter]="true"
                   filterBy="label"
@@ -133,7 +131,6 @@
                 getAccountLabel(item.account)
               }}</ng-template>
             </td>
-
 
             <!-- Dimension 1 
             <td>
@@ -226,7 +223,6 @@
                 <p-select
                   class="w-full"
                   formControlName="taxCodeID"
-                
                   [options]="taxCodeOptions"
                   [filter]="true"
                   filterBy="label"
@@ -240,9 +236,6 @@
                 getTaxCodeLabel(item.taxCodeID)
               }}</ng-template>
             </td>
-
-
-
 
             <!-- Net Amount -->
 
@@ -262,7 +255,7 @@
               </ng-container>
               <ng-template #showlineNetAmount>
                 <p class="text-right">
-                  {{ item.lineNetAmount | number : "1.2-2" }}
+                  {{ item.lineNetAmount | number: "1.2-2" }}
                 </p>
               </ng-template>
             </td>
@@ -282,7 +275,7 @@
               </ng-container>
               <ng-template #showTaxAmount>
                 <p class="text-right">
-                  {{ item.lineTaxAmount | number : "1.2-2" }}
+                  {{ item.lineTaxAmount | number: "1.2-2" }}
                 </p>
               </ng-template>
             </td>
@@ -303,7 +296,7 @@
               </ng-container>
               <ng-template #showAmount>
                 <p class="text-right">
-                  {{ item.lineAmount | number : "1.2-2" }}
+                  {{ item.lineAmount | number: "1.2-2" }}
                 </p>
               </ng-template>
             </td>
@@ -320,7 +313,7 @@
               </ng-container>
               <ng-template #showNote>{{ item.note }}</ng-template>
             </td>
-               <!-- Actions -->
+            <!-- Actions -->
             <td class="whitespace-nowrap">
               <ng-container *ngIf="editingRowIndex !== ri">
                 <button
@@ -370,82 +363,148 @@
 
       <!-- Footer Summary -->
       <ng-template pTemplate="footer">
+        <!-- Invoice Line Amount -->
         <tr>
-          <td colspan="6" style="text-align: right; font-weight: 600">
-            Invoice Line Amount
+          <!-- Empty columns before Line Description -->
+          <td colspan="4"></td>
+
+          <!-- Label aligned under Line Description -->
+          <td
+            class="font-semibold text-right whitespace-nowrap"
+            style="min-width: 180px"
+          >
+            Invoice Line Amount:
           </td>
+
+          <!-- Tax Code -->
           <td></td>
+
+          <!-- Net Amount -->
           <td>
             <p class="font-semibold text-right">
-              {{ totalNetAmount | number : "1.2-2" }}
+              {{ totalNetAmount | number: "1.2-2" }}
             </p>
           </td>
+
+          <!-- Tax Amount -->
           <td>
             <p class="font-semibold text-right">
-              {{ totalTaxAmount | number : "1.2-2" }}
+              {{ totalTaxAmount | number: "1.2-2" }}
             </p>
           </td>
+
+          <!-- Amount -->
           <td class="hidden">
             <p class="font-semibold text-right">
-              {{ totalAmount | number : "1.2-2" }}
+              {{ totalAmount | number: "1.2-2" }}
             </p>
           </td>
+
+          <!-- Note -->
+          <td></td>
+
+          <!-- Actions -->
           <td></td>
         </tr>
+
+        <!-- Invoice Header Amount -->
         <tr>
-          <td colspan="6" style="text-align: right; font-weight: 600">
-            Invoice Header Amount
+          <!-- Empty columns before Line Description -->
+          <td colspan="4"></td>
+
+          <!-- Label aligned under Line Description -->
+          <td
+            class="font-semibold text-right whitespace-nowrap"
+            style="min-width: 180px"
+          >
+            Invoice Header Amount:
           </td>
+
+          <!-- Tax Code -->
           <td></td>
+
+          <!-- Net Amount -->
           <td>
             <p class="font-semibold text-right">
-              {{ amounts?.netAmount | number : "1.2-2" }}
+              {{ amounts?.netAmount | number: "1.2-2" }}
             </p>
           </td>
+
+          <!-- Tax Amount -->
           <td>
             <p class="font-semibold text-right">
-              {{ amounts?.taxAmount | number : "1.2-2" }}
+              {{ amounts?.taxAmount | number: "1.2-2" }}
             </p>
           </td>
+
+          <!-- Amount -->
           <td class="hidden">
             <p class="font-semibold text-right">
-              {{ amounts?.totalAmount | number : "1.2-2" }}
+              {{ amounts?.totalAmount | number: "1.2-2" }}
             </p>
           </td>
+
+          <!-- Note -->
+          <td></td>
+
+          <!-- Actions -->
           <td></td>
         </tr>
+
         <tr>
-          <td colspan="6"></td>
+          <td colspan="11"></td>
         </tr>
+
+        <!-- Difference in Invoice Total -->
         <tr>
-          <td colspan="6" style="text-align: right; font-weight: 600">
-            Difference in Invoice Total
+          <!-- Empty columns before Line Description -->
+          <td colspan="4"></td>
+
+          <!-- Label aligned under Line Description -->
+          <td
+            class="font-semibold text-right whitespace-nowrap"
+            style="min-width: 180px"
+          >
+            Difference in Invoice Total:
           </td>
+
+          <!-- Tax Code -->
           <td></td>
+
+          <!-- Net Amount -->
           <td>
             <p
               [class.text-red-500]="isNetAmountMatch"
               class="font-semibold text-right"
             >
-              {{ differenceInNetAmount | number : "1.2-2" }}
+              {{ differenceInNetAmount | number: "1.2-2" }}
             </p>
           </td>
+
+          <!-- Tax Amount -->
           <td>
             <p
               [class.text-red-500]="isTaxAmountMatch"
               class="font-semibold text-right"
             >
-              {{ differenceInTaxAmount | number : "1.2-2" }}
+              {{ differenceInTaxAmount | number: "1.2-2" }}
             </p>
           </td>
+
+          <!-- Amount -->
           <td class="hidden">
             <p
               [class.text-red-500]="isAmountMatch"
               class="font-semibold text-right"
             >
-              {{ differenceInTotalAmount | number : "1.2-2" }}
+              {{ differenceInTotalAmount | number: "1.2-2" }}
             </p>
           </td>
+
+          <!-- Note -->
+          <td></td>
+
+          <!-- Actions -->
           <td></td>
         </tr>
       </ng-template>
