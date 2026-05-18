@@ -685,5 +685,14 @@ goodReceiptNoSearch(
 
 }
 
+validateInvoices(
+  invoiceIds: number[]
+): Observable<ResponseResult<InvValidationResponseDto[]>> {
+  return this.resultHttpClient.post<InvValidationResponseDto[]>(
+    INV_ENPOINT.VALIDATE_INVOICE_BY_IDS,
+    invoiceIds,
+    true
+  );
+}
 
 }
