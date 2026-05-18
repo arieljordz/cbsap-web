@@ -52,4 +52,5 @@ export const INV_ENPOINT = {
 
   GET_ROUTINGLEVEL: (invoiceId: number,supplierInfoId:number | null,keywordId:number | null) =>
     `${inv_base_endpoint}/invoiceInfoLinkedRoutingLevels?InvoiceID=${invoiceId}&SupplierInfoID=${supplierInfoId}&KeywordID=${keywordId}`,
+  VALIDATE_INVOICE_BY_IDS: `${inv_base_endpoint}/validateByIds`,
 };
