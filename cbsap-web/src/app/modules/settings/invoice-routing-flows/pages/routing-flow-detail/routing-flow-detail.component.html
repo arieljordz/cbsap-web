@@ -190,16 +190,6 @@
               </p-inputgroup>
             </div>
                       <div class="flex justify-between">
-            <div class="flex-1">
-              <small
-                *ngIf="
-                  f['matchReference'].invalid && f['matchReference'].touched
-                "
-                class="pt-2 text-xs text-red-500"
-              >
-                {{ getErrorMessage(f["matchReference"], "Keyword") }}
-              </small>
-            </div>
             <div
               class="flex-1 text-right"
               *ngIf="focusStates['invRoutingFlowName']"

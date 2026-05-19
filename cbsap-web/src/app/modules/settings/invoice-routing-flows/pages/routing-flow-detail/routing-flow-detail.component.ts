@@ -333,6 +333,7 @@ export class RoutingFlowDetailComponent implements OnInit, OnDestroy {
 
       data: {
         excludesSelectedRoleIds: roles.map((r) => r.roleID),
+        isNew: true
       },
       style: { minHeight: '200px' },
       dismissableMask: true,

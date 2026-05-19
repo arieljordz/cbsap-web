@@ -46,6 +46,7 @@ import {
   LookupOptionsService,
   LookUpsService,
   ValidationService,
+  InvoiceFormService
 } from '@core/services';
 import { InvoiceDetailService } from '@core/services/invoicing/invoice-detail.service';
 import { PurchaseOrderService } from '@core/services/purchase-order/purchase-order.service';
@@ -85,8 +86,7 @@ import { DueDateCalculationDto }  from '@core/model/system-settings/entity/entit
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    NgIf,
-    InvoiceValidationMessageComponent,
+    NgIf
   ],
   templateUrl: './invoice-info.component.html',
   styleUrl: './invoice-info.component.scss',
@@ -106,7 +106,7 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
   focusStates: { [key: string]: boolean } = {};
 
   invoiceID: number = 0;
-   @Output() invoiceDataLoaded = new EventEmitter<InvInfoDto>();
+  @Output() invoiceDataLoaded = new EventEmitter<InvInfoDto>();
   @Input() messages: string[] = [];
   @Input() invoiceValidationHeader: string = '';
   @Input() invoiceId?: number;
@@ -160,10 +160,12 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
   createdDate: Date = new Date();  
   invDueDateCalculation: number = 1;
   defaultInvoiceDueDays: number = 0;
+  nextRole:string = "";
 
   constructor(
     private lookUpOptionService: LookupOptionsService,
     private invDetailService: InvoiceDetailService,
+    private formService: InvoiceFormService,
     private validationService: ValidationService,
     private dialogService: DialogService,
     private activeRoute: ActivatedRoute,
@@ -195,6 +197,7 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
 
     //this.disabledFieldsInException();
 
+    
     this.f['dueDate'].valueChanges
       .pipe(
         startWith(this.f['dueDate'].value),
@@ -212,9 +215,9 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
         takeUntil(this.destroy$)
       )
       .subscribe(() => {
-        this.updateDueDate();
+        //this.updateDueDate();
       });
-  
+    
 
       this.invInfoForm.get('keyword')!.valueChanges.pipe(
         map(v => (v ?? '').trim()),
@@ -268,6 +271,7 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  /*
   private updateDueDate() {
     const FormValue = this.invInfoForm.getRawValue();
     const dto: DueDateCalculationDto = {
@@ -330,6 +334,7 @@ computeInvoiceDueDate(
     dueDate.setDate(dueDate.getDate() + paymentTermDays);
     return dueDate;
   }
+  */
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['invoiceId'] && !changes['invoiceId'].firstChange) {
@@ -341,7 +346,7 @@ computeInvoiceDueDate(
       }            
     }  
   }  
-  
+
   
 
   private resetFormState(): void {
@@ -493,6 +498,8 @@ computeInvoiceDueDate(
   }
 
   isReadOnly(field: string): boolean {
+    if(field ==='dueDate')
+      return true;
     return this.readOnlyFields.has(field);
   }
 
@@ -862,9 +869,11 @@ private searchGoodReceiptNos(searchQuery: SearchGoodsReceiptQuery): void {
         switchMap((response: ResponseResult<InvInfoDto>) => {
           if (response?.isSuccess && response.responseData) {
             const invoice = response.responseData;
+            this.nextRole = invoice.nextRole ?? "";
             this.queueroute = invoice.queueType ?? this.queueroute;
             this.disabledFieldsInException();
             this.routingFlowName = invoice.routingFlowName;
+
             return combineLatest([
               of(invoice),
               this.entityOptions$,
@@ -893,7 +902,7 @@ private searchGoodReceiptNos(searchQuery: SearchGoodsReceiptQuery): void {
         this.invDueDateCalculation = invoice.invDueDateCalculation ?? 1;
         this.defaultInvoiceDueDays = invoice.defaultInvoiceDueInDays ?? 0;
  
-        this.updateDueDate();
+        //this.updateDueDate();
 
         this.entityOptions = entityOptions;
         this.taxCodeOptions = taxCodeLookUpOptions;

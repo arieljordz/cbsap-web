@@ -33,6 +33,7 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ImageModule } from 'primeng/image';
 import { SplitterModule } from 'primeng/splitter';
+import { MenuModule } from 'primeng/menu';
 
 @NgModule({
   imports: [
@@ -70,6 +71,7 @@ import { SplitterModule } from 'primeng/splitter';
     ProgressSpinnerModule,
     ImageModule,
     SplitterModule,
+    MenuModule,
   ],
   exports: [
     ButtonModule,
@@ -106,6 +108,7 @@ import { SplitterModule } from 'primeng/splitter';
     ProgressSpinnerModule,
     ImageModule,
     SplitterModule,
+    MenuModule,
   ],
   providers: [],
 })

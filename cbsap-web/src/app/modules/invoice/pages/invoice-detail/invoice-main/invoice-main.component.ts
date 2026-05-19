@@ -834,9 +834,8 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
         .map((m) => m.trim())
         .filter(
           (m) =>
-            m.length > 0 &&  (response?.queueType !== InvoiceQueue.ExceptionQueue)
-            // (response?.queueType !== InvoiceQueue.ExceptionQueue ||
-            //   !m.toLowerCase().includes('potential duplicate'))
+            m.length > 0 &&  //(response?.queueType !== InvoiceQueue.ExceptionQueue)
+            (response?.queueType !== InvoiceQueue.ExceptionQueue || !m.toLowerCase().includes('potential duplicate'))
         );
       filteredMessages = filteredMessages.length > 0 ? filteredMessages : [raw];
 
