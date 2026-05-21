@@ -161,12 +161,6 @@ export class GridService {
   assignedInvoiceColumn(): TableColumn[] {
     return [
       {
-        field: 'queue',
-        header: 'Queue',
-        sort: false,
-        isSearchFilter: false,
-      },
-      {
         field: 'supplierName',
         header: 'Supplier Name',
         sort: false,
@@ -424,6 +418,28 @@ export class GridService {
         isSearchFilter: true,
       },
     ];
+  }
+
+  supplierBankAccountColumn(): TableColumn[]{
+        return [
+        {
+          field: 'bankAccountNumber',
+          header: 'Bank Account No',
+          sort: true,
+          isSearchFilter: true,
+        },
+        {
+          field: 'bankName',
+          header: 'Bank Name',
+          sort: true,
+          isSearchFilter: true,
+        },
+        {
+          field: 'isActive',
+          header: 'Active Status',
+          sort: true,
+          isSearchFilter: true,
+        }]
   }
 
   entitySelectGridColumn(): TableColumn[] {
@@ -895,7 +911,7 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         isSearchFilter: true,
       },
       {
-        field: 'invoiceDate',
+        field: 'displayInvoiceDate',
         header: 'Invoice Date',
         sort: true,
         isSearchFilter: true,
@@ -913,13 +929,13 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         isSearchFilter: true,
       },
       {
-        field: 'dueDate',
+        field: 'displayDueDate',
         header: 'Due Date',
         sort: true,
         isSearchFilter: true,
       },
       {
-        field: 'grossAmount',
+        field: 'displayGrossAmount',
         header: 'Gross Amount',
         sort: true,
         isSearchFilter: true,
@@ -962,7 +978,7 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         isSearchFilter: true,
       },
       {
-        field: 'invoiceDate',
+        field: 'displayInvoiceDate',
         header: 'Invoice Date',
         sort: true,
         isSearchFilter: true,
@@ -980,24 +996,23 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         isSearchFilter: true,
       },
       {
-        field: 'dueDate',
+        field: 'displayDueDate',
         header: 'Due Date',
         sort: true,
         isSearchFilter: true,
       },
       {
-        field: 'grossAmount',
+        field: 'displayGrossAmount',
         header: 'Gross Amount',
         sort: true,
         isSearchFilter: true,
-      },
-      
-      // {
-      //   field: 'nextRole',
-      //   header: 'Next Role',
-      //   sort: true,
-      //   isSearchFilter: true,
-      // },
+      },  
+      {
+        field: 'reason',
+        header: 'Reason',
+        sort: true,
+        isSearchFilter: true,
+      }
     ];
   }
 
@@ -1018,7 +1033,7 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         isSearchFilter: true,
       },
       {
-        field: 'invoiceDate',
+        field: 'displayInvoiceDate',
         header: 'Invoice Date',
         sort: true,
         isSearchFilter: true,
@@ -1036,13 +1051,13 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         isSearchFilter: true,
       },
       {
-        field: 'dueDate',
+        field: 'displayDueDate',
         header: 'Due Date',
         sort: true,
         isSearchFilter: true,
       },
       {
-        field: 'grossAmount',
+        field: 'displayGrossAmount',
         header: 'Gross Amount',
         sort: true,
         isSearchFilter: true,
@@ -1082,7 +1097,7 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         isSearchFilter: true,
       },
       {
-        field: 'invoiceDate',
+        field: 'displayInvoiceDate',
         header: 'Invoice Date',
         sort: true,
         isSearchFilter: true,
@@ -1100,13 +1115,13 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         isSearchFilter: true,
       },
       {
-        field: 'dueDate',
+        field: 'displayDueDate',
         header: 'Due Date',
         sort: true,
         isSearchFilter: true,
       },
       {
-        field: 'grossAmount',
+        field: 'displayGrossAmount',
         header: 'Gross Amount',
         sort: true,
         isSearchFilter: true,
@@ -1388,7 +1403,7 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
     ];
   }
 
-    /** Invoice Inquiry Grid Column */
+
   invoiceInquiryGridColumn(): TableColumn[] {
     return [
       {
@@ -1398,7 +1413,7 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         isSearchFilter: true,
         type: 'text',
       },
-
+ 
       {
         field: 'supplierName',
         header: 'Supplier Name',
@@ -1461,17 +1476,18 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
       },
       {
         field: 'status',
-        header: 'Status',
+        header: 'status',
         sort: true,
         isSearchFilter: true,
         type: 'text',
       },
       {
-        field: 'role',
+        field: 'Role',
         header: 'Role',
         sort: true,
         isSearchFilter: true,
         type: 'text',
+        
       },
       {
         field: 'approvedBy',
@@ -1479,8 +1495,10 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         sort: true,
         isSearchFilter: true,
         type: 'text',
-      },
+      }
     ];
   }
+
+
 
 }

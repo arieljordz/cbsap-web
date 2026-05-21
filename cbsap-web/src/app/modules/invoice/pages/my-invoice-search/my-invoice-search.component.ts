@@ -31,6 +31,8 @@ import {
   MyInvoiceSearchConfig,
   buildMyInvoiceSearchConfig,
 } from '@core/model/invoicing/invoice/invoice-search.configs';
+import { MyInvoiceAdvanceSearchComponent } from '../my-invoice-advance-search/my-invoice-advance-search.component';
+import { ADVANCESEARCH_CONSTANT } from '@core/constants/advance-search/advance-search-constants';
 
 @Component({
   selector: 'app-my-invoice-search',
@@ -85,8 +87,6 @@ export class MyInvoiceSearchComponent
     poNo: '',
   };
 
-  selectedInvoices: InvMyInvoiceSearchDto[] = [];
-
   constructor(
     private router: Router,
     private gridService: GridService,
@@ -94,7 +94,8 @@ export class MyInvoiceSearchComponent
     private excelService: ExcelService,
     private dynamicGridService: DynamicGridService<InvMyInvoiceSearchDto>,
     private invDetailService: InvoiceDetailService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private dialogService: DialogService,
   ) {}
 
   ngOnDestroy(): void {
@@ -114,7 +115,9 @@ export class MyInvoiceSearchComponent
   }
 
   search(event: MyInvoiceSearchModel) {
+    console.log(this.myInvoiceFilter);
     this.myInvoiceFilter = event;
+    console.log(event);
     setTimeout(() => {
       if (this.selectInvoiceTemplate) {
         this.initializeDynamicGrid();
@@ -170,50 +173,7 @@ export class MyInvoiceSearchComponent
       });
   }
 
-  onInvoiceValidate(): void {
-    if (!this.selectedInvoices.length) {
-      this.message.showToast(
-        MessageSeverity.warn,
-        'Warning',
-        'Select a record to validate'
-      );
-      return;
-    }
-
-    this.loading = true;
-
-    const invoiceIds = this.selectedInvoices.map(x => x.invoiceID);
-
-    this.invDetailService
-      .validateInvoices(invoiceIds)
-      .pipe(takeUntil(this.destroySubject))
-      .subscribe({
-        next: (response) => {
-
-          if (response.isSuccess) {
-            this.message.showToast(
-              MessageSeverity.success,
-              'Success',
-              'Selected records successfully validated'
-            );
-
-            this.selectedInvoices = [];
-            this.loadData(1);
-          }
-
-          this.loading = false;
-        },
-        error: () => {
-          this.loading = false;
-
-          this.message.showToast(
-            MessageSeverity.error,
-            'Error',
-            'Failed to validate records'
-          );
-        },
-      });
-  }
+  onInvoiceValidate(): void {}
 
   private initializeDynamicGrid() {
     const columns = this.gridService.myInvoiceSearchColumn(
@@ -306,24 +266,13 @@ export class MyInvoiceSearchComponent
       });
   }
 
-  onRowCheckboxChange(checked: boolean, row: InvMyInvoiceSearchDto): void {
-    if (checked) {
-      const exists = this.selectedInvoices.some(
-        (x) => x.invoiceID === row.invoiceID
-      );
-
-      if (!exists) {
-        this.selectedInvoices.push(row);
-      }
-    } else {
-      this.selectedInvoices = this.selectedInvoices.filter(
-        (x) => x.invoiceID !== row.invoiceID
-      );
-    }
+  onRowCheckboxChange(checked: boolean, row: any): void {
+    //todo: for validate button logic
   }
 
   editInvoice(invoice: any) {
     const id = invoice.invoiceID;
+    /*by pass this */
     localStorage.setItem('myinvoice-search',JSON.stringify(this.myInvoiceFilter));
     this.router.navigate(['invoices', id, 'edit'], {
       state: { returnUrl: this.router.url },
@@ -334,4 +283,22 @@ export class MyInvoiceSearchComponent
     const timestamp = this.datePipe.transform(new Date(), 'yyyyMMdd_HHmmss');
     return `MyInvoices_${timestamp}.xlsx`;
   }
+  
+  advanceSearch() {
+
+    this.dialogService.open(MyInvoiceAdvanceSearchComponent, {
+      width: '900px',
+      style: { minHeight: '200px' },
+      modal: true,
+      closable: true,
+      baseZIndex: 1200,
+      header : 'Advance Search',
+      data :{
+        formName : ADVANCESEARCH_CONSTANT.FORMNAME.MYINVOICEQUEUE
+      }
+    });
+
+
+  }
+
 }

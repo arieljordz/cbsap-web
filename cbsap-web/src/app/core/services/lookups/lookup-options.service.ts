@@ -119,20 +119,20 @@ export class LookupOptionsService {
   );
 
   getRolesByEntityIDLookUpOptions(entityId: number) {
-    return this.lookUpService
-      .getRolesByEntityIDLookUps(entityId)
-      .pipe(
+        return this.lookUpService
+          .getRolesByEntityIDLookUps(entityId)
+        .pipe(
         map((roles) =>
-          roles.isSuccess
+         roles.isSuccess
             ? [
-                { label: '\u00A0', value: null },
-                ...(roles.responseData ?? []).map((role) => ({
-                  label: role.roleName,
-                  value: role.roleID,
-                })),
-              ]
-            : []
-        )
-      );
+             { label: '\u00A0', value: null },
+               ...(roles.responseData ?? []).map((role) => ({
+                label: role.roleName,
+            value: role.roleID,
+          })),
+        ]
+    : []
+    )
+   );
   }
 }

@@ -5,3 +5,4 @@ export * from './supplier-info-search.dto';
 export * from './supplier-export.query';
 export * from './supplier-export.dto';
 export * from './search-supplier.query';
+export * from './supplier-bankaccount.dto';

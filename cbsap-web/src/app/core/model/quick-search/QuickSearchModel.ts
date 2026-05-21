@@ -3,9 +3,9 @@ import { SelectItem } from 'primeng/api';
 export interface SearchField<T> {
   key: keyof T;
   label: string;
-  type: 'text' | 'number' | 'date' | 'bool';
-  fieldType: 'input' | 'dropdown' | 'calendar' | 'multiselect' | 'range'; 
-  options?: SelectItem[];
+  type: 'text' | 'number' | 'date' | 'bool'; // input types
+  fieldType: 'input' | 'dropdown' | 'calendar' | 'multiselect' | 'range';
+  options?: SelectItem[]; // updated to use SelectItem from PrimeNG
   range?: boolean;
   row?: number;
   filter?: boolean;

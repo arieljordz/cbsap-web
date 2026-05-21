@@ -10,6 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageSeverity } from '@core/constants';
+import { ADVANCESEARCH_CONSTANT } from '@core/constants/advance-search/advance-search-constants';
 import { ResponseResult, TableColumn } from '@core/model/common';
 import { GridConfig } from '@core/model/dynamic-grid/grid.config';
 import { ExceptionInvoiceSearchDto } from '@core/model/invoicing/invoice/invoice-info.dto';
@@ -31,6 +32,7 @@ import { AccountSearchComponent } from '@shared/popup/account-search/account-sea
 import { QuickSearchComponent } from '@shared/quick-search/quick-search.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Subject, takeUntil } from 'rxjs';
+import { MyInvoiceAdvanceSearchComponent } from '../my-invoice-advance-search/my-invoice-advance-search.component';
 
 @Component({
   selector: 'app-exception-queue-search',
@@ -85,8 +87,6 @@ export class ExceptionQueueSearchComponent
     poNo: '',
   };
 
-  selectedInvoices: ExceptionInvoiceSearchDto[] = [];
-
   /**
    *
    */
@@ -97,7 +97,8 @@ export class ExceptionQueueSearchComponent
     private excelService: ExcelService,
     private dynamicGridService: DynamicGridService<ExceptionInvoiceSearchDto>,
     private invDetailService: InvoiceDetailService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private dialogService: DialogService
   ) {}
   ngOnInit(): void {
     this.dynamicGridService.setGridKey("exception-queue-grid");
@@ -171,51 +172,7 @@ export class ExceptionQueueSearchComponent
         },
       });
   }
-
-  onInvoiceValidate(): void {
-    if (!this.selectedInvoices.length) {
-      this.message.showToast(
-        MessageSeverity.warn,
-        'Warning',
-        'Select a record to validate'
-      );
-      return;
-    }
-
-    this.loading = true;
-
-    const invoiceIds = this.selectedInvoices.map(x => x.invoiceID);
-
-    this.invDetailService
-      .validateInvoices(invoiceIds)
-      .pipe(takeUntil(this.destroySubject))
-      .subscribe({
-        next: (response) => {
-
-          if (response.isSuccess) {
-            this.message.showToast(
-              MessageSeverity.success,
-              'Success',
-              'Selected records successfully validated'
-            );
-
-            this.selectedInvoices = [];
-            this.loadData(1);
-          }
-
-          this.loading = false;
-        },
-        error: () => {
-          this.loading = false;
-
-          this.message.showToast(
-            MessageSeverity.error,
-            'Error',
-            'Failed to validate records'
-          );
-        },
-      });
-  }
+  onInvoiceValidate(): void {}
 
   private initializeDynamicGrid() {
     const columns = this.gridService.exceptionQueueSearchColumn(
@@ -308,22 +265,9 @@ export class ExceptionQueueSearchComponent
       });
   }
 
-  onRowCheckboxChange(checked: boolean, row: ExceptionInvoiceSearchDto): void {
-    if (checked) {
-      const exists = this.selectedInvoices.some(
-        (x) => x.invoiceID === row.invoiceID
-      );
-
-      if (!exists) {
-        this.selectedInvoices.push(row);
-      }
-    } else {
-      this.selectedInvoices = this.selectedInvoices.filter(
-        (x) => x.invoiceID !== row.invoiceID
-      );
-    }
+  onRowCheckboxChange(checked: boolean, row: any): void {
+    //todo: for validate button logic
   }
-
   editInvoice(invoice: any) {
     const id = invoice.invoiceID;
     localStorage.setItem('exception-queue-search',JSON.stringify(this.myInvoiceFilter));
@@ -336,5 +280,20 @@ export class ExceptionQueueSearchComponent
   getTimestampedFileName(): string {
     const timestamp = this.datePipe.transform(new Date(), 'yyyyMMdd_HHmmss');
     return `ExceptionQueue_${timestamp}.xlsx`;
+  }
+
+  advanceSearch() {
+
+    this.dialogService.open(MyInvoiceAdvanceSearchComponent, {
+      width: '900px',
+      style: { minHeight: '200px' },
+      modal: true,
+      closable: true,
+      baseZIndex: 1200,
+      header : 'Advance Search',
+      data :{
+        formName : ADVANCESEARCH_CONSTANT.FORMNAME.EXCEPTIONQUEUE
+      }
+    });
   }
 }

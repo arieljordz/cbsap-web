@@ -149,17 +149,25 @@
         </label>
       </div>
       <div class="flex items-center gap-2 pb-3 pt-4">
-        <p-checkbox id="invoiceNetLessThanPO" formControlName="invoiceNetLessThanPO" binary="true">
+        <p-checkbox id="invoiceNetLessThanPOException" formControlName="invoiceNetLessThanPOException" binary="true">
         </p-checkbox>
-        <label for="IinvoiceNetLessThanPO">
+        <label for="invoiceNetLessThanPOException">
           If the Invoice Net is less than the Invoice PO amount route to Exceptions
         </label>
       </div>
       <div class="flex items-center gap-2 pb-3 pt-4">
-        <p-checkbox id="invoiceNetGreaterThanPO" formControlName="invoiceNetGreaterThanPO" binary="true">
+        <p-checkbox id="invoiceNetGreaterThanPOApproved" formControlName="invoiceNetGreaterThanPOApproved" binary="true">
         </p-checkbox>
-        <label for="invoiceNetGreaterThanPO">
+        <label for="invoiceNetGreaterThanPOApproved">
           If the Invoice Net is greater than the Invoice PO amount, allow the last Role to approve the invoice
+        </label>
+      </div>
+
+      <div class="flex items-center gap-2 pb-3 pt-4">
+        <p-checkbox id="invoiceNetLessThanPOApproved" formControlName="invoiceNetLessThanPOApproved" binary="true">
+        </p-checkbox>
+        <label for="invoiceNetLessThanPOApproved">
+          If the Invoice Net is less than the Invoice PO amount, allow the last Role to approve the invoice
         </label>
       </div>
 

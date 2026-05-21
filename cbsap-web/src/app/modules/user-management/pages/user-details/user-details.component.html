@@ -16,8 +16,17 @@
           [icon]="userDto.isLockedOut ? 'pi pi-lock' : 'pi pi-unlock'"
           [pTooltip]="userDto.isLockedOut ? 'User is locked' : 'User is unlocked'"
           (click) = "lockUnlockUser()"
+          [disabled]="!hasManagePermission()"
         />
-        <p-button  label="Save"  icon="pi pi-check"  [raised]="true" [rounded]="true"  [severity]="!userForm.valid ? 'secondary':'primary'" type="submit" [disabled]="!userForm.valid"  />
+        <p-button  
+          label="Save"  
+          icon="pi pi-check"  
+          [raised]="true" 
+          [rounded]="true"  
+          [severity]="!userForm.valid ? 'secondary':'primary'" 
+          type="submit" 
+          [disabled]="!userForm.valid || !hasManagePermission()"  />
+
         <p-button 
           label="Delete"  
           *ngIf="!this.isNewUser" 
@@ -26,6 +35,7 @@
           [rounded]="true" 
           severity="contrast"
           (click) ="softUserDeletion()"
+          [disabled]="!hasManagePermission()"
          />
         <p-button 
           label="Cancel"   

@@ -6,11 +6,11 @@
       <h5 class="font-semibold text-xl">{{ pageLabel }}</h5>
 
       <div class="flex gap-3">
-        <p-button label="Save" icon="pi pi-check" [raised]="true" [rounded]="true" [disabled]="!roleDetailForm.valid"
+        <p-button label="Save" icon="pi pi-check" [raised]="true" [rounded]="true" [disabled]="!roleDetailForm.valid || !hasManagePermission()"
           [severity]="!roleDetailForm.valid ? 'secondary' : 'primary'" type="submit"></p-button>
 
         <p-button label="Delete" *ngIf="roleId !== 0" icon="pi pi-trash" [raised]="true" [rounded]="true"
-          severity="contrast" (click)="confirmDelete()"></p-button>
+          severity="contrast" [disabled]="!hasManagePermission()" (click)="confirmDelete()"></p-button>
 
         <p-button label="Cancel" icon="pi pi-times" [raised]="true" [rounded]="true" severity="contrast"
           (click)="cancel()"></p-button>

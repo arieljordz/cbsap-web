@@ -12,11 +12,12 @@ export interface EntityProfileDto   {
     invAllowPresetDimension: boolean | null;
     taxDollarAmt: number | null;
     taxPercentageAmt: number | null;
-   invDueDateCalculation: number | null;
+    invDueDateCalculation: number | null;
     matchingConfigs: EntityMatchingConfigDto[] | null;
     automaticGoodsDelivered: boolean;
-    invoiceNetLessThanPO: boolean;
-    invoiceNetGreaterThanPO: boolean;
+    invoiceNetLessThanPOException: boolean;
+    invoiceNetGreaterThanPOApproved: boolean;
+    invoiceNetLessThanPOApproved: boolean;
     invoiceRequiredToBeCoded :boolean;
     
 }
