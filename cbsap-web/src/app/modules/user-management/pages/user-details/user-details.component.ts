@@ -18,7 +18,6 @@ import {
 } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
-import { Permission, PermissionValues } from '@core/model/auth/permission';
 import {
   CreateUserDTO,
   DeleteUserCommand,
@@ -32,7 +31,6 @@ import {
   RoleService,
   UserManagementService,
   ValidationService,
-  AuthService
 } from 'src/app/core/services';
 import { MessageSeverity } from './../../../../core/constants/index';
 
@@ -97,8 +95,7 @@ export class UserDetailsComponent implements OnInit, AfterViewInit {
     private router: Router,
     private formBuilder: FormBuilder,
     private validationService: ValidationService,
-    private menuService: MenuService,
-    private authService: AuthService
+    private menuService: MenuService
   ) {
     this.userAccountID = Number(
       this.activeRoute.snapshot.params['userAccountID'] ?? 0
@@ -427,9 +424,5 @@ export class UserDetailsComponent implements OnInit, AfterViewInit {
 
   onFocusChange(field: string, isFocused: boolean) {
     this.focusStates[field] = isFocused;
-  }
-
-  hasManagePermission():boolean{
-    return this.authService.userHasPermission(Permission.CanManageUser);
   }
 }

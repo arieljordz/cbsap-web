@@ -11,9 +11,7 @@ import {
   GridService,
   ExcelService,
   AlertService,
-  AuthService
 } from 'src/app/core/services/index';
-import { Permission, PermissionValues } from '@core/model/auth/permission';
 import { first, Subject, takeUntil } from 'rxjs';
 import { User } from 'src/app/core/model/user-management/user.model';
 import { ConfirmationService, SelectItem, PrimeTemplate } from 'primeng/api';
@@ -167,7 +165,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     private excelService: ExcelService,
     private confirmationService: ConfirmationService,
     private message: AlertService,
-    private authService: AuthService,
     private router: Router,
     private datePipe: DatePipe
   ) {}
@@ -372,9 +369,5 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.pageNumber = event.first + 1; //page starts from 0, so incrementing by 1
     this.pageSize = event.rows;
     this.searchUser(); // Call search again when page changes
-  }
-
-  hasManagePermission():boolean{
-    return this.authService.userHasPermission(Permission.CanManageUser);
   }
 }

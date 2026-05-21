@@ -15,23 +15,12 @@
   [currentStatus]="invoiceStatus"
   [currentQueue]="queueroute"
   [permissions]="permissions"
-  [attachmentCount]="attachments.length"></app-invoice-actions>
-
+></app-invoice-actions>
     <div class="p-4 w-full overflow-auto invoice-details-container" >
      
       <!-- Button Above Tabs -->
       <div class="mb-4 flex justify-between items-center">
         <div class="flex gap-2">
-          <p-button
-          [raised]="true"
-          *ngIf="isVisibleFor(InvoiceActionButton.Submit)"
-          label="Submit"
-          icon="pi pi-check"
-          [rounded]="true"
-          severity="secondary"
-          size="small"
-          (click)="onSubmit()"
-        />
           <p-button
             [raised]="true"
             *ngIf="isVisibleFor(InvoiceActionButton.Approve)"
@@ -48,7 +37,7 @@
             [label]="isHeld ? 'Un-hold' : 'Hold'"
             [icon]="isHeld ? 'pi pi-play' : 'pi pi-pause'"
             [rounded]="true"
-            [severity]="isHeld ? 'warn' :'warn'"
+            [severity]="isHeld ? 'warn' : 'warn'"
             size="small"
             (click)="onToggleHold()"
           />
@@ -92,10 +81,6 @@
             Processing Status: {{ status }}
           </span>
         </div>
-      </div>
-      <div class="mb-4" *ngIf="ShowValidationBox()">      
-        <app-invoice-validation-message [messages]="invValidationMessages" [invoiceValidationHeader]="invoiceValidationHeader" [reason]="reason" *ngIf="!autoValidate">
-        </app-invoice-validation-message>
       </div>
       <p-tabs value="0" scrollable (valueChange)="onTabSelect($event)">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -187,7 +172,7 @@
                       [invoiceID]="invoiceID"
                       [keywordID]="keywordID"
                       [supplierInfoID]="supplierInfoID"
-                      [invoiceStatus]="invoiceStatus"
+                      [invoiceStatus]="invoiceStatus" 
                       [entityProfileID]="entityProfileID"
                     ></app-invoice-routing-flow>
                  
@@ -207,58 +192,29 @@
  <!-- <i class="pi pi-ellipsis-v"></i> -->
 <!--<span class="ml-2">Comments</span> -->
 <!-- <p-badge value="{{invoiceComments.length }}" class="ml-2"></p-badge> -->
- </span>
- </div>
- </ng-template>
+</span>
+</div>
+</ng-template>
  
                   <div class="mt-2"><!-- space here --></div>
-  <div class="space-y-4 mt-2">
-  <div class="flex flex-col items-center w-full"
+<div class="space-y-4 mt-2">
+<div class="flex flex-col items-center w-full"
                       *ngFor="let comment of invoiceComments; let i = index">
  
-          <div class="flex items-center justify-between bg-gray-100 p-3 rounded shadow-sm w-full">
+                      <div class="flex items-center justify-between bg-gray-100 p-3 rounded shadow-sm w-full"        >
 <div class="text-left flex-1">
-<div class="font-semibold mt-2 mb-2 flex items-center justify-between">
-<div class="flex items-center">
+<div class="font-semibold mt-2 mb-2">
 <i class="pi pi-user mr-3"></i>
 <span class="mr-2">{{ comment.createdBy }}</span>
 <i class="pi pi-circle-on text-gray-500 mr-2" style="font-size: 6px"></i>
 <small class="font-normal text-gray-500 mt-3">{{ comment.createdDate }}</small>
 </div>
-<div class="ml-2" *ngIf="username === comment.createdBy">
-<p-button
- icon="pi pi-trash"
- variant="text"
- rounded="true"
- severity="danger"
- (click)="openCommentMenu($event, i)"
- aria-label="Delete comment"
-></p-button>
-</div>
-</div>
-
-
-
- <div *ngIf="editingIndex !== i">
 <small class="font-semiboldtext-gray-500" style="font-size: 14px">{{ comment.comment }}</small>
 </div>
-
-
-
- <div *ngIf="editingIndex === i" class="mt-2 w-full">
-  <textarea pInputTextarea rows="3" [(ngModel)]="editCommentText" class="w-full p-2 rounded border" ></textarea>
-   <div class="flex gap-2 mt-2">
-   <p-button label="Save" icon="pi pi-check" (click)="saveEditedComment()" severity="success" size="small"></p-button>
-   <p-button label="Cancel" icon="pi pi-times" (click)="cancelEdit()" severity="secondary" size="small" variant="outlined"></p-button>
-         </div>
-       </div>
-     </div>
-  </div>
 </div>
-
-
-
-<div class="flex flex-col items-center w-full">
+</div>
+ 
+ <div class="flex flex-col items-center w-full">
 <p-inputgroup class="mt-4">
 <input pInputText placeholder="Add comment" [(ngModel)]="submitComment"/>
 <p-inputgroup-addon>
@@ -267,20 +223,15 @@
 </p-inputgroup>
 </div>
 </div>
-<p-menu #commentMenu [popup]="true" [model]="commentMenuItems"></p-menu>
 </p-panel>
 </div>
 </div>
 </p-tabpanel>
 
+        </p-tabpanels>
+      </p-tabs>
+    </div>
+    </div>
 
-
- </p-tabpanels>
-</p-tabs>
-</div>
-</div>
-
-
-
- </ng-template>
+  </ng-template>
 </p-splitter>

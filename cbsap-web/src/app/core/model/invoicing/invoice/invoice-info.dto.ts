@@ -99,14 +99,12 @@ export interface InvMyInvoiceSearchDto {
   invoiceID: number;
   entity: string | null;
   suppName: string | null;
-  invoiceDate: Date | null;
-  displayInvoiceDate: string | null;
+  invoiceDate: string | null;
   invoiceNo: string | null;
   poNo: string | null;
-  dueDate: Date | null;
-  displayDueDate: string | null;
+  dueDate: string | null;
   grossAmount: number | null;
-  displayGrossAmount: number | null;
+
   nextRole: string | null;
   exceptionReason: string | null;
   isSelected: boolean;

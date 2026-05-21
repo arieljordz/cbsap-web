@@ -63,8 +63,8 @@
       <tr [pSelectableRow]="rowData" (dblclick)="editUser(rowData)">
         <td>
           <!--<p-button   [id]="btnEditUser" styleClass="text-blue-900" variant ="text" [rounded]="true" icon="pi pi-pencil"   (click)="editUser(rowData)"/>-->
-          <p-button  variant ="text" [rounded]="true" icon="pi pi-trash"  (click)="softUserDeletion(rowData)" [disabled]="!hasManagePermission()"/>
-          <p-button  *ngIf="rowData.isLockedOut"  styleClass="text-blue-900" variant ="text" [rounded]="true" icon="pi pi-lock"  pTooltip="User is locked" [disabled]="!hasManagePermission()" />
+          <p-button  variant ="text" [rounded]="true" icon="pi pi-trash"  (click)="softUserDeletion(rowData)"/>
+          <p-button  *ngIf="rowData.isLockedOut"  styleClass="text-blue-900" variant ="text" [rounded]="true" icon="pi pi-lock"  pTooltip="User is locked" />
         
         </td>
         <td *ngFor="let col of columns" [ngSwitch]="col.field">

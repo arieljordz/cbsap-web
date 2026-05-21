@@ -8,7 +8,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { InvRoutingFlowService, LookupOptionsService } from '@core/services';
-import { ThemeService } from '@primeng/themes';
 import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
 import { SelectItem } from 'primeng/api';
 import {
@@ -29,7 +28,7 @@ import { Subject, takeUntil } from 'rxjs';
 export class RoutingflowRoleSelectorComponent implements OnInit, OnDestroy {
   roleSelectorForm!: FormGroup;
   private destroy$ = new Subject<void>();
-  
+
   rolesOptions: SelectItem[] = [];
 
   excludesSelectedRoleIds: number[] = [];
@@ -43,39 +42,31 @@ export class RoutingflowRoleSelectorComponent implements OnInit, OnDestroy {
     this.excludesSelectedRoleIds =
       (this.config.data?.excludesSelectedRoleIds as number[]) ?? [];
   }
+
   ngOnInit(): void {
     this.roleSelectorForm = new FormGroup({
       selectedRoleID: new FormControl(null, Validators.required),
     });
 
-   
-const entityId = this.config.data?.entityProfileID;
+    const entityId = this.config.data?.entityProfileID;
 
+    if (!entityId) {
+      console.error('Entity ID is missing');
+      return;
+    }
 
-
-     if (!entityId) {
-     console.error('Entity ID is missing');
-     return;
-     }
-
-
-
-     this.lookUpOptionService
-     .getRolesByEntityIDLookUpOptions(entityId)
+    this.lookUpOptionService
+      .getRolesByEntityIDLookUpOptions(entityId)
       .pipe(takeUntil(this.destroy$))
       .subscribe((options) => {
-      if (options.length > 0) {
-           options[0].label = '-- Please Select --';
+        if (options.length > 0) {
+          options[0].label = '-- Please Select --';
         }
 
-
-       this.rolesOptions = options.filter(
-      (roleID) => !this.excludesSelectedRoleIds.includes(roleID.value!),
-     );
-   });
-
- 
-
+        this.rolesOptions = options.filter(
+          (roleID) => !this.excludesSelectedRoleIds.includes(roleID.value!),
+        );
+      });
   }
 
   get f() {
@@ -90,25 +81,19 @@ const entityId = this.config.data?.entityProfileID;
   submit() {
     if (this.roleSelectorForm.invalid) return;
 
+    const assignRoleCommand = {
+      roleID: this.f['selectedRoleID'].value,
+      invoiceID: this.config.data?.invoiceID,
+      level: this.config.data?.level,
+    };
 
-
- const assignRoleCommand = {
- roleID: this.f['selectedRoleID'].value,
- invoiceID: this.config.data?.invoiceID,
- level: this.config.data?.level,
- isNew: this.config.data?.isNew
-};
-
-
- this.invRoutingFlowService.assignRole(assignRoleCommand).subscribe({
- 
- next: () => {
- this.dialogRef.close(assignRoleCommand.roleID);
- },
- error: (err) => {
- console.error('Failed to assign role', err);
- },
- });
-}
-  
+    this.invRoutingFlowService.assignRole(assignRoleCommand).subscribe({
+      next: () => {
+        this.dialogRef.close(assignRoleCommand.roleID);
+      },
+      error: (err) => {
+        console.error('Failed to assign role', err);
+      },
+    });
+  }
 }
