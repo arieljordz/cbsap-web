@@ -1,8 +1,5 @@
 <form [formGroup]="invInfoForm">
-  <div class="mb-4" *ngIf="messages.length > 0">      
-      <app-invoice-validation-message [messages]="messages" [invoiceValidationHeader]="invoiceValidationHeader">
-      </app-invoice-validation-message>
-    </div>
+
   <p-panel [toggleable]="true" styleClass="mb-4 panel-items">
     <ng-template #header>
       <div class="flex items-center gap-2">
@@ -275,7 +272,7 @@
           <div class="grid grid-cols-12 items-center gap-2">
           <label class="col-span-12 md:col-span-4 font-medium">Next Role</label>
           <div class="col-span-12 md:col-span-8">
-            <input type="text" disabled pInputText  class="w-full" />
+            <input type="text" disabled pInputText  class="w-full"   [(ngModel)]="nextRole"   [ngModelOptions]="{ standalone: true }"/>
           </div>
         </div>
       </div>

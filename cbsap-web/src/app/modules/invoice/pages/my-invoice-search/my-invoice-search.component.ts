@@ -85,6 +85,8 @@ export class MyInvoiceSearchComponent
     poNo: '',
   };
 
+  selectedInvoices: InvMyInvoiceSearchDto[] = [];
+
   constructor(
     private router: Router,
     private gridService: GridService,
@@ -168,7 +170,50 @@ export class MyInvoiceSearchComponent
       });
   }
 
-  onInvoiceValidate(): void {}
+  onInvoiceValidate(): void {
+    if (!this.selectedInvoices.length) {
+      this.message.showToast(
+        MessageSeverity.warn,
+        'Warning',
+        'Select a record to validate'
+      );
+      return;
+    }
+
+    this.loading = true;
+
+    const invoiceIds = this.selectedInvoices.map(x => x.invoiceID);
+
+    this.invDetailService
+      .validateInvoices(invoiceIds)
+      .pipe(takeUntil(this.destroySubject))
+      .subscribe({
+        next: (response) => {
+
+          if (response.isSuccess) {
+            this.message.showToast(
+              MessageSeverity.success,
+              'Success',
+              'Selected records successfully validated'
+            );
+
+            this.selectedInvoices = [];
+            this.loadData(1);
+          }
+
+          this.loading = false;
+        },
+        error: () => {
+          this.loading = false;
+
+          this.message.showToast(
+            MessageSeverity.error,
+            'Error',
+            'Failed to validate records'
+          );
+        },
+      });
+  }
 
   private initializeDynamicGrid() {
     const columns = this.gridService.myInvoiceSearchColumn(
@@ -261,8 +306,20 @@ export class MyInvoiceSearchComponent
       });
   }
 
-  onRowCheckboxChange(checked: boolean, row: any): void {
-    //todo: for validate button logic
+  onRowCheckboxChange(checked: boolean, row: InvMyInvoiceSearchDto): void {
+    if (checked) {
+      const exists = this.selectedInvoices.some(
+        (x) => x.invoiceID === row.invoiceID
+      );
+
+      if (!exists) {
+        this.selectedInvoices.push(row);
+      }
+    } else {
+      this.selectedInvoices = this.selectedInvoices.filter(
+        (x) => x.invoiceID !== row.invoiceID
+      );
+    }
   }
 
   editInvoice(invoice: any) {

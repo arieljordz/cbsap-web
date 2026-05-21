@@ -9,7 +9,7 @@ import { ExcelService } from '../util-services/excel.service';
 import { InvoiceInquirySearchDto } from '@core/model/reports/invoice-inquiry/invoice-inquiry-searchDto';
 import { ExportInvoiceInquiryQuery, InvoiceInquiryDto, SearchInvoiceInquiryQuery } from '@core/model/reports/invoice-inquiry/invoice-inquiry.index';
 import { INVOICE_INQUIRY } from '@core/constants/invoice-inquiry/invoice-inquiry-constants';
-
+ 
 @Injectable({
   providedIn: 'root',
 })
@@ -19,16 +19,16 @@ export class InvoiceInquiryService {
     invoiceMatchBasis: SelectItem[];
     allowPresets: SelectItem[];
     dueDateCalculations: SelectItem[];
-
+ 
   }>;
-
+ 
   constructor(
     private httpClient: HttpClient,
     private resultHttpClient: ResultsHttpService,
     private errorHandlingService: ErrorHandlerService,
     private excelService: ExcelService
   ) {}
-
+ 
   searchInvoiceInquiry(
     query: SearchInvoiceInquiryQuery
   ): Observable<ResponseResult<Pagination<InvoiceInquirySearchDto>>> {
@@ -43,7 +43,7 @@ export class InvoiceInquiryService {
         catchError((error: HttpErrorResponse) => throwError(() => error))
       );
   }
-
+ 
     exportInvoiceInquiry(query: ExportInvoiceInquiryQuery): Observable<ResponseResult<Blob>> {
       console.log('Export Query in Service:', query);
       return this.excelService
@@ -60,7 +60,6 @@ export class InvoiceInquiryService {
           })
         );
     }
-
-
-
+ 
+ 
 }

@@ -8,6 +8,7 @@ import {
   InvAttachmentFromDto,
 } from '@core/model/invoicing/invoicing.index';
 import { InvoiceAttachmentService } from '@core/services/invoicing/invoice-attachment.service';
+import { InvoiceFormService } from '@core/services';
 import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
 import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { FileUpload } from 'primeng/fileupload';
@@ -15,13 +16,13 @@ import { FileUpload } from 'primeng/fileupload';
 @Component({
   selector: 'app-invoice-attachment',
   standalone: true,
-  imports: [PrimeImportsModule, CommonModule, NgFor,],
+  imports: [PrimeImportsModule, CommonModule],
   templateUrl: './invoice-attachment.component.html',
   styleUrl: './invoice-attachment.component.scss',
 })
 export class InvoiceAttachmentComponent implements OnInit {
   @ViewChild('fu') fileUpload!: FileUpload;
-  attachments?: InvAttachmentDto[] = [];
+  attachments!: InvAttachmentDto[];
 
   uploadUrl = this.attachmentService.getUploadUrl();
   invoiceID: number = 0;
@@ -29,10 +30,11 @@ export class InvoiceAttachmentComponent implements OnInit {
   constructor(
     private attachmentService: InvoiceAttachmentService,
     private dialogRef: DynamicDialogRef,
-    private config: DynamicDialogConfig
+    private config: DynamicDialogConfig,
+    private formService: InvoiceFormService
   ) {
     this.invoiceID = (this.config.data?.invoiceID as number) ?? 0;
-  }
+  } 
   ngOnInit(): void {
     this.getAttachments();
   }
@@ -59,6 +61,10 @@ export class InvoiceAttachmentComponent implements OnInit {
         if (res.isSuccess) {
           this.attachments?.unshift(res.responseData as InvAttachmentDto);
           this.fileUpload.clear();
+          // notify parent/page that attachments changed so counts update immediately
+          try {
+            this.formService.triggerAttachmentChanged();
+          } catch {}
         }
       },
       error: (err) => {
@@ -98,9 +104,10 @@ export class InvoiceAttachmentComponent implements OnInit {
     this.attachmentService.getAttachments(this.invoiceID).subscribe({
       next: (response) => {
         if (response.isSuccess) {
-          this.attachments = response?.responseData?.map((data) => {
-            return data;
-          });
+        //  this.attachments = response?.responseData?.map((data) => {
+        //    return data;
+        //  });
+        this.attachments = response.responseData!;
         }
       },
       error: (error: ResponseResult<InvAttachmentDto[]>) => {
