@@ -1,4 +1,8 @@
-import { NgIf } from '@angular/common';
+import { NgIf,
+  NgFor,
+  NgSwitch,
+  NgSwitchCase,
+  NgSwitchDefault } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   AbstractControl,
@@ -12,9 +16,12 @@ import {
   createSupplierInfoForm,
   SupplierInfoDto,
   SupplierInfoFormGroup,
+  SupplierBankAccountDto
 } from '@core/model/system-settings/supplier/supplier.index';
+import { TableColumn } from '@core/model/common/grid-column';
 import {
   AlertService,
+  GridService,
   SupplierInfoService,
   ValidationService,
 } from '@core/services';
@@ -38,6 +45,10 @@ import { ResponseResult } from '@core/model/common';
     CharacterLengthPipe,
     CharacterFocusTrackerDirective,
     NgIf,
+    NgFor,
+    NgSwitch,
+    NgSwitchCase,
+    NgSwitchDefault
   ],
   providers: [DialogService, AlertService, ConfirmationService],
   templateUrl: './supplier-detail.component.html',
@@ -57,11 +68,23 @@ export class SupplierDetailComponent implements OnInit, OnDestroy {
   invRoutingFlowOptions?: SelectItem[] = [];
   taxCodeOptions?: SelectItem[] = [];
 
+  columns: TableColumn[] = [];
+  bankAccountDto: SupplierBankAccountDto[] = [];
+  triggeredBySearch: boolean = false;
+  totalRecords: number = 0;
+  pageNumber: number = 0;
+  pageSize: number = 5;
+
+  selectedBankAccountID: number =0;
+  selectedBankNumber: string = '';
+  selectedBankName: string = '';
+  selectedIsActive: boolean = false;
+
   constructor(
     private confirmationService: ConfirmationService,
     private supplierInfoService: SupplierInfoService,
     private lookOptionService: LookupOptionsService,
-
+    private gridService: GridService,
     private validationService: ValidationService,
     private message: AlertService,
     private activeRoute: ActivatedRoute,
@@ -93,6 +116,8 @@ export class SupplierDetailComponent implements OnInit, OnDestroy {
       this.pagelabel = 'Edit Supplier';
       this.loadSupplierForEdit(this.supplierInfoID);
     }
+
+    this.columns = this.gridService.supplierBankAccountColumn();
   }
 
   onSubmit() {
@@ -191,6 +216,8 @@ export class SupplierDetailComponent implements OnInit, OnDestroy {
 
         if (response.isSuccess) {
           const supplier = response.responseData;
+          this.bankAccountDto = response.responseData?.suppliersBankAccount ?? [];
+          console.log(this.bankAccountDto);
           this.supplierForm.patchValue({
             ...supplier,
           });
@@ -303,5 +330,55 @@ export class SupplierDetailComponent implements OnInit, OnDestroy {
 
   onFocusChange(field: string, isFocused: boolean) {
     this.focusStates[field] = isFocused;
+  }
+
+  isActive(isActive: boolean) {
+      if (isActive) return 'success';
+      else return 'danger';
+  }
+
+  selectDetails(bankDetails:any){
+    this.selectedBankAccountID = bankDetails.supplierBankAccountID;
+    this.selectedBankName = bankDetails.bankName;
+    this.selectedBankNumber = bankDetails.bankAccountNumber;
+    this.selectedIsActive = bankDetails.isActive;
+  }
+
+  updateBankAccountDetails(){
+
+    const supplier: SupplierBankAccountDto = {
+      supplierBankAccountID: this.selectedBankAccountID,
+      bankAccountNumber: this.selectedBankNumber,
+      bankName: this.selectedBankName,
+      isActive: this.selectedIsActive
+    } as SupplierBankAccountDto
+
+
+    this.supplierInfoService.updateSupplierBankAccount(supplier)
+    .subscribe({
+      next: (response) => {
+        console.log(response)
+        if (response.isSuccess) {
+          this.bankAccountDto = response.responseData ?? [];
+          this.message.showToast(
+            MessageSeverity.success.toString(),
+            'Supplier Bank Account',
+            'Supplier Bank Account has been successfully updated',
+            2000
+          );
+        }
+      },
+      error: (error: ResponseResult<boolean>) => {
+        this.message.showToast(
+          MessageSeverity.error.toString(),
+          'Error on Supplier Bank Account',
+          error.messages?.[0],
+          2000
+        );
+      },
+      complete: () => {
+        //this.closeDialog();
+      }
+    });
   }
 }

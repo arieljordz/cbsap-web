@@ -1,5 +1,6 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { AfterViewInit, Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Menu }  from 'primeng/menu';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageSeverity } from '@core/constants';
@@ -13,6 +14,7 @@ import { ResponseResult } from '@core/model/common';
 import { InvAllocEntryDto } from '@core/model/invoicing/invoice/invoice-allocation-lines.dto';
 import {
   AmountDto,
+  InvAttachmentDto,
   InvInfoDto,
   InvValidationResponseDto,
   InvoiceCommentDto,
@@ -25,9 +27,11 @@ import {
   AuthService,
   CustomConfirmDialogService,
   GridService,
+  InvoiceAttachmentService,
   InvoiceDetailService,
   InvoiceFormService,
   LoaderService,
+  LocalStorageService,
 } from '@core/services';
 
 import {
@@ -46,6 +50,7 @@ import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import { InvoiceActivityLogComponent } from '../../invoice-popups/invoice-activity-log/invoice-activity-log.component';
+import { InvoiceValidationMessageComponent } from '.././invoice-main/invoice-validation-message/invoice-validation-message.component';
 import { PoMatchingComponent } from '../../purchase-order/po-matching/po-matching.component';
 import { PoLinesSharedService } from '@core/services/purchase-order/po-lines-shared.service';
 import { DynamicGridService } from '@core/services/shared/dynamic-grid.service';
@@ -69,7 +74,7 @@ import { GridConfig } from '@core/model/dynamic-grid/grid.config';
     InvoiceLinesComponent,
     InvoiceRoutingFlowComponent,
     InvoiceActionsComponent,
-
+    InvoiceValidationMessageComponent,
     NgClass,
     NgIf,
     NgFor,
@@ -86,7 +91,9 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(InvoiceLinesComponent) invLinesComp!: InvoiceLinesComponent;
   @ViewChild('invroutingFlowComp')
   invroutingFlowComp!: InvoiceRoutingFlowComponent;
-  
+  @ViewChild('commentMenu') commentMenu!: Menu;
+  attachments!: InvAttachmentDto[];
+
   invoiceID: number = 0;
   keywordID:number | null = 0;
   supplierInfoID:number | null = 0;
@@ -97,6 +104,9 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
 
   changeColor = 'p-button-contrast';
   status = 'Pending';
+  reason = '';
+  autoValidate = false;
+
   private destroy$ = new Subject<void>();
   private isCancelInProgress = false;
 
@@ -139,6 +149,15 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
 
   isHeld: boolean = false;
 
+  // comment menu / edite state
+  selectedCommentIndex: number | null = null;
+  editingIndex: number | null = null;
+  editCommentText: string = '';
+  commentMenuItems: any[] = [];
+  username: string = this.localStorage.get('username')  ?? 'Unknown User';
+
+  
+
   private destroySubject: Subject<void> = new Subject();
   private sub = new Subscription();
   private openCommentDialogSub = new Subscription();
@@ -173,7 +192,10 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
     private poLinesSharedService: PoLinesSharedService,
     private invFormService:InvoiceFormService,
     private gridService: GridService,
-    private dynamicGridService: DynamicGridService<LoadInvoiceCommentsDto>
+    private dynamicGridService: DynamicGridService<LoadInvoiceCommentsDto>,
+    private attachmentService: InvoiceAttachmentService,
+    private localStorage: LocalStorageService
+    
   ) {
     this.invoiceID = Number(this.activeRoute.snapshot.params['id'] ?? 0);
   }
@@ -219,7 +241,35 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
     this.listenToInvoiceChanges();
     this.initializeMain();
     this.initializeDynamicGrid();
+    this.getAttachments();
+}
+
+
+
+getAttachments() {
+ this.attachmentService.getAttachments(this.invoiceID).subscribe({
+    next: (response) => {
+       if (response.isSuccess) {
+        // this.attachments = response?.responseData?.map((data) => {
+        //   return data;
+        // });
+
+
+
+        this.attachments = response.responseData!;
+      }
+    },
+      error: (error: ResponseResult<InvAttachmentDto[]>) => {
+      // this.message.showToast(
+      //   MessageSeverity.error.toString(),
+      //   'Error on Adding Comment',
+      //   error.messages?.[0],
+      //   2000
+      // );
+      },
+    });
     
+    //this.handleValidate();
   }
 
   onTabSelect(event: any) {
@@ -286,6 +336,7 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   get canApproveInvoice() {
+
     const canApprove =
       this.queueroute === InvoiceQueue.MyInvoices &&
       this.authService.userHasPermission(
@@ -296,6 +347,28 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
     return canApprove;
   }
 
+  get canSubmitInvoice() {
+
+    var invoiceStatus = this.invoiceStatus === null || this.invoiceStatus === undefined ? 0 : this.invoiceStatus;
+
+    var canSubmit =
+      (this.queueroute == InvoiceQueue.MyInvoices 
+        || this.queueroute == InvoiceQueue.ExceptionQueue)
+      && [InvoiceStatusEnum.Exception,
+        InvoiceStatusEnum.ExceptionOnHold,
+        InvoiceStatusEnum.ForApproval].includes(invoiceStatus);
+
+        // second validation for approval condition
+        if(InvoiceStatusEnum.ForApproval == invoiceStatus && 
+        this.authService.userHasPermission(
+          Permission.CanApproveInvoiceTotalAmount
+        ) && this.invoiceTotalAmount <= this.authorisationLimit)
+        {
+          canSubmit = false;
+        }
+    return canSubmit;
+  }
+
   invoiceDataLoaded(invoice: InvInfoDto) {
     this.invoiceTotalAmount = invoice.totalAmount;
     this.invoiceStatus = invoice.statusType ?? this.invoiceStatus;
@@ -303,8 +376,32 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
     this.keywordID = invoice.keywordID;
     this.supplierInfoID = invoice.supplierInfoID;
     this.entityProfileID = invoice.entityProfileID;
+    this.reason = invoice.reason;
+    this.autoValidate = false;
     this.getInvoiceStatus();
     this.reloadPermissions();
+
+    if(this.invoiceStatus != InvoiceStatusEnum.ReadyForExport){
+      //alert("still triggered");
+      this.triggerValidateOnLoad();
+    }
+  }
+
+  private autoValidateTriggered = false;
+  private triggerValidateOnLoad(): void {
+    if (this.autoValidateTriggered) return;
+
+    // Ensure invoice info form exists
+    if (!this.invInvComp?.invInfoForm) return;
+
+    this.autoValidateTriggered = true;
+    queueMicrotask(() => {
+      this.handleValidate(true);
+    });
+  } 
+
+  onSubmit() {
+    this.formService.triggerSubmit();
   }
 
   onApprove() {
@@ -344,7 +441,8 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
           ref.onClose.subscribe((result) => {
             if (result) {
               this.getInvoiceStatus();
-              this.navigationBack();
+              //this.navigationBack();
+              this.loadNext();
             }
           });
         }
@@ -381,7 +479,8 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
           ref.onClose.subscribe((result) => {
             if (result) {
               this.getInvoiceStatus();
-              this.navigationBack();
+              //this.navigationBack();
+              this.loadNext();
             }
           });
         }
@@ -418,7 +517,8 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
           ref.onClose.subscribe((result) => {
             if (result) {
               this.getInvoiceStatus();
-              this.navigationBack();
+              //this.navigationBack();
+              this.loadNext();
             }
           });
         }
@@ -518,7 +618,7 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  handleValidate() {
+  handleValidate(isOnLoad: boolean) {
     const invoiceForm = this.invInvComp.invInfoForm.getRawValue();
     const allocForm = this.invLinesComp.invoiceAllocationItems;
     const invoicePayload = {
@@ -530,7 +630,7 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
       this.invInvComp.invInfoForm.markAllAsTouched();
     }
     if (this.invInvComp.invInfoForm.valid) {
-      this.validateInvoiceForm(invoicePayload);
+      this.validateInvoiceForm(invoicePayload,isOnLoad);
     }
   }
 
@@ -552,6 +652,9 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
       this.formService.openInvAttachmentDialog$.subscribe(() => {
         this.AddAttachment();
       });
+      //Refresh attachments immediately when an attachment is added/removed
+       this.formService.attachmentChanged$.pipe(takeUntil(this.destroy$))
+       .subscribe(() => this.getAttachments()); 
     this.openInvoiceActivityLogDialogSub =
       this.formService.openInvActivityLog$.subscribe(() => {
         this.OpenInvoiceActivityLog();
@@ -568,7 +671,9 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.validateSub = this.formService.validate$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.handleValidate());
+      .subscribe(() => {
+          this.handleValidate(false);
+      });
   }
 
   private listenToInvoiceChanges(): void {
@@ -685,12 +790,16 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     return { label, changeColor };
   }
-  private validateInvoiceForm(invoiceForm: InvoiceDto) {
+  private validateInvoiceForm(invoiceForm: InvoiceDto, isOnLoad: boolean) {
     this.loaderService.show();
-    this.invDetail.validateInvoice(invoiceForm).subscribe({
+    this.invDetail.validateInvoice(invoiceForm,isOnLoad).subscribe({
       next: (response) => {
         if (response.isSuccess) {
           const validateResponse = response.responseData!;
+
+          this.autoValidate = !!response?.responseData?.isOnLoad &&
+                              response?.responseData?.failureMessages === '';
+
           const { validationMessage, validationHeader } =
             this.extractValidationDetails(validateResponse, response.messages!);
           this.invValidationMessages = validationMessage;
@@ -700,6 +809,10 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
       },
       error: (error: ResponseResult<InvValidationResponseDto>) => {
         const validateResponse = error.responseData!;
+
+        this.autoValidate = !!error?.responseData?.isOnLoad &&
+                            error?.responseData?.failureMessages === '';
+
         const { validationMessage, validationHeader } =
           this.extractValidationDetails(validateResponse);
         this.invValidationMessages = validationMessage;
@@ -717,7 +830,15 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
       next: (response) => {
         if (response.isSuccess) {
           const submitresponse = response.responseData!;
-
+          if(submitresponse === null){
+            this.message.showToast(
+              MessageSeverity.success.toString(),
+              'Approve',
+              'Invoice successfully approved for payment',
+              2000
+            );
+            this.loadNext();
+          }
           const { validationMessage, validationHeader } =
             this.extractValidationDetails(submitresponse, response.messages!);
           this.invSubmissionMessages = validationMessage;
@@ -784,7 +905,8 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
             response.messages?.[0],
             2000
           );
-          this.navigationBack();
+          this.loaderService.hide();
+          this.loadNext();
         }
       },
       error: (error: ResponseResult<InvValidationResponseDto>) => {
@@ -870,6 +992,8 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
 
       case InvoiceActionButton.Reactivate:
         return this.queueroute === InvoiceQueue.RejectionQueue;
+      case InvoiceActionButton.Submit:
+        return this.canSubmitInvoice 
 
       default:
         return false;
@@ -915,6 +1039,7 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
       dismissableMask: true,
       baseZIndex: 1200,
     });
+    // attachment are refreshed  via 'attachmentChanged$ from the attchment component
   }
 
   OpenPurchaseOrder() {
@@ -944,6 +1069,136 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
     this.dialogService.getInstance(ref).maximize();
   }
 
+  openCommentMenu(event: any, index: number) {
+    this.selectedCommentIndex = index;
+   this.commentMenuItems = [
+   // {
+   //   label: 'Edit',
+   //   icon: 'pi pi-pencil',
+    //   command: () => {
+  //     this.startEditComment(index);
+   //   },
+   // },
+   {
+        label: 'Delete',
+       icon: 'pi pi-trash',
+        command: () => {
+        this.confirmDeleteComment(index);
+       },
+      },
+   ];
+
+
+
+   try {
+  this.commentMenu.toggle(event);
+  } catch {
+ // ignore
+    }
+   }
+
+
+
+    startEditComment(index: number | null) {
+   if (index === null || index === undefined) return;
+    this.editingIndex = index;
+    this.editCommentText = this.invoiceComments[index]?.comment ?? '';
+    }
+
+
+
+   cancelEdit() {
+     this.editingIndex = null;
+     this.editCommentText = '';
+    }
+
+
+
+     saveEditedComment() {
+     if (this.editingIndex === null) return;
+     const idx = this.editingIndex;
+     const existing = this.invoiceComments[idx];
+       const payload: InvoiceCommentDto = {
+     invoiceCommentID: existing.invoiceCommentID,
+     invoiceID: this.invoiceID || 0,
+      comment: this.editCommentText,
+    };
+
+
+
+ this.invDetail.saveinvoiceComment(payload).subscribe({
+           next: (res) => {
+          if (res.isSuccess) {
+                this.message.showToast(
+            MessageSeverity.success.toString(),
+            'Comment Edited',
+                'Comment updated',
+         2000
+         );
+         }
+       },
+        error: (err) => {
+       this.message.showToast(
+         MessageSeverity.error.toString(),
+        'Edit Comment',
+          err.messages?.[0],
+        2000
+       );
+        },
+       complete: () => {
+         this.editingIndex = null;
+        this.editCommentText = '';
+       this.loadData(1);
+      },
+      });
+    }
+
+
+
+    confirmDeleteComment(index: number | null) {
+     if (index === null) return;
+     this.customConfirmService.confirm({
+     message: 'Are you sure you want to delete this comment?',
+     header: 'Delete Comment',
+      accept: () => this.deleteComment(index),
+      reject: () => {},
+     });
+    }
+
+
+
+   deleteComment(index: number) {
+     if (index >= 0 && index < this.invoiceComments.length) {
+       this.invDetail.deleteInvoiceComment(this.invoiceComments[index]).subscribe({
+         next: (response) => {
+         if (response.isSuccess) {
+          this.message.showToast(
+            MessageSeverity.success.toString(),
+           'Comment Deleted',
+             'Successfully deleted.',
+            2000
+            );
+          }
+          },
+          error: (error: ResponseResult<boolean>) => {
+            this.message.showToast(
+           MessageSeverity.error.toString(),
+           'Error on Deleting Comment',
+             error.messages?.[0],
+          2000
+          );
+         },
+        complete: () => {
+      this.loadData(1);
+      },
+   });
+
+
+ }
+ }
+
+
+
   OpenInvoiceValidation(messages: string[], title: string, action: string) {
     const ref = this.dialogService.open(InvoiceValidationResponseComponent, {
       header: title,
@@ -960,7 +1215,7 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
     ref.onClose.subscribe((result) => {
       if (result) {
         if (title === 'Submit Action') {
-          this.navigationBack();
+          this.loadNext();
         } else {
           this.getInvoiceStatus();
         }
@@ -1024,6 +1279,8 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
           );
         },
       });
+      this.autoValidateTriggered = false;
+      //this.triggerValidateOnLoad();
   }
 
   loadNext(): void {
@@ -1074,6 +1331,8 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
           );
         },
       });
+      this.autoValidateTriggered = false;
+      //this.triggerValidateOnLoad();
   }
 
   private navigateToInvoice(invoiceId: number): void {
@@ -1178,8 +1437,8 @@ private initializeDynamicGrid() {
           if (res.isSuccess) {
             this.totalRecords = res.responseData?.totalCount ?? 0;
             this.invoiceComments = res.responseData?.data ?? [];
-            console.log('Total Records:', this.totalRecords);
-            console.log('Total ResponseData:', this.invoiceComments);
+         //   console.log('Total Records:', this.totalRecords);
+          //  console.log('Total ResponseData:', this.invoiceComments);
           }
         },
         error: () => {
@@ -1213,5 +1472,9 @@ private initializeDynamicGrid() {
         },
       });
     }
+  }
+
+  ShowValidationBox() : boolean {
+    return (this.invValidationMessages.length > 0 || this.reason != '') ? true : false;
   }
 }

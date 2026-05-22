@@ -39,6 +39,11 @@ export const INV_ENPOINT = {
   CHANGE_HOLD_STATE: `${inv_base_endpoint}/changeHoldState`,
   ADD_COMMENTS: `${inv_base_endpoint}/addinvoicecomment`,
   UPLOAD_ATTACHMENT: `${inv_base_endpoint}/upload`,
+  ADD_ADVANCESEARCH: `${inv_base_endpoint}/addAdvanceSearch`,
+  UPDATE_ADVANCESEARCH : `${inv_base_endpoint}/updateAdvanceSearch`,
+  GET_ADVANCESEARCH: (formName : string) => `${inv_base_endpoint}/${formName}/getAdvanceSearchByFormName`,
+  DELETE_ADVANCESEARCH : (advanceSearhcId : number ) => `${inv_base_endpoint}/${advanceSearhcId}`,
+  DELETE_COMMENT: `${inv_base_endpoint}/deleteinvoicecomment`,
   DOWNLOAD_ATTACHMENT: (InvoiceAttachnmentID: number) =>
     `${inv_base_endpoint}/${InvoiceAttachnmentID}/downloadattachment`,
   GETALL_ATTACHMENT: (InvoiceID: number) =>

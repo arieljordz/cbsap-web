@@ -31,6 +31,8 @@ import {
   MyInvoiceSearchConfig,
   buildMyInvoiceSearchConfig,
 } from '@core/model/invoicing/invoice/invoice-search.configs';
+import { MyInvoiceAdvanceSearchComponent } from '../my-invoice-advance-search/my-invoice-advance-search.component';
+import { ADVANCESEARCH_CONSTANT } from '@core/constants/advance-search/advance-search-constants';
 
 @Component({
   selector: 'app-my-invoice-search',
@@ -94,7 +96,8 @@ export class MyInvoiceSearchComponent
     private excelService: ExcelService,
     private dynamicGridService: DynamicGridService<InvMyInvoiceSearchDto>,
     private invDetailService: InvoiceDetailService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private dialogService: DialogService,
   ) {}
 
   ngOnDestroy(): void {
@@ -114,7 +117,9 @@ export class MyInvoiceSearchComponent
   }
 
   search(event: MyInvoiceSearchModel) {
+    console.log(this.myInvoiceFilter);
     this.myInvoiceFilter = event;
+    console.log(event);
     setTimeout(() => {
       if (this.selectInvoiceTemplate) {
         this.initializeDynamicGrid();
@@ -324,6 +329,7 @@ export class MyInvoiceSearchComponent
 
   editInvoice(invoice: any) {
     const id = invoice.invoiceID;
+    /*by pass this */
     localStorage.setItem('myinvoice-search',JSON.stringify(this.myInvoiceFilter));
     this.router.navigate(['invoices', id, 'edit'], {
       state: { returnUrl: this.router.url },
@@ -334,4 +340,22 @@ export class MyInvoiceSearchComponent
     const timestamp = this.datePipe.transform(new Date(), 'yyyyMMdd_HHmmss');
     return `MyInvoices_${timestamp}.xlsx`;
   }
+  
+  advanceSearch() {
+
+    this.dialogService.open(MyInvoiceAdvanceSearchComponent, {
+      width: '900px',
+      style: { minHeight: '200px' },
+      modal: true,
+      closable: true,
+      baseZIndex: 1200,
+      header : 'Advance Search',
+      data :{
+        formName : ADVANCESEARCH_CONSTANT.FORMNAME.MYINVOICEQUEUE
+      }
+    });
+
+
+  }
+
 }

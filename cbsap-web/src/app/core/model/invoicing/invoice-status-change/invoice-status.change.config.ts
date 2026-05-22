@@ -29,6 +29,7 @@ export const QueueActionConfigMap: Partial<
       buttonLabel: 'Route to Exception',
       color: 'warn',
     },
+    
   },
   [InvoiceQueue.ExceptionQueue]: {
     [InvoiceActionButton.Hold]: {

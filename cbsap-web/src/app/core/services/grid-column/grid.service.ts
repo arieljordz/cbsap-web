@@ -426,6 +426,28 @@ export class GridService {
     ];
   }
 
+  supplierBankAccountColumn(): TableColumn[]{
+        return [
+        {
+          field: 'bankAccountNumber',
+          header: 'Bank Account No',
+          sort: true,
+          isSearchFilter: true,
+        },
+        {
+          field: 'bankName',
+          header: 'Bank Name',
+          sort: true,
+          isSearchFilter: true,
+        },
+        {
+          field: 'isActive',
+          header: 'Active Status',
+          sort: true,
+          isSearchFilter: true,
+        }]
+  }
+
   entitySelectGridColumn(): TableColumn[] {
     return [
       {
@@ -990,14 +1012,13 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         header: 'Gross Amount',
         sort: true,
         isSearchFilter: true,
-      },
-      
-      // {
-      //   field: 'nextRole',
-      //   header: 'Next Role',
-      //   sort: true,
-      //   isSearchFilter: true,
-      // },
+      },  
+      {
+        field: 'reason',
+        header: 'Reason',
+        sort: true,
+        isSearchFilter: true,
+      }
     ];
   }
 
@@ -1388,7 +1409,7 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
     ];
   }
 
-    /** Invoice Inquiry Grid Column */
+
   invoiceInquiryGridColumn(): TableColumn[] {
     return [
       {
@@ -1398,7 +1419,7 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         isSearchFilter: true,
         type: 'text',
       },
-
+ 
       {
         field: 'supplierName',
         header: 'Supplier Name',
@@ -1461,7 +1482,7 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
       },
       {
         field: 'status',
-        header: 'Status',
+        header: 'status',
         sort: true,
         isSearchFilter: true,
         type: 'text',
@@ -1482,5 +1503,7 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
       },
     ];
   }
+
+
 
 }
