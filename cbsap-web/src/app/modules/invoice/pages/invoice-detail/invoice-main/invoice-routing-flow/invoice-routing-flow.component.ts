@@ -371,20 +371,6 @@ export class InvoiceRoutingFlowComponent
     return this.routingFlowLevels.length === 1;
   }
 
-  ]);
-
-   isInvoiceLocked(): boolean {
-     
-    return this.lockedInvoiceStatuses.has(this.invoiceStatus!);
-
-    
-}
-
-   hasSingleLevel(): boolean {  return this.routingFlowLevels.length === 1;
-
-                                       
-
-   }
 
    canRemoveLevel(index:number): boolean {
 
