@@ -1,6 +1,5 @@
-
-export interface AssignRoleCommand {
-  roleID: number;
-  invoiceID: number;
-  level: number;
+export interface AssignRoleCommand{
+    roleID: number;
+    invoiceID: number;
+    level: number;
 }

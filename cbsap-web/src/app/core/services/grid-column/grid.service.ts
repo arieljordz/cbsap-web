@@ -420,6 +420,28 @@ export class GridService {
     ];
   }
 
+  supplierBankAccountColumn(): TableColumn[]{
+        return [
+        {
+          field: 'bankAccountNumber',
+          header: 'Bank Account No',
+          sort: true,
+          isSearchFilter: true,
+        },
+        {
+          field: 'bankName',
+          header: 'Bank Name',
+          sort: true,
+          isSearchFilter: true,
+        },
+        {
+          field: 'isActive',
+          header: 'Active Status',
+          sort: true,
+          isSearchFilter: true,
+        }]
+  }
+
   entitySelectGridColumn(): TableColumn[] {
     return [
       {
@@ -984,14 +1006,13 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         header: 'Gross Amount',
         sort: true,
         isSearchFilter: true,
-      },
-      
-      // {
-      //   field: 'nextRole',
-      //   header: 'Next Role',
-      //   sort: true,
-      //   isSearchFilter: true,
-      // },
+      },  
+      {
+        field: 'reason',
+        header: 'Reason',
+        sort: true,
+        isSearchFilter: true,
+      }
     ];
   }
 
@@ -1382,7 +1403,7 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
     ];
   }
 
-    /** Invoice Inquiry Grid Column */
+
   invoiceInquiryGridColumn(): TableColumn[] {
     return [
       {
@@ -1392,7 +1413,7 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         isSearchFilter: true,
         type: 'text',
       },
-
+ 
       {
         field: 'supplierName',
         header: 'Supplier Name',
@@ -1438,26 +1459,46 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         type: 'text',
       },
       {
-        field: 'nextRole',
-        header: 'Next Role',
+        field: 'paymentDate',
+        header: 'Payment Date',
         sort: true,
         isSearchFilter: true,
+        type: 'date',
+        pipe: 'date',
       },
       {
-        field: 'exceptionReason',
-        header: 'Exception Reason',
+        field: 'scanDate',
+        header: 'Scan Date',
         sort: true,
         isSearchFilter: true,
-        type: 'text',
+        type: 'date',
+        pipe: 'date',
       },
       {
         field: 'status',
-        header: 'Status',
+        header: 'status',
         sort: true,
         isSearchFilter: true,
         type: 'text',
       },
+      {
+        field: 'Role',
+        header: 'Role',
+        sort: true,
+        isSearchFilter: true,
+        type: 'text',
+        
+      },
+      {
+        field: 'approvedBy',
+        header: 'Approved By',
+        sort: true,
+        isSearchFilter: true,
+        type: 'text',
+      }
     ];
   }
+
+
 
 }

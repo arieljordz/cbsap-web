@@ -1,0 +1,39 @@
+$grid-fontSize: 0.781rem;
+.word-wrap {
+ white-space: normal !important;
+ word-break: break-word;
+ word-wrap: break-word;
+ max-width: 8.125rem; /* Optional: controls width before wrap */
+}
+
+
+
+:host ::ng-deep .p-datatable {
+font-size: $grid-fontSize;
+}
+
+
+
+:host
+ ::ng-deep
+ .p-datatable-hoverable
+.p-datatable-tbody
+> tr:not(.p-datatable-row-selected):hover {
+cursor: pointer !important;
+}
+
+
+:host ::ng-deep .p-datatable table {
+ border-collapse: collapse;
+}
+
+
+
+:host ::ng-deep .p-datatable th,
+:host ::ng-deep .p-datatable td {
+
+
+
+border: 1px solid #d1d5db;
+padding: 6px 8px;
+}

@@ -10,6 +10,7 @@
       class="rounded-full p-button-outlined p-button-sm"
       (click)="addAlocationRow()"
       *ngIf="isAddAllocationLineVisible"
+      [disabled]="disableInvoiceLineAllocation()"
     >
     <i class="pi pi-plus"></i>
       <span class="font-bold"> Add Invoice Line</span>
@@ -329,6 +330,7 @@
                   (click)="editAllocRow(ri)"
                   *ngIf="isAddAllocationLineVisible"
                   severity="contrast"
+                  [disabled]="disableInvoiceLineAllocation()"
                 ></button>
               </ng-container>
 
@@ -339,6 +341,7 @@
                   class="p-button-sm p-button-success p-button-text"
                   (click)="saveRow(ri)"
                   *ngIf="isAddAllocationLineVisible"
+                  [disabled]="disableInvoiceLineAllocation()"
                 ></button>
                 <button
                   pButton
@@ -346,6 +349,7 @@
                   class="p-button-sm p-button-warning p-button-text"
                   (click)="cancelEdit(ri)"
                   *ngIf="isAddAllocationLineVisible"
+                  [disabled]="disableInvoiceLineAllocation()"
                 ></button>
               </ng-container>
 
@@ -356,6 +360,7 @@
                   icon="pi pi-trash"
                   class="p-button-sm p-button-danger p-button-text"
                   (click)="deleteRow(ri)"
+                  [disabled]="disableInvoiceLineAllocation()"
                 ></button>
               </ng-container>
             </td>

@@ -1,8 +1,5 @@
 <form [formGroup]="invInfoForm">
-  <div class="mb-4" *ngIf="messages.length > 0">      
-      <app-invoice-validation-message [messages]="messages" [invoiceValidationHeader]="invoiceValidationHeader">
-      </app-invoice-validation-message>
-    </div>
+
   <p-panel [toggleable]="true" styleClass="mb-4 panel-items">
     <ng-template #header>
       <div class="flex items-center gap-2">
@@ -111,7 +108,7 @@
             </div>
           </div>
         </div>
-        <div class="grid grid-cols-12 items-center gap-2">
+        <!-- <div class="grid grid-cols-12 items-center gap-2">
           <label for="grNo" class="col-span-12 md:col-span-4 font-medium">Good Receipt No</label>
           <div class="col-span-12 md:col-span-8">
             <p-inputgroup>
@@ -123,6 +120,14 @@
             </p-inputgroup>
             
           </div>
+        </div> -->
+
+         <div class="grid grid-cols-12 items-center gap-2">
+          <label for="email" class="col-span-12 md:col-span-4 font-medium">Due Date</label>
+          <div class="col-span-12 md:col-span-8">
+            <p-datepicker formControlName="dueDate"  [showIcon]="true" dateFormat="dd/mm/yy"
+              styleClass="w-full" inputStyleClass="w-full" [ngClass]="{ 'readonly-datepicker': isReadOnly('dueDate') }"/>
+          </div>          
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
@@ -139,13 +144,7 @@
                 </div>
               </div>
             </div>        
-        <div class="grid grid-cols-12 items-center gap-2">
-          <label for="email" class="col-span-12 md:col-span-4 font-medium">Due Date</label>
-          <div class="col-span-12 md:col-span-8">
-            <p-datepicker formControlName="dueDate"  [showIcon]="true" dateFormat="dd/mm/yy"
-              styleClass="w-full" inputStyleClass="w-full" [ngClass]="{ 'readonly-datepicker': isReadOnly('dueDate') }"/>
-          </div>          
-        </div>
+       
         
          <!-- <div class="grid grid-cols-12 items-center gap-2">
             <label for="note" class="col-span-12 md:col-span-4 font-medium">Note</label>

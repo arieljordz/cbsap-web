@@ -19,4 +19,9 @@ export interface TableColumn {
     | 'actionButtons'
     | 'checkbox'
     | 'tag';
-}
+
+
+
+
+}   
+   

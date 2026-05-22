@@ -1,1 +1,1 @@
-export const INVOICE_INQUIRY ='v1/InvoiceInquiry';
+export const INVOICE_INQUIRY = 'v1/InvoiceInquiry';

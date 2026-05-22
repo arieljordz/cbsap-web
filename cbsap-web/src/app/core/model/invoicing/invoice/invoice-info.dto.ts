@@ -37,6 +37,7 @@ export interface InvInfoDto {
   invDueDateCalculation:number;
   defaultInvoiceDueInDays: number;
   nextRole: string;
+  reason : string;
 }
 
 export interface FreeFieldDto {
@@ -91,6 +92,7 @@ export interface InvoiceDto {
   spareAmount: SpareAmountDto[];
   invoiceAllocationLines: InvAllocEntryDto[];
   invInfoRoutingLevels: InvInfoRoutingLevelDto[];
+  reason : string;
 }
 
 export interface InvMyInvoiceSearchDto {
@@ -130,9 +132,9 @@ export interface RejectedInvoiceSearchDto {
   poNo: string | null;
   dueDate: string | null;
   grossAmount: number | null;
-
   invoiceApprover: string | null;
   archiveDate: string | null;
+  reason : string | null;
 }
 
 /**Exception Queue */

@@ -10,6 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageSeverity } from '@core/constants';
+import { ADVANCESEARCH_CONSTANT } from '@core/constants/advance-search/advance-search-constants';
 import { ResponseResult, TableColumn } from '@core/model/common';
 import { GridConfig } from '@core/model/dynamic-grid/grid.config';
 import { ExceptionInvoiceSearchDto } from '@core/model/invoicing/invoice/invoice-info.dto';
@@ -31,6 +32,7 @@ import { AccountSearchComponent } from '@shared/popup/account-search/account-sea
 import { QuickSearchComponent } from '@shared/quick-search/quick-search.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Subject, takeUntil } from 'rxjs';
+import { MyInvoiceAdvanceSearchComponent } from '../my-invoice-advance-search/my-invoice-advance-search.component';
 
 @Component({
   selector: 'app-exception-queue-search',
@@ -95,7 +97,8 @@ export class ExceptionQueueSearchComponent
     private excelService: ExcelService,
     private dynamicGridService: DynamicGridService<ExceptionInvoiceSearchDto>,
     private invDetailService: InvoiceDetailService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private dialogService: DialogService
   ) {}
   ngOnInit(): void {
     this.dynamicGridService.setGridKey("exception-queue-grid");
@@ -277,5 +280,20 @@ export class ExceptionQueueSearchComponent
   getTimestampedFileName(): string {
     const timestamp = this.datePipe.transform(new Date(), 'yyyyMMdd_HHmmss');
     return `ExceptionQueue_${timestamp}.xlsx`;
+  }
+
+  advanceSearch() {
+
+    this.dialogService.open(MyInvoiceAdvanceSearchComponent, {
+      width: '900px',
+      style: { minHeight: '200px' },
+      modal: true,
+      closable: true,
+      baseZIndex: 1200,
+      header : 'Advance Search',
+      data :{
+        formName : ADVANCESEARCH_CONSTANT.FORMNAME.EXCEPTIONQUEUE
+      }
+    });
   }
 }
