@@ -257,11 +257,13 @@
                               >
                                 <p-button
                                   icon="pi pi-trash"
-                                  class="p-button-rounded p-button-text"
+                                  [text]="true"
+                                  [rounded]="true"
+                                  severity="danger"
                                   (click)="confirmDeleteComment(i)"
                                   aria-label="Delete Comment"
-                                  ></p-button
                                 >
+                                </p-button>
                               </div>
                             </div>
 
