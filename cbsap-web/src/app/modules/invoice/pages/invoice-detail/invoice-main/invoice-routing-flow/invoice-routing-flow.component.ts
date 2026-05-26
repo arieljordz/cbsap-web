@@ -70,7 +70,6 @@ export class InvoiceRoutingFlowComponent
   @Input() invoiceID: number = 0;
   @Input() keywordID: number | null = null;
   @Input() supplierInfoID: number | null = null;
-  @Input() entityProfileID: number | null = null;
   @Input() invoiceStatus?: InvoiceStatusEnum | null;
   currentLevelIndex: number | null = null;
 
@@ -306,7 +305,6 @@ export class InvoiceRoutingFlowComponent
         invoiceID: this.invoiceID,
         keywordID: this.keywordID,
         supplierInfoID: this.supplierInfoID,
-        entityProfileID: this.entityProfileID,
         level: index !== undefined ? index + 1 : roles.length + 1,
         isNew: false
       },

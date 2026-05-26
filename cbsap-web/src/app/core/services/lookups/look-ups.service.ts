@@ -68,17 +68,6 @@ export class LookUpsService {
     );
   }
 
-  getRolesByEntityIDLookUps(entityId:number): Observable<ResponseResult<RoleDTO[]>> {
-    return this.resultHttpClient.get<RoleDTO[]>(`${ROLES_LOOKUP}/${entityId}`, true).pipe(
-      map((response) => {
-        return response;
-      }),
-      catchError((error: HttpErrorResponse) => {
-        return throwError(() => error);
-      })
-    );
-  }
-
   getInvRoutingFlowLookUps(): Observable<
     ResponseResult<InvRoutingFlowLookupDto[]>
   > {
