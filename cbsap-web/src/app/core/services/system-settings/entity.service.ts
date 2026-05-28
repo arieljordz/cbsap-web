@@ -164,4 +164,18 @@ export class EntityService {
           })
         );
     }
+
+  getAllEntitiesByRole(roleID: number): Observable<ResponseResult<GetAllEntityDto[]>> {
+    return this.resultHttpClient
+      .get<GetAllEntityDto[]>(`${ENTITYPROFILE}/role/${roleID}/entities`, true)
+      .pipe(
+        map((response) => {
+          return response;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+        })
+      );
+  }
+
 }

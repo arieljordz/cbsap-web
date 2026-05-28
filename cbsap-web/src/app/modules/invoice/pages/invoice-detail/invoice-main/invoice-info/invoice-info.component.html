@@ -79,7 +79,7 @@
         <div class="grid grid-cols-12 items-center gap-2">
           <label for="entity" class="col-span-12 md:col-span-4 font-medium">Entity</label>
           <div class="col-span-12 md:col-span-8">
-            <p-select class="w-full" formControlName="entityProfileID"  [options]="entityOptions"
+            <p-select class="w-full" formControlName="entityProfileID"  [options]="entityOptionsByRole"
               [filter]="true" filterBy="label" [showClear]="false" [ngClass]="{ 'readonly-select': isReadOnly('entityProfileID') }"> </p-select>
           </div>
         </div>
