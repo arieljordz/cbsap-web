@@ -30,7 +30,7 @@ export class RoutingflowRoleSelectorComponent implements OnInit, OnDestroy {
   roleSelectorForm!: FormGroup;
   private destroy$ = new Subject<void>();
   rolesOptions?: SelectItem[] = [];
-  readonly roleOptions$ = this.lookUpOptionService.rolesLookUpOptions$;
+  readonly roleOptions$ = this.lookUpOptionService.canBeAddedRolesLookUpOptions$;
 
   excludesSelectedRoleIds: number[] = [];
 
