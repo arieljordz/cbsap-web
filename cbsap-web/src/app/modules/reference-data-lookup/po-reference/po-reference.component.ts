@@ -57,7 +57,7 @@ export class PoReferenceComponent implements OnInit, OnDestroy {
   searchFilters: Record<string, any> = {
     entityName: '',
     poNo: '',
-    supplier: '',
+    supplierName: '',
     isActive: null,
   };
 
@@ -114,7 +114,7 @@ export class PoReferenceComponent implements OnInit, OnDestroy {
     const query: POSearchQuery = {
       EntityName: searchCriteria.entityName! ?? null,
       PONo: searchCriteria.poNo! ?? null,
-      Supplier: searchCriteria.supplierName! ?? null,
+      SupplierName: searchCriteria.supplierName! ?? null,
       IsActive: searchCriteria.isActive! ?? null,
       PageNumber: pageNumber,
       PageSize: rows,
@@ -130,7 +130,7 @@ export class PoReferenceComponent implements OnInit, OnDestroy {
     let query: POSearchQuery = {
       PONo: searchCriteria.poNo ?? null,
       EntityName: searchCriteria.entityName ?? null,
-      Supplier: searchCriteria.supplierName ?? null,
+      SupplierName: searchCriteria.supplierName ?? null,
       IsActive: searchCriteria.isActive ?? null,
       PageNumber: pageNumber,
       PageSize: this.gridConfig?.pageSize ?? 10,
@@ -183,7 +183,7 @@ export class PoReferenceComponent implements OnInit, OnDestroy {
     let exportQuery: ExportPOSearchQuery = {
       PONo: searchCriteria.poNo ?? null,
       EntityName: searchCriteria.entityName ?? null,
-      Supplier: searchCriteria.supplierName ?? null,
+      SupplierName: searchCriteria.supplierName ?? null,
       IsActive: searchCriteria.isActive ?? null,
     };
     this.purchaseOrderService

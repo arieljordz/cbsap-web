@@ -1,9 +1,8 @@
 <p-confirmDialog [style]="{ width: '20vw', height: '200px' }" />
 
-
 <p-splitter styleClass="w-full h-full mb-8" [panelSizes]="[40, 60]">
   <ng-template pTemplate>
-    <div class="w-full bg-white p-4 h-full">      
+    <div class="w-full bg-white p-4 h-full">
       <app-invoice-image-viewer
         [invoiceId]="invoiceID"
       ></app-invoice-image-viewer>
@@ -11,227 +10,329 @@
   </ng-template>
   <ng-template pTemplate>
     <div class="w-full h-full">
- <app-invoice-actions
-  [currentStatus]="invoiceStatus"
-  [currentQueue]="queueroute"
-  [permissions]="permissions"
-></app-invoice-actions>
-    <div class="p-4 w-full overflow-auto invoice-details-container" >
-     
-      <!-- Button Above Tabs -->
-      <div class="mb-4 flex justify-between items-center">
-        <div class="flex gap-2">
-          <p-button
-            [raised]="true"
-            *ngIf="isVisibleFor(InvoiceActionButton.Approve)"
-            label="Approve"
-            icon="pi pi-check"
-            [rounded]="true"
-            severity="success"
-            size="small"
-            (click)="onApprove()"
-          />
-          <p-button
-            [raised]="true"
-            *ngIf="isVisibleFor(InvoiceActionButton.Hold) || isVisibleFor(InvoiceActionButton.Unhold)"
-            [label]="isHeld ? 'Un-hold' : 'Hold'"
-            [icon]="isHeld ? 'pi pi-play' : 'pi pi-pause'"
-            [rounded]="true"
-            [severity]="isHeld ? 'warn' : 'warn'"
-            size="small"
-            (click)="onToggleHold()"
-          />
-          <p-button
-            [raised]="true"
-            *ngIf="isVisibleFor(InvoiceActionButton.RouteToException)"
-            label="Route to Exception"
-            icon="pi pi-directions"
-            [rounded]="true"
-            severity="contrast"
-            size="small"
-            (click)="onRouteToException()"
-          />
-          <p-button
-            [raised]="true"
-            *ngIf="isVisibleFor(InvoiceActionButton.Reject)"
-            label="Reject"
-            icon="pi pi-thumbs-down"
-            [rounded]="true"
-            severity="danger"
-            size="small"
-            (click)="onReject()"
-          />
-          <p-button
-            [raised]="true"
-            *ngIf="isVisibleFor(InvoiceActionButton.Reactivate)"
-            label="Reactivate"
-            icon="pi pi-refresh"
-            [rounded]="true"
-            severity="contrast"
-            size="small"
-            (click)="onReactivate()"
-          />
-        </div>
+      <app-invoice-actions
+        [currentStatus]="invoiceStatus"
+        [currentQueue]="queueroute"
+        [permissions]="permissions"
+        [attachmentCount]="attachments.length"
+      ></app-invoice-actions>
 
-        <div class="text-gray-700 font-medium">
-          <span
-            class="p-button p-button-rounded p-button-sm p-button-outlined pointer-events-none select-none font-semibold"
-            [ngClass]="changeColor"
-          >
-            Processing Status: {{ status }}
-          </span>
-        </div>
-      </div>
-      <p-tabs value="0" scrollable (valueChange)="onTabSelect($event)">
-        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <p-tablist class="flex-1 min-w-0">
-          <ng-template #previcon>
-            <i class="pi pi-minus"></i>
-          </ng-template>
-          <p-tab value="0" class="flex items-center !gap-2">
-            <i class="pi pi-info-circle"></i>
-            <span class="font-bold whitespace-nowrap">Invoice Information</span>
-          </p-tab>
-          <p-tab value="1" class="flex items-center !gap-2">
-            <i class="pi pi-list"></i>
-            <span class="font-bold whitespace-nowrap"
-              >Invoice Line Allocation</span
+      <div class="p-4 w-full overflow-auto invoice-details-container">
+        <!-- Button Above Tabs -->
+        <div class="mb-4 flex justify-between items-center">
+          <div class="flex gap-2">
+            <p-button
+              [raised]="true"
+              *ngIf="isVisibleFor(InvoiceActionButton.Submit)"
+              label="Submit"
+              icon="pi pi-check"
+              [rounded]="true"
+              severity="secondary"
+              size="small"
+              (click)="onSubmit()"
+            />
+            <p-button
+              [raised]="true"
+              *ngIf="isVisibleFor(InvoiceActionButton.Approve)"
+              label="Approve"
+              icon="pi pi-check"
+              [rounded]="true"
+              severity="success"
+              size="small"
+              (click)="onApprove()"
+            />
+            <p-button
+              [raised]="true"
+              *ngIf="
+                isVisibleFor(InvoiceActionButton.Hold) ||
+                isVisibleFor(InvoiceActionButton.Unhold)
+              "
+              [label]="isHeld ? 'Un-hold' : 'Hold'"
+              [icon]="isHeld ? 'pi pi-play' : 'pi pi-pause'"
+              [rounded]="true"
+              [severity]="isHeld ? 'warn' : 'warn'"
+              size="small"
+              (click)="onToggleHold()"
+            />
+            <p-button
+              [raised]="true"
+              *ngIf="isVisibleFor(InvoiceActionButton.RouteToException)"
+              label="Route to Exception"
+              icon="pi pi-directions"
+              [rounded]="true"
+              severity="contrast"
+              size="small"
+              (click)="onRouteToException()"
+            />
+            <p-button
+              [raised]="true"
+              *ngIf="isVisibleFor(InvoiceActionButton.Reject)"
+              label="Reject"
+              icon="pi pi-thumbs-down"
+              [rounded]="true"
+              severity="danger"
+              size="small"
+              (click)="onReject()"
+            />
+            <p-button
+              [raised]="true"
+              *ngIf="isVisibleFor(InvoiceActionButton.Reactivate)"
+              label="Reactivate"
+              icon="pi pi-refresh"
+              [rounded]="true"
+              severity="contrast"
+              size="small"
+              (click)="onReactivate()"
+            />
+          </div>
+
+          <div class="text-gray-700 font-medium">
+            <span
+              class="p-button p-button-rounded p-button-sm p-button-outlined pointer-events-none select-none font-semibold"
+              [ngClass]="changeColor"
             >
-          </p-tab>
-          <p-tab value="2" class="flex items-center !gap-2">
-            <i class="pi pi pi-sync"></i>
-            <span class="font-bold whitespace-nowrap">Routing Flow</span>
-          </p-tab>
-          <p-tab value="3" class="flex items-center !gap-2">
-            <i class="pi pi-envelope"></i>
-            <span class="font-bold whitespace-nowrap">Comments</span>
-            <p-badge value="{{invoiceComments.length}}" class="ml-1"></p-badge>
-          </p-tab>
-          </p-tablist>
-          <div class="flex items-center gap-2 self-end lg:self-auto">
-            <p-button
-              icon="pi pi-chevron-left"
-              aria-label="Previous invoice"
-              size="large"
-              severity="secondary"
-              variant="outlined"
-              pTooltip="Previous invoice in same status & queue"
-              tooltipPosition="top"
-              [loading]="isPreviousInvoiceLoading"
-              [disabled]="isPreviousInvoiceLoading || hasPreviousInvoice === false"
-              (click)="loadPrevious()"
-            ></p-button>
-            <p-button
-              icon="pi pi-chevron-right"
-              aria-label="Next invoice"
-              size="large"
-              severity="secondary"
-              variant="outlined"
-              pTooltip="Next invoice in same status & queue"
-              tooltipPosition="top"
-              [loading]="isNextInvoiceLoading"
-              [disabled]="isNextInvoiceLoading || hasNextInvoice === false"
-              (click)="loadNext()"
-            ></p-button>
+              Processing Status: {{ status }}
+            </span>
           </div>
         </div>
-        <p-tabpanels>
-          <p-tabpanel value="0">
-            <div class="h-full w-full">
-              <div class="grid grid-cols-1 gap-4 w-full h-full">
-                <!-- Invoice info component -->
-                <app-invoice-info
-                  [invoiceId]="invoiceID"
-                  (invoiceDataLoaded)="invoiceDataLoaded($event)"
-                  [messages]="invValidationMessages"
-                  [invoiceValidationHeader]="invoiceValidationHeader"
-                  (amounts)="handleAmountsChange($event)"
+        <div class="mb-4" *ngIf="ShowValidationBox()">
+          <app-invoice-validation-message
+            [messages]="invValidationMessages"
+            [invoiceValidationHeader]="invoiceValidationHeader"
+            [reason]="reason"
+            *ngIf="!autoValidate"
+          >
+          </app-invoice-validation-message>
+        </div>
+        <p-tabs value="0" scrollable (valueChange)="onTabSelect($event)">
+          <div
+            class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between"
+          >
+            <p-tablist class="flex-1 min-w-0">
+              <ng-template #previcon>
+                <i class="pi pi-minus"></i>
+              </ng-template>
+              <p-tab value="0" class="flex items-center !gap-2">
+                <i class="pi pi-info-circle"></i>
+                <span class="font-bold whitespace-nowrap"
+                  >Invoice Information</span
                 >
-                </app-invoice-info>
-              </div>
+              </p-tab>
+              <p-tab value="1" class="flex items-center !gap-2">
+                <i class="pi pi-list"></i>
+                <span class="font-bold whitespace-nowrap"
+                  >Invoice Line Allocation</span
+                >
+              </p-tab>
+              <p-tab value="2" class="flex items-center !gap-2">
+                <i class="pi pi pi-sync"></i>
+                <span class="font-bold whitespace-nowrap">Routing Flow</span>
+              </p-tab>
+              <p-tab value="3" class="flex items-center !gap-2">
+                <i class="pi pi-envelope"></i>
+                <span class="font-bold whitespace-nowrap">Comments</span>
+                <p-badge
+                  value="{{ invoiceComments.length }}"
+                  class="ml-1"
+                ></p-badge>
+              </p-tab>
+            </p-tablist>
+            <div class="flex items-center gap-2 self-end lg:self-auto">
+              <p-button
+                icon="pi pi-chevron-left"
+                aria-label="Previous invoice"
+                size="large"
+                severity="secondary"
+                variant="outlined"
+                pTooltip="Previous invoice in same status & queue"
+                tooltipPosition="top"
+                [loading]="isPreviousInvoiceLoading"
+                [disabled]="
+                  isPreviousInvoiceLoading || hasPreviousInvoice === false
+                "
+                (click)="loadPrevious()"
+              ></p-button>
+              <p-button
+                icon="pi pi-chevron-right"
+                aria-label="Next invoice"
+                size="large"
+                severity="secondary"
+                variant="outlined"
+                pTooltip="Next invoice in same status & queue"
+                tooltipPosition="top"
+                [loading]="isNextInvoiceLoading"
+                [disabled]="isNextInvoiceLoading || hasNextInvoice === false"
+                (click)="loadNext()"
+              ></p-button>
             </div>
-          </p-tabpanel>
-          <p-tabpanel value="1">
-            <div class="h-full w-full">
-              <div class="grid grid-cols-1 gap-4 w-full h-full">
-                <app-invoice-lines
-                  [invoiceId]="invoiceID"
-                  [invoiceAllocationItems]="invoiceAllocationItems"
-                  [amounts]="currentAmounts"
-                  (itemsChange)="onItemsChange($event)"
-                ></app-invoice-lines>
+          </div>
+          <p-tabpanels>
+            <p-tabpanel value="0">
+              <div class="h-full w-full">
+                <div class="grid grid-cols-1 gap-4 w-full h-full">
+                  <!-- Invoice info component -->
+                  <app-invoice-info
+                    [invoiceId]="invoiceID"
+                    (invoiceDataLoaded)="invoiceDataLoaded($event)"
+                    [messages]="invValidationMessages"
+                    [invoiceValidationHeader]="invoiceValidationHeader"
+                    (amounts)="handleAmountsChange($event)"
+                  >
+                  </app-invoice-info>
+                </div>
               </div>
-            </div>
-          </p-tabpanel>
-          <p-tabpanel value="2">
-            <div class="h-full w-full">
-              <div class="grid grid-cols-1 gap-4 w-full h-full">
-                <p class="m-0">
-                
-                <app-invoice-routing-flow #invroutingFlowComp
+            </p-tabpanel>
+            <p-tabpanel value="1">
+              <div class="h-full w-full">
+                <div class="grid grid-cols-1 gap-4 w-full h-full">
+                  <app-invoice-lines
+                    [invoiceId]="invoiceID"
+                    [invoiceAllocationItems]="invoiceAllocationItems"
+                    [amounts]="currentAmounts"
+                    (itemsChange)="onItemsChange($event)"
+                  ></app-invoice-lines>
+                </div>
+              </div>
+            </p-tabpanel>
+            <p-tabpanel value="2">
+              <div class="h-full w-full">
+                <div class="grid grid-cols-1 gap-4 w-full h-full">
+                  <p class="m-0">
+                    <app-invoice-routing-flow
+                      #invroutingFlowComp
                       [invoiceID]="invoiceID"
                       [keywordID]="keywordID"
                       [supplierInfoID]="supplierInfoID"
                       [invoiceStatus]="invoiceStatus" 
-                      [entityProfileID]="entityProfileID"
                     ></app-invoice-routing-flow>
-                 
-                </p>
+                  </p>
+                </div>
               </div>
-            </div>
-          </p-tabpanel>
-          <p-tabpanel value="3">
-<div class="h-full w-full">
-<div class="grid grid-cols-1 gap-4 w-full h-full">
- 
-                <!-- comments panel -->
-<p-panel [toggleable]="true" styleClass="mb-4 panel-items">
-<ng-template #header>
-<div class="flex items-center gap-2">
-<span class="font-bold">
- <!-- <i class="pi pi-ellipsis-v"></i> -->
-<!--<span class="ml-2">Comments</span> -->
-<!-- <p-badge value="{{invoiceComments.length }}" class="ml-2"></p-badge> -->
-</span>
-</div>
-</ng-template>
- 
-                  <div class="mt-2"><!-- space here --></div>
-<div class="space-y-4 mt-2">
-<div class="flex flex-col items-center w-full"
-                      *ngFor="let comment of invoiceComments; let i = index">
- 
-                      <div class="flex items-center justify-between bg-gray-100 p-3 rounded shadow-sm w-full"        >
-<div class="text-left flex-1">
-<div class="font-semibold mt-2 mb-2">
-<i class="pi pi-user mr-3"></i>
-<span class="mr-2">{{ comment.createdBy }}</span>
-<i class="pi pi-circle-on text-gray-500 mr-2" style="font-size: 6px"></i>
-<small class="font-normal text-gray-500 mt-3">{{ comment.createdDate }}</small>
-</div>
-<small class="font-semiboldtext-gray-500" style="font-size: 14px">{{ comment.comment }}</small>
-</div>
-</div>
-</div>
- 
- <div class="flex flex-col items-center w-full">
-<p-inputgroup class="mt-4">
-<input pInputText placeholder="Add comment" [(ngModel)]="submitComment"/>
-<p-inputgroup-addon>
-<p-button icon="pi pi-send" severity="secondary" variant="text" (click)="onAddComment()" />
-</p-inputgroup-addon>
-</p-inputgroup>
-</div>
-</div>
-</p-panel>
-</div>
-</div>
-</p-tabpanel>
+            </p-tabpanel>
+            <p-tabpanel value="3">
+              <div class="h-full w-full">
+                <div class="grid grid-cols-1 gap-4 w-full h-full">
+                  <!-- comments panel -->
+                  <p-panel [toggleable]="true" styleClass="mb-4 panel-items">
+                    <ng-template #header>
+                      <div class="flex items-center gap-2">
+                        <span class="font-bold">
+                          <!-- <i class="pi pi-ellipsis-v"></i> -->
+                          <!--<span class="ml-2">Comments</span> -->
+                          <!-- <p-badge value="{{invoiceComments.length }}" class="ml-2"></p-badge> -->
+                        </span>
+                      </div>
+                    </ng-template>
 
-        </p-tabpanels>
-      </p-tabs>
-    </div>
-    </div>
+                    <div class="mt-2"><!-- space here --></div>
+                    <div class="space-y-4 mt-2">
+                      <div
+                        class="flex flex-col items-center w-full"
+                        *ngFor="let comment of invoiceComments; let i = index"
+                      >
+                        <div
+                          class="flex items-center justify-between bg-gray-100 p-3 rounded shadow-sm w-full"
+                        >
+                          <div class="text-left flex-1">
+                            <div
+                              class="font-semibold mt-2 mb-2 flex items-center justify-between"
+                            >
+                              <div class="flex items-center">
+                                <i class="pi pi-user mr-3"></i>
+                                <span class="mr-2">{{
+                                  comment.createdBy
+                                }}</span>
+                                <i
+                                  class="pi pi-circle-on text-gray-500 mr-2"
+                                  style="font-size: 6px"
+                                ></i>
+                                <small class="font-normal text-gray-500 mt-3">{{
+                                  comment.createdDate
+                                }}</small>
+                              </div>
+                              <div
+                                class="ml-2"
+                                *ngIf="username === comment.createdBy"
+                              >
+                                <p-button
+                                  icon="pi pi-trash"
+                                  [text]="true"
+                                  [rounded]="true"
+                                  severity="danger"
+                                  (click)="confirmDeleteComment(i)"
+                                  aria-label="Delete Comment"
+                                >
+                                </p-button>
+                              </div>
+                            </div>
 
+                            <div *ngIf="editingIndex !== i">
+                              <small
+                                class="font-semiboldtext-gray-500"
+                                style="font-size: 14px"
+                                >{{ comment.comment }}</small
+                              >
+                            </div>
+
+                            <div *ngIf="editingIndex === i" class="mt-2 w-full">
+                              <textarea
+                                pInputTextarea
+                                rows="3"
+                                [(ngModel)]="editCommentText"
+                                class="w-full p-2 rounded border"
+                              ></textarea>
+                              <div class="flex gap-2 mt-2">
+                                <p-button
+                                  label="Save"
+                                  icon="pi pi-check"
+                                  (click)="saveEditedComment()"
+                                  severity="success"
+                                  size="small"
+                                ></p-button>
+                                <p-button
+                                  label="Cancel"
+                                  icon="pi pi-times"
+                                  (click)="cancelEdit()"
+                                  severity="secondary"
+                                  size="small"
+                                  variant="outlined"
+                                ></p-button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="flex flex-col items-center w-full">
+                        <p-inputgroup class="mt-4">
+                          <input
+                            pInputText
+                            placeholder="Add comment"
+                            [(ngModel)]="submitComment"
+                          />
+                          <p-inputgroup-addon>
+                            <p-button
+                              icon="pi pi-send"
+                              severity="secondary"
+                              variant="text"
+                              (click)="onAddComment()"
+                            />
+                          </p-inputgroup-addon>
+                        </p-inputgroup>
+                      </div>
+                    </div>
+                    <p-menu
+                      #commentMenu
+                      [popup]="true"
+                      [model]="commentMenuItems"
+                    ></p-menu>
+                  </p-panel>
+                </div>
+              </div>
+            </p-tabpanel>
+          </p-tabpanels>
+        </p-tabs>
+      </div>
+    </div>
   </ng-template>
 </p-splitter>

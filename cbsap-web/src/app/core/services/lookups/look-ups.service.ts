@@ -23,7 +23,8 @@ import {
   DIMENSION_EXPORT,
   GOODS_RECEIPT_SEARCH_LOOKUP,
   GOODS_RECEIPT_EXPORT,
-  ROUTING_FLOWS_LOOKUP
+  ROUTING_FLOWS_LOOKUP,
+  CAN_BE_ADDED_ROLES_LOOKUP
 } from '../../constants';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { TaxCodeLookupDto } from '../../model/taxcode-management';
@@ -68,8 +69,8 @@ export class LookUpsService {
     );
   }
 
-  getRolesByEntityIDLookUps(entityId:number): Observable<ResponseResult<RoleDTO[]>> {
-    return this.resultHttpClient.get<RoleDTO[]>(`${ROLES_LOOKUP}/${entityId}`, true).pipe(
+  getCanBeAddedRolesLookUps(): Observable<ResponseResult<RoleDTO[]>> {
+    return this.resultHttpClient.get<RoleDTO[]>(`${CAN_BE_ADDED_ROLES_LOOKUP}`, true).pipe(
       map((response) => {
         return response;
       }),
@@ -78,7 +79,6 @@ export class LookUpsService {
       })
     );
   }
-
   getInvRoutingFlowLookUps(): Observable<
     ResponseResult<InvRoutingFlowLookupDto[]>
   > {

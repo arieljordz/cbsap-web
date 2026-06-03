@@ -7,6 +7,7 @@ export const ROUTING_FLOWS_LOOKUP = 'v1/lookup/routingflow/paged';
 export const ACCOUNT_SEARCH_LOOKUP = 'v1/lookup/accounts/paged';
 export const ACCOUNT_EXPORT = 'v1/lookup/accounts/download';
 export const ROLES_LOOKUP = 'v1/lookup/roles';
+export const CAN_BE_ADDED_ROLES_LOOKUP = 'v1/lookup/roles/can-be-added';
 export const DIMENSION_SEARCH_LOOKUP = 'v1/lookup/dimensions/paged';
 export const DIMENSION_EXPORT = 'v1/lookup/dimensions/download';
 export const GOODS_RECEIPT_SEARCH_LOOKUP = 'v1/lookup/goods-receipts/paged';

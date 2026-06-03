@@ -1,3 +1,5 @@
+import { SupplierBankAccountDto } from "./supplier-bankaccount.dto";
+
 export interface SupplierInfoDto {
     supplierInfoID : number ;
     supplierID : string | null;
@@ -27,7 +29,8 @@ export interface SupplierInfoDto {
     freeField2 : string | null;
     freeField3 : string | null;
   
-    notes : string | null
+    notes : string | null;
+    suppliersBankAccount : SupplierBankAccountDto[];
 }
 
 

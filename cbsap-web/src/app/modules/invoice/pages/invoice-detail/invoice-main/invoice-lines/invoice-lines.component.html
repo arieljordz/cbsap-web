@@ -27,24 +27,33 @@
       scrollHeight="600px"
       scroll="800px"
       scrollDirection="both"
-      [tableStyle]="{ minWidth: '60rem' }"
+      [tableStyle]="{
+        minWidth: '60rem',
+        tableLayout: 'fixed',
+      }"
     >
       <!-- Header -->
       <ng-template pTemplate="header">
         <tr>
-          <th class="min-w-[100px] whitespace-nowrap">Po Line No</th>
-          <th class="min-w-[100px] whitespace-nowrap">Po No</th>
-          <th class="min-w-[220px] whitespace-nowrap">Account</th>
-          <th class="min-w-[100px] whitespace-nowrap">Qty</th>
-          <th class="min-w-[180px] whitespace-normal break-words">
+          <th style="width: 100px" class="whitespace-nowrap">Po Line No</th>
+          <th style="width: 100px" class="whitespace-nowrap">Po No</th>
+          <th style="width: 180px" class="whitespace-nowrap">Account</th>
+          <th style="width: 100px" class="whitespace-nowrap">Qty</th>
+          <th style="width: 180px" class="whitespace-normal break-words">
             Line Description
           </th>
-          <th class="min-w-[100px] whitespace-nowrap">Tax Code</th>
-          <th class="min-w-[100px] whitespace-nowrap text-right">Net Amount</th>
-          <th class="min-w-[100px] whitespace-nowrap text-right">Tax Amount</th>
-          <th class="min-w-[100px] whitespace-nowrap hidden">Amount</th>
-          <th class="min-w-[180px] whitespace-normal break-words">Note</th>
-          <th class="w-32 whitespace-nowrap">Actions</th>
+          <th style="width: 180px" class="whitespace-nowrap">Tax Code</th>
+          <th style="width: 120px" class="whitespace-nowrap !text-right">
+            Net Amount
+          </th>
+          <th style="width: 120px" class="whitespace-nowrap !text-right">
+            Tax Amount
+          </th>
+          <th style="width: 120px" class="whitespace-nowrap hidden">Amount</th>
+          <th style="width: 180px" class="whitespace-normal break-words">
+            Note
+          </th>
+          <th style="width: 120px" class="whitespace-nowrap">Actions</th>
         </tr>
       </ng-template>
 
@@ -53,7 +62,7 @@
         <tr [pEditableRow]="item">
           <ng-container [formGroup]="invAllocForms[ri]">
             <!-- PO Line No -->
-            <td>
+            <td style="width: 100px">
               <ng-container *ngIf="editingRowIndex === ri; else showpoLineNo">
                 <input
                   type="text"
@@ -68,7 +77,7 @@
             </td>
 
             <!-- PO No -->
-            <td>
+            <td style="width: 100px">
               <ng-container *ngIf="editingRowIndex === ri; else showPONo">
                 <input
                   type="text"
@@ -84,7 +93,7 @@
 
             <!-- Account-->
 
-            <!--  <td>
+            <!--  <td style="width:220px">
               <ng-container *ngIf="editingRowIndex === ri; else showAccount">
                 <p-input-group>
                   <input
@@ -113,10 +122,11 @@
 
             <!-- Account-->
 
-            <td>
+            <td style="width: 180px">
               <ng-container *ngIf="editingRowIndex === ri; else showAccount">
                 <p-select
                   class="w-full"
+                  styleClass="w-full"
                   formControlName="account"
                   [options]="accountOptions"
                   [filter]="true"
@@ -180,7 +190,7 @@
             -->
 
             <!-- Quantity -->
-            <td>
+            <td style="width: 100px">
               <ng-container *ngIf="editingRowIndex === ri; else showQty">
                 <input
                   type="number"
@@ -196,11 +206,7 @@
 
             <!-- Line Description -->
             <td
-              style="
-                white-space: normal;
-                word-break: break-word;
-                max-width: 600px;
-              "
+              style="width: 180px; white-space: normal; word-break: break-word"
             >
               <ng-container *ngIf="editingRowIndex === ri; else showDesc">
                 <input
@@ -218,10 +224,11 @@
             </td>
 
             <!-- Tax Code -->
-            <td>
+            <td style="width: 180px">
               <ng-container *ngIf="editingRowIndex === ri; else showTaxCode">
                 <p-select
                   class="w-full"
+                  styleClass="w-full"
                   formControlName="taxCodeID"
                   [options]="taxCodeOptions"
                   [filter]="true"
@@ -239,7 +246,7 @@
 
             <!-- Net Amount -->
 
-            <td>
+            <td style="width: 120px">
               <ng-container
                 *ngIf="editingRowIndex === ri; else showlineNetAmount"
               >
@@ -247,7 +254,8 @@
                   formControlName="lineNetAmount"
                   mode="decimal"
                   [minFractionDigits]="2"
-                  class="w-full text-right blur-on-readonly"
+                  class="w-full"
+                  inputStyleClass="w-full text-right"
                   [readonly]="item.isFromPOMatching"
                   [ngClass]="{ ' blur-on-readonly': item.isFromPOMatching }"
                 />
@@ -261,13 +269,14 @@
             </td>
 
             <!-- Tax Amount -->
-            <td>
+            <td style="width: 120px">
               <ng-container *ngIf="editingRowIndex === ri; else showTaxAmount">
                 <p-inputnumber
                   formControlName="lineTaxAmount"
                   mode="decimal"
                   [minFractionDigits]="2"
-                  class="w-full text-right blur-on-readonly"
+                  class="w-full"
+                  inputStyleClass="w-full text-right"
                   [readonly]="item.isFromPOMatching"
                   [ngClass]="{ ' blur-on-readonly': item.isFromPOMatching }"
                 />
@@ -281,7 +290,7 @@
             </td>
 
             <!-- Amount -->
-            <td class="hidden">
+            <td style="width: 120px" class="hidden">
               <ng-container *ngIf="editingRowIndex === ri; else showAmount">
                 <p-inputnumber
                   formControlName="lineAmount"
@@ -302,7 +311,7 @@
             </td>
 
             <!-- Note -->
-            <td>
+            <td style="width: 180px">
               <ng-container *ngIf="editingRowIndex === ri; else showNote">
                 <input
                   type="text"
@@ -314,7 +323,7 @@
               <ng-template #showNote>{{ item.note }}</ng-template>
             </td>
             <!-- Actions -->
-            <td class="whitespace-nowrap">
+            <td style="width: 120px" class="whitespace-nowrap">
               <ng-container *ngIf="editingRowIndex !== ri">
                 <button
                   pButton

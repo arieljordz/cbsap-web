@@ -5,14 +5,44 @@ export interface GetInvAllocLineQuery extends BasePaginationQuery {
 }
 
 export interface MyInvoiceSearchQuery extends BasePaginationQuery {
+  AdvanceSearchId? : number;
   SupplierName: string;
   InvoiceNo: string;
   PONo: string;
+  PaymentTerm?: string;
+  SupplierNo?: string
+  SuppABN? : string;
+  SuppBankAccount? : string;
+  EntityProfileID? : number;
+  GrNo? : string;
+  DateRangeInvoiceDate? : Date[];
+  StartInvoiceDate? : string;
+  EndInvoiceDate? : string;
+  DateRangeDueDate? :  Date[];
+  StartDueDate? : string;
+  EndDueDate? : string;
+  DaystillDue? : number;
+  NetAmount? : number;
+  TaxCodeID? : number;
+  TaxAmount? : number;
+  Currency? : string;
+  TotalAmount? : number;
+  InvRoutingFlowName? : string;
+  NextRole? : string;
+  Keyword? : string;
+  MapID? : string;
+  DateRangeScanDate? :  Date[];
+  StartScanDate? : string;
+  EndScanDate? : string;
+  InvoiceID? : string;
+  FormName? : string;
 }
+
 export interface ExportMyInvoiceQuery {
   SupplierName: string;
   InvoiceNo: string;
   PONo: string;
+  
 }
 
 export interface MyInvoiceSearchModel {

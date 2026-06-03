@@ -1,6 +1,6 @@
 import { InvoiceStatusEnum } from "@core/enums/invoice.enum";
 import { SelectItem  } from "primeng/api";
-
+ 
 export function getInvoiceStatusFilterOptions() : SelectItem[] {
   return [
     { label: 'Validation', value: InvoiceStatusEnum.Validation },

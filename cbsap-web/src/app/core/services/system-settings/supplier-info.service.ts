@@ -11,6 +11,7 @@ import {
   SearchSupplierQuery,
   SupplierExportQuery,
   SupplierSearchDto,
+  SupplierBankAccountDto,
 } from '@core/model/system-settings/supplier/supplier.index';
 import { Pagination, ResponseResult } from '@core/model/common';
 import { HttpErrorResponse, SUPPLIER } from '@core/constants';
@@ -82,6 +83,21 @@ export class SupplierInfoService {
   ): Observable<ResponseResult<SupplierInfoDto>> {
     return this.resultHttpClient
       .get<SupplierInfoDto>(`${SUPPLIER}/${supplierInfoID}`, true)
+      .pipe(
+        map((response) => {
+          return response;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+        })
+      );
+  }
+
+  updateSupplierBankAccount(
+    supplierBankAccount: SupplierBankAccountDto
+  ): Observable<ResponseResult<SupplierBankAccountDto[]>> {
+    return this.resultHttpClient
+      .put<SupplierBankAccountDto[]>(`${SUPPLIER}/updatesupplierbankdetails`, supplierBankAccount, true)
       .pipe(
         map((response) => {
           return response;

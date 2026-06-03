@@ -101,7 +101,7 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
   queueroute?: InvoiceQueue | null = null;
 
   invInfoDropdown: Record<string, SelectItem[]> = {};
-  entityOptions?: SelectItem[] = [];
+  entityOptionsByRole?: SelectItem[] = [];
   taxCodeOptions?: SelectItem[] = [];
   focusStates: { [key: string]: boolean } = {};
 
@@ -111,9 +111,8 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
   @Input() invoiceValidationHeader: string = '';
   @Input() invoiceId?: number;
 
-  readonly entityOptions$ = this.lookUpOptionService.entityOptions$;
-  readonly taxCodeLookUpOptions$ =
-    this.lookUpOptionService.taxCodeLookUpOptions$;
+  readonly taxCodeLookUpOptions$ = this.lookUpOptionService.taxCodeLookUpOptions$;
+  entityOptionsByRole$ = this.lookUpOptionService.entityOptionsByRole$;
 
   amountDto: AmountDto = {
     netAmount: 0,
@@ -184,6 +183,18 @@ export class InvoiceInfoComponent implements OnInit, OnDestroy, OnChanges {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private getStoredRoleID() {
+    const storedRole = localStorage.getItem('sr');
+
+    const roleId = storedRole ? Number(storedRole) : null;
+
+    console.log('Stored role from localStorage on init:', roleId);
+
+    if (roleId !== null && !Number.isNaN(roleId)) {
+      this.lookUpOptionService.setRoleID(roleId);
+    }
   }
 
   ngOnInit(): void {
@@ -852,7 +863,7 @@ private searchGoodReceiptNos(searchQuery: SearchGoodsReceiptQuery): void {
     return {
       PONo: filters.poNo?.trim() ?? null,
       EntityName: filters.entityName?.trim() ?? null,
-      Supplier: supplierValue ? supplierValue : null,
+      SupplierName: supplierValue ? supplierValue : null,
       IsActive: normalizedActive,
       PageNumber: filters.pageNumber ?? 1,
       PageSize: filters.pageSize ?? 10,
@@ -871,12 +882,12 @@ private searchGoodReceiptNos(searchQuery: SearchGoodsReceiptQuery): void {
             const invoice = response.responseData;
             this.nextRole = invoice.nextRole ?? "";
             this.queueroute = invoice.queueType ?? this.queueroute;
-            this.disabledFieldsInException();
+            // this.disabledFieldsInException();
             this.routingFlowName = invoice.routingFlowName;
 
             return combineLatest([
               of(invoice),
-              this.entityOptions$,
+              this.entityOptionsByRole$,
               this.invDetailService.getDropdownOptions(),
               this.taxCodeLookUpOptions$
 
@@ -888,7 +899,7 @@ private searchGoodReceiptNos(searchQuery: SearchGoodsReceiptQuery): void {
         }),
         takeUntil(this.destroy$)
       )
-      .subscribe(([invoice, entityOptions, dropdown, taxCodeLookUpOptions]) => {
+      .subscribe(([invoice, entityOptionsByRole, dropdown, taxCodeLookUpOptions]) => {
         const patchValue = {
           ...invoice,
             invoiceDate: invoice.invoiceDate ? new Date (invoice.invoiceDate) : null,
@@ -904,7 +915,7 @@ private searchGoodReceiptNos(searchQuery: SearchGoodsReceiptQuery): void {
  
         //this.updateDueDate();
 
-        this.entityOptions = entityOptions;
+        this.entityOptionsByRole = entityOptionsByRole;
         this.taxCodeOptions = taxCodeLookUpOptions;
         this.invInfoDropdown = {
           currencies: dropdown.currencies ?? [],
@@ -967,9 +978,6 @@ private searchGoodReceiptNos(searchQuery: SearchGoodsReceiptQuery): void {
       next: (dropdown) => {
         this.invInfoDropdown = dropdown;
       },
-    });
-    this.entityOptions$.pipe(takeUntil(this.destroy$)).subscribe((options) => {
-      this.entityOptions = options;
     });
     this.taxCodeLookUpOptions$
       .pipe(takeUntil(this.destroy$))
