@@ -29,7 +29,8 @@ import { Subject, takeUntil } from 'rxjs';
 export class RoutingflowRoleSelectorComponent implements OnInit, OnDestroy {
   roleSelectorForm!: FormGroup;
   private destroy$ = new Subject<void>();
-  rolesOptions: SelectItem[] = [];
+  rolesOptions?: SelectItem[] = [];
+  readonly roleOptions$ = this.lookUpOptionService.canBeAddedRolesLookUpOptions$;
 
   excludesSelectedRoleIds: number[] = [];
 
@@ -37,42 +38,27 @@ export class RoutingflowRoleSelectorComponent implements OnInit, OnDestroy {
     private lookUpOptionService: LookupOptionsService,
     private dialogRef: DynamicDialogRef,
     private config: DynamicDialogConfig,
-    private invRoutingFlowService: InvRoutingFlowService,
+    private invRoutingFlowService: InvRoutingFlowService
   ) {
     this.excludesSelectedRoleIds =
-      (this.config.data?.excludesSelectedRoleIds as number[]) ?? [];
+      (this.config.data?.excludesSelectedRoleIds as number[]) ?? null;
   }
-
   ngOnInit(): void {
     this.roleSelectorForm = new FormGroup({
       selectedRoleID: new FormControl(null, Validators.required),
     });
 
-    const entityId = this.config.data?.entityProfileID;
-
-    if (!entityId) {
-      console.error('Entity ID is missing');
-      return;
-    }
-
-    this.lookUpOptionService
-      .getRolesByEntityIDLookUpOptions(entityId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((options) => {
-        if (options.length > 0) {
-          options[0].label = '-- Please Select --';
-        }
-
-        this.rolesOptions = options.filter(
-          (roleID) => !this.excludesSelectedRoleIds.includes(roleID.value!),
-        );
-      });
+    this.roleOptions$.pipe(takeUntil(this.destroy$)).subscribe((options) => {
+      options[0].label = '-- Please Select --';
+      this.rolesOptions = options.filter(
+        (roleID) => !this.excludesSelectedRoleIds.includes(roleID.value!)
+      );
+    });
   }
 
   get f() {
     return this.roleSelectorForm.controls;
   }
-
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
