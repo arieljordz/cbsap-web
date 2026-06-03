@@ -498,7 +498,7 @@ this.myInvoiceFilter.AdvanceSearchId = entity.advanceSearchId;
     return {
       PONo: filters.poNo?.trim() ?? null,
       EntityName: filters.entityName?.trim() ?? null,
-      Supplier: supplierValue ? supplierValue : null,
+      SupplierName: supplierValue ? supplierValue : null,
       IsActive: normalizedActive,
       PageNumber: filters.pageNumber ?? 1,
       PageSize: filters.pageSize ?? 10,
