@@ -122,21 +122,13 @@ export class KeywordSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    
-    const stored = localStorage.getItem('keyword-search');
-    if (stored) {
-      this.keywordSearchModel = JSON.parse(stored);
-    }
-
     this.columns = this.gridService.keywordManagementColumn();
   }
 
 
   editKeyword(keyword: Keyword) {
     const id = keyword.keywordID;
-    localStorage.setItem('keyword-search', JSON.stringify(this.keywordSearchModel));
     this.router.navigate(['keyword-management/edit-keyword', id]);
-
   }
 
   search() {
@@ -151,8 +143,6 @@ export class KeywordSearchComponent implements OnInit, OnDestroy {
   }
 
   onClear() {
-    localStorage.removeItem('keyword-grid');
-    localStorage.removeItem('keyword-search');
     this.keywordSearchModel = {
       entityName: '',
       invoiceRoutingFlowName: '',

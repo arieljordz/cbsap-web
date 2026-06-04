@@ -306,6 +306,7 @@ export class PoMatchingComponent
 
           const linNumber = src.lineNo;
           if (src.purchaseOrderMatchTrackingID !== 0) {
+            console.log('purchaseOrderMatchTrackingID', src.qty);
             matchableQty = Math.abs(src.mergeQty - src.qty) + src.qty;
           } else if (
             src.purchaseOrderMatchTrackingID === 0 &&

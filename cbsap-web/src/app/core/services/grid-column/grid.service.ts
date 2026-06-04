@@ -426,28 +426,6 @@ export class GridService {
     ];
   }
 
-  supplierBankAccountColumn(): TableColumn[]{
-        return [
-        {
-          field: 'bankAccountNumber',
-          header: 'Bank Account No',
-          sort: true,
-          isSearchFilter: true,
-        },
-        {
-          field: 'bankName',
-          header: 'Bank Name',
-          sort: true,
-          isSearchFilter: true,
-        },
-        {
-          field: 'isActive',
-          header: 'Active Status',
-          sort: true,
-          isSearchFilter: true,
-        }]
-  }
-
   entitySelectGridColumn(): TableColumn[] {
     return [
       {
@@ -494,8 +472,6 @@ export class GridService {
       },
     ];
   }
-
-
 
   invRoutingFlowGridColumn(
     rolesTemplate: TemplateRef<any>,
@@ -769,25 +745,6 @@ export class GridService {
     ];
   }
 
-  invoiceRoutingSelectTableGrid(): DynamicGridColumn[]{
-      return[{
-          field: 'invRoutingFlowID',
-          header: 'Routing Flow ID',
-          sort: true,
-          isSearchFilter: true
-      },{
-          field: 'invRoutingFlowName',
-          header: 'Routing Flow Name',
-          sort: true,
-          isSearchFilter: true
-      },{
-          field: 'supplierName',
-          header: 'Supplier Name',
-          sort: true,
-          isSearchFilter: true,
-      }]
-  }
-
   supplierSelectTableGrid(): DynamicGridColumn[] {
     return [
       {
@@ -863,42 +820,6 @@ export class GridService {
       },
     ];
   }
-
-GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
-    return [
-      {
-        field: 'goodsReceiptNumber',
-        header: 'Goods Receipt Number',
-        sort: true,
-        isSearchFilter: true
-      },
-      {
-        field: 'supplier',
-        header: 'Supplier Name',
-        sort: true,
-        isSearchFilter: true
-      },
-      {
-        field: 'deliveryDate',
-        header: 'Delivery Date',
-        sort: false,
-        isSearchFilter: true,
-        type: 'date',
-        pipe: 'date',
-        filterType: 'date-range' 
-      },
-      {
-        field: 'active',
-        header: 'Active',
-        sort: true,
-        isSearchFilter: true,
-        type: 'tag',
-        pipe: 'yesno',
-        filterType: 'boolean'
-      }
-    ];
-  }
-
 
   myInvoiceSearchColumn(
     selectInvoiceTemplate: TemplateRef<any>
@@ -1012,13 +933,14 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
         header: 'Gross Amount',
         sort: true,
         isSearchFilter: true,
-      },  
-      {
-        field: 'reason',
-        header: 'Reason',
-        sort: true,
-        isSearchFilter: true,
-      }
+      },
+      
+      // {
+      //   field: 'nextRole',
+      //   header: 'Next Role',
+      //   sort: true,
+      //   isSearchFilter: true,
+      // },
     ];
   }
 
@@ -1408,102 +1330,4 @@ GoodReceiptSelectTableGrid(): DynamicGridColumn[] {
       },
     ];
   }
-
-
-  invoiceInquiryGridColumn(): TableColumn[] {
-    return [
-      {
-        field: 'invoiceID',
-        header: 'Invoice ID',
-        sort: true,
-        isSearchFilter: true,
-        type: 'text',
-      },
- 
-      {
-        field: 'supplierName',
-        header: 'Supplier Name',
-        sort: true,
-        isSearchFilter: true,
-        type: 'text',
-      },
-      {
-        field: 'invoiceDate',
-        header: 'Invoice Date',
-        sort: true,
-        isSearchFilter: true,
-        type: 'date',
-        pipe: 'date',
-      },
-      {
-        field: 'invoiceNumber',
-        header: 'Invoice Number',
-        sort: true,
-        isSearchFilter: true,
-        type: 'text',
-      },
-      {
-        field: 'poNumber',
-        header: 'PO Number',
-        sort: true,
-        isSearchFilter: true,
-        type: 'text',
-      },
-      {
-        field: 'dueDate',
-        header: 'Due Date',
-        sort: true,
-        isSearchFilter: true,
-        type: 'date',
-        pipe: 'date',
-      },
-      {
-        field: 'grossAmount',
-        header: 'Gross Amount',
-        sort: true,
-        isSearchFilter: true,
-        type: 'text',
-      },
-      {
-        field: 'paymentDate',
-        header: 'Payment Date',
-        sort: true,
-        isSearchFilter: true,
-        type: 'date',
-        pipe: 'date',
-      },
-      {
-        field: 'scanDate',
-        header: 'Scan Date',
-        sort: true,
-        isSearchFilter: true,
-        type: 'date',
-        pipe: 'date',
-      },
-      {
-        field: 'status',
-        header: 'status',
-        sort: true,
-        isSearchFilter: true,
-        type: 'text',
-      },
-      {
-        field: 'role',
-        header: 'Role',
-        sort: true,
-        isSearchFilter: true,
-        type: 'text',
-      },
-      {
-        field: 'approvedBy',
-        header: 'Approved By',
-        sort: true,
-        isSearchFilter: true,
-        type: 'text',
-      },
-    ];
-  }
-
-
-
 }

@@ -15,8 +15,6 @@ export const INV_ENPOINT = {
   GET_INV_ACTIVITY_LOG: (InvoiceID: number) =>
     `${inv_base_endpoint}/${InvoiceID}/invoiceActivityLog`,
 
-  Get_INV_ACTIVITY_LOG2: (InvoiceID: number) =>
-    `${inv_base_endpoint}/${InvoiceID}/ActivityLog`,
   GET_INV_ALLOCATION_QUERY: `${inv_base_endpoint}/invallocationline/paged?`,
   UPDATE_INVOICE: `${inv_base_endpoint}/update`,
   GET_INV_MYINVOICE_SEARCH: `${inv_base_endpoint}/myInvoiceSearch/paged?`,
@@ -36,14 +34,8 @@ export const INV_ENPOINT = {
   VALIDATE_INVOICE: `${inv_base_endpoint}/validate`,
   ROUTE_TO_EXCEPTION: `${inv_base_endpoint}/routeToException`,
   FOR_HOLD: `${inv_base_endpoint}/forhold`,
-  CHANGE_HOLD_STATE: `${inv_base_endpoint}/changeHoldState`,
   ADD_COMMENTS: `${inv_base_endpoint}/addinvoicecomment`,
   UPLOAD_ATTACHMENT: `${inv_base_endpoint}/upload`,
-  ADD_ADVANCESEARCH: `${inv_base_endpoint}/addAdvanceSearch`,
-  UPDATE_ADVANCESEARCH : `${inv_base_endpoint}/updateAdvanceSearch`,
-  GET_ADVANCESEARCH: (formName : string) => `${inv_base_endpoint}/${formName}/getAdvanceSearchByFormName`,
-  DELETE_ADVANCESEARCH : (advanceSearhcId : number ) => `${inv_base_endpoint}/${advanceSearhcId}`,
-  DELETE_COMMENT: `${inv_base_endpoint}/deleteinvoicecomment`,
   DOWNLOAD_ATTACHMENT: (InvoiceAttachnmentID: number) =>
     `${inv_base_endpoint}/${InvoiceAttachnmentID}/downloadattachment`,
   GETALL_ATTACHMENT: (InvoiceID: number) =>
@@ -52,5 +44,4 @@ export const INV_ENPOINT = {
 
   GET_ROUTINGLEVEL: (invoiceId: number,supplierInfoId:number | null,keywordId:number | null) =>
     `${inv_base_endpoint}/invoiceInfoLinkedRoutingLevels?InvoiceID=${invoiceId}&SupplierInfoID=${supplierInfoId}&KeywordID=${keywordId}`,
-  VALIDATE_INVOICE_BY_IDS: `${inv_base_endpoint}/validateByIds`,
 };

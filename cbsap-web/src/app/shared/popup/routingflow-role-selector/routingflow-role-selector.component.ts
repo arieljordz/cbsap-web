@@ -7,8 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { InvRoutingFlowService, LookupOptionsService } from '@core/services';
-import { ThemeService } from '@primeng/themes';
+import { LookupOptionsService } from '@core/services';
 import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
 import { SelectItem } from 'primeng/api';
 import {
@@ -30,15 +29,14 @@ export class RoutingflowRoleSelectorComponent implements OnInit, OnDestroy {
   roleSelectorForm!: FormGroup;
   private destroy$ = new Subject<void>();
   rolesOptions?: SelectItem[] = [];
-  readonly roleOptions$ = this.lookUpOptionService.canBeAddedRolesLookUpOptions$;
+  readonly roleOptions$ = this.lookUpOptionService.rolesLookUpOptions$;
 
   excludesSelectedRoleIds: number[] = [];
 
   constructor(
     private lookUpOptionService: LookupOptionsService,
     private dialogRef: DynamicDialogRef,
-    private config: DynamicDialogConfig,
-    private invRoutingFlowService: InvRoutingFlowService
+    private config: DynamicDialogConfig
   ) {
     this.excludesSelectedRoleIds =
       (this.config.data?.excludesSelectedRoleIds as number[]) ?? null;
@@ -65,27 +63,6 @@ export class RoutingflowRoleSelectorComponent implements OnInit, OnDestroy {
   }
 
   submit() {
-    if (this.roleSelectorForm.invalid) return;
-
-
-
- const assignRoleCommand = {
- roleID: this.f['selectedRoleID'].value,
- invoiceID: this.config.data?.invoiceID,
- level: this.config.data?.level,
- isNew: this.config.data?.isNew
-};
-
-
- this.invRoutingFlowService.assignRole(assignRoleCommand).subscribe({
- 
- next: () => {
- this.dialogRef.close(assignRoleCommand.roleID);
- },
- error: (err) => {
- console.error('Failed to assign role', err);
- },
- });
-}
-  
+    this.dialogRef.close(this.f['selectedRoleID'].value);
+  }
 }

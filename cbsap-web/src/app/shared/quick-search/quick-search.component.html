@@ -2,117 +2,43 @@
   <div class="card p-6 shadow-md rounded-lg flex flex-col h-full min-h-[1px]">
     <h5 class="mb-4 text-xl font-semibold">Quick Search</h5>
 
-    <div *ngFor="let group of groupedRows" class="mb-4">
-      <div
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 w-full"
-      >
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 w-full"
+    >
+      <div class="flex flex-col" *ngFor="let field of fields">
+        <label class="mb-2" [for]="field.key">{{ field.label }}</label>
 
-        <ng-container *ngFor="let field of group.fields">
+        <input
+          *ngIf="field.fieldType === 'input'"
+          pInputText
+          [type]="field.type"
+          (keydown.enter)="search()"
+          class="p-inputtext p-component w-full"
+          [(ngModel)]="model[field.key.toString()]"
+          [id]="field.key.toString()"
+        />
 
-          <!-- Completely remove "To" fields from DOM -->
-          <div class="flex flex-col" *ngIf="!isRangeEnd(field)">
+        <p-dropdown
+          *ngIf="field.fieldType === 'dropdown'"
+          [options]="field.options || []"
+          [autoDisplayFirst]="false"
+          (keydown.enter)="search()"
+          [showClear]="true"
+          class="p-fluid w-full"
+          [(ngModel)]="model[field.key.toString()]"
+          [id]="field.key.toString()"
+        ></p-dropdown>
 
-            <!-- DATE RANGE FIELD (ONLY for "From") -->
-            <ng-container *ngIf="isRangeStart(field); else normalField">
-              <label class="mb-2">{{ field.label }}</label>
-
-              <div class="grid grid-cols-2 gap-2">
-                <!-- FROM -->
-                <input
-                  pInputText
-                  type="date"
-                  class="w-full"
-                  [(ngModel)]="model[field.key.toString()]"
-                  (keydown.enter)="search()"
-                />
-
-                <!-- TO -->
-                <input
-                  pInputText
-                  type="date"
-                  class="w-full"
-                  [(ngModel)]="model[getRangePairKey(field).toString()]"
-                  (keydown.enter)="search()"
-                />
-              </div>
-            </ng-container>
-
-            <!-- NORMAL FIELD -->
-            <ng-template #normalField>
-              <label class="mb-2" [for]="field.key">{{ field.label }}</label>
-
-              <!-- INPUT -->
-              <input
-                *ngIf="field.fieldType === 'input'"
-                pInputText
-                [type]="field.type"
-                class="p-inputtext p-component w-full"
-                [(ngModel)]="model[field.key.toString()]"
-                (keydown.enter)="search()"
-                [id]="field.key.toString()"
-              />
-
-              <!-- DROPDOWN -->
-              <p-select
-                *ngIf="field.fieldType === 'dropdown'"
-                [options]="field.options || []"
-                [autoDisplayFirst]="false"
-                (keydown.enter)="search()"
-                [showClear]="true"
-                [filter]="field.filter ?? false"
-                [filterBy]="'label'"
-                class="p-fluid w-full"
-                [(ngModel)]="model[field.key.toString()]"
-                [id]="field.key.toString()"
-              ></p-select>
-
-              <!-- MULTISELECT -->
-              <p-multiselect
-                *ngIf="field.fieldType === 'multiselect'"
-                [options]="getOptionsWithAll(field)"
-                [(ngModel)]="model[field.key.toString()]"
-                placeholder="All"
-                optionLabel="label"
-                optionValue="value"
-                display="chip"
-                class="w-full"
-                [showToggleAll]="false"
-                [filter]="field.filter ?? false"
-                (onChange)="onMultiSelectChange(field, $event.value)"
-                (keydown.enter)="search()"
-                [id]="field.key.toString()"
-              >
-              </p-multiselect>
-
-              <!-- CALENDAR (RANGE MODE) -->
-              <p-datepicker
-                *ngIf="field.fieldType === 'calendar' && field.range"
-                [(ngModel)]="model[field.key.toString()]"
-                selectionMode="range"
-                [showIcon]="true"
-                dateFormat="mm/dd/yy"
-                styleClass="w-full"
-                inputStyleClass="w-full"
-                (keydown.enter)="search()"
-                [id]="field.key.toString()"
-              ></p-datepicker>
-
-              <!-- CALENDAR (SINGLE) -->
-              <p-datepicker
-                *ngIf="field.fieldType === 'calendar' && !field.range"
-                [(ngModel)]="model[field.key.toString()]"
-                [showIcon]="true"
-                dateFormat="mm/dd/yy"
-                styleClass="w-full"
-                inputStyleClass="w-full"
-                (keydown.enter)="search()"
-                [id]="field.key.toString()"
-              ></p-datepicker>
-            </ng-template>
-
-          </div>
-        </ng-container>
-
+        <p-datepicker
+          *ngIf="field.fieldType === 'calendar'"
+          [(ngModel)]="model[field.key.toString()]"
+          [showIcon]="true"
+          dateFormat="dd/mm/yy"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          (keydown.enter)="search()"
+          [id]="field.key.toString()"
+        ></p-datepicker>
       </div>
     </div>
 
@@ -145,16 +71,6 @@
         [rounded]="true"
         icon="pi pi-download"
         (click)="exportToExcel()"
-        styleClass="w-full sm:w-auto"
-      />
-      <p-button
-        *ngIf="actionButtons.advancedSearch"
-        label="Adv Search"
-        severity="secondary"
-        [raised]="true"
-        outlined="true"
-        [rounded]="true"
-        icon="pi pi-search-plus"
         styleClass="w-full sm:w-auto"
       />
       <p-button

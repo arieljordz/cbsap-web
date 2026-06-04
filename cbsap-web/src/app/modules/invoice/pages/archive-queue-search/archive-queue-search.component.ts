@@ -10,7 +10,6 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageSeverity } from '@core/constants';
-import { ADVANCESEARCH_CONSTANT } from '@core/constants/advance-search/advance-search-constants';
 import { ResponseResult, TableColumn } from '@core/model/common';
 import { GridConfig } from '@core/model/dynamic-grid/grid.config';
 import {
@@ -35,7 +34,6 @@ import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
 import { QuickSearchComponent } from '@shared/quick-search/quick-search.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Subject, takeUntil } from 'rxjs';
-import { MyInvoiceAdvanceSearchComponent } from '../my-invoice-advance-search/my-invoice-advance-search.component';
 
 @Component({
   selector: 'app-archive-queue-search',
@@ -93,15 +91,9 @@ export class ArchiveQueueSearchComponent
     private excelService: ExcelService,
     private dynamicGridService: DynamicGridService<ExceptionInvoiceSearchDto>,
     private invDetailService: InvoiceDetailService,
-    private datePipe: DatePipe,
-    private dialogService: DialogService
+    private datePipe: DatePipe
   ) {}
   ngOnInit(): void {
-    this.dynamicGridService.setGridKey("archive-queue-grid");
-    const stored = localStorage.getItem("archive-queue-search");
-    if(stored){
-      this.myInvoiceFilter = JSON.parse(stored);
-    }
     this.sizes = { name: 'Small', class: 'p-table?-sm' };
   }
   ngOnDestroy(): void {
@@ -123,8 +115,6 @@ export class ArchiveQueueSearchComponent
     });
   }
   clear() {
-    localStorage.removeItem("archive-queue-grid");
-    localStorage.removeItem("archive-queue-search");
     this.searchConfig.model.suppName = '';
     this.searchConfig.model.invNo = '';
     this.searchConfig.model.poNo = '';
@@ -198,7 +188,6 @@ export class ArchiveQueueSearchComponent
           allow: false,
         },
       ],
-      gridKey: 'archive-queue-grid'
     });
     this.loadData(1);
   }
@@ -215,7 +204,6 @@ export class ArchiveQueueSearchComponent
     };
 
     this.dynamicGridService.setLoading(true);
-    this.dynamicGridService
     this.searchArchiveInvoice(query);
   }
 
@@ -270,7 +258,6 @@ export class ArchiveQueueSearchComponent
   editInvoice(invoice: any) {
     const id = invoice.invoiceID;
     // this.router.navigate(['invoices', id, 'edit']);
-    localStorage.setItem('archive-queue-search',JSON.stringify(this.myInvoiceFilter));
     this.router.navigate(['invoices', id, 'edit'], {
       state: { returnUrl: this.router.url },
     });
@@ -279,19 +266,5 @@ export class ArchiveQueueSearchComponent
   getTimestampedFileName(): string {
     const timestamp = this.datePipe.transform(new Date(), 'yyyyMMdd_HHmmss');
     return `ArchiveInvoice_${timestamp}.xlsx`;
-  }
-
-  advanceSearch() {
-    this.dialogService.open(MyInvoiceAdvanceSearchComponent, {
-      width: '900px',
-      style: { minHeight: '200px' },
-      modal: true,
-      closable: true,
-      baseZIndex: 1200,
-      header : 'Advance Search',
-      data :{
-        formName : ADVANCESEARCH_CONSTANT.FORMNAME.ARCHIVEINVOICE
-      }
-    });
   }
 }

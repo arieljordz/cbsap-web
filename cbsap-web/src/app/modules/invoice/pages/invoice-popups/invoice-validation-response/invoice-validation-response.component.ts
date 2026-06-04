@@ -46,17 +46,13 @@ export class InvoiceValidationResponseComponent implements OnInit {
   }
 
   force() {
-    if (this.getHasMissingRoutingFlow()) {
-      return;
-    }
-
-    const isDuplicate = this.getIsDuplicateInvoice();
+    const ForApprovalQueue = InvoiceQueue.ApproverQueue;
 
     const invoiceStatusChangeDTO: InvStatusChangeDto = {
       invoiceID: this.invoiceID,
-      status:  isDuplicate ? InvoiceStatusEnum.Rejected : InvoiceStatusEnum.ForApproval,
-      reason: isDuplicate ? 'Duplicate Invoice' : 'Invoice is Force to Submit from Exception Queue',
-      };
+      status: InvoiceStatusEnum.ForApproval,
+      reason: '"Invoice is Force to Submit from Exception Queue',
+    };
 
     this.invDetail.forceToSubmit(invoiceStatusChangeDTO).subscribe({
       next: (response) => {
@@ -73,48 +69,19 @@ export class InvoiceValidationResponseComponent implements OnInit {
   }
 
   validationInfo(action: InvoiceActionButton): string {
-    
+    let validation: string = '';
     switch (action.toLowerCase()) {
       case InvoiceActionButton.Submit:
-
-        if (this.getIsDuplicateInvoice()) {
-          return 'Duplicate Invoice detected. This will be routed to Reject Queue.';
-        }
-        
-        if(this.getHasMissingRoutingFlow()){
-          return 'Invoice is missing a role/Routing Flow and cannot be forced/submitted.';
-        }
-
-        return 'The invoice contains errors and is not able to be approved. Do you want to route the invoice to the next role in the flow?';
-
-
+        return ' The invoice contains errors and is not able to be approved. Do you want to route the invoice to the next role in the flow?';
       case InvoiceActionButton.Approve:
-
         return ' The invoice contains errors and is not able to be approved.';
 
       default:
-        return '';
+        return validation;
     }
   }
 
   forceButtonVisible(): boolean {
-    return (
-      this.action.toLowerCase() === InvoiceActionButton.Submit &&
-      !this.getHasMissingRoutingFlow()
-
-    );
-  }
-
-  getHasMissingRoutingFlow(): boolean {
-    return this.messages?.some(msg =>
-
-    msg.includes('Invoice has a missing routing flow')
-    ) ?? false;
-  }
-
-  getIsDuplicateInvoice(): boolean {
-    return this.messages?.some(msg =>
-      msg.includes('Duplicate Invoice')
-    ) ?? false;
+    return this.action.toLowerCase() === InvoiceActionButton.Submit;
   }
 }

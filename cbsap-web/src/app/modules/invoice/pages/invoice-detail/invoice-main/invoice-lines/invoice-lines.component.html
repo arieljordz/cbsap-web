@@ -10,9 +10,8 @@
       class="rounded-full p-button-outlined p-button-sm"
       (click)="addAlocationRow()"
       *ngIf="isAddAllocationLineVisible"
-      [disabled]="disableInvoiceLineAllocation()"
     >
-      <i class="pi pi-plus"></i>
+    <i class="pi pi-plus"></i>
       <span class="font-bold"> Add Invoice Line</span>
     </button>
   </div>
@@ -27,33 +26,25 @@
       scrollHeight="600px"
       scroll="800px"
       scrollDirection="both"
-      [tableStyle]="{
-        minWidth: '60rem',
-        tableLayout: 'fixed',
-      }"
+      [tableStyle]="{ minWidth: '60rem' }"
     >
       <!-- Header -->
       <ng-template pTemplate="header">
         <tr>
-          <th style="width: 100px" class="whitespace-nowrap">Po Line No</th>
-          <th style="width: 100px" class="whitespace-nowrap">Po No</th>
-          <th style="width: 180px" class="whitespace-nowrap">Account</th>
-          <th style="width: 100px" class="whitespace-nowrap">Qty</th>
-          <th style="width: 180px" class="whitespace-normal break-words">
+          <th class="min-w-[100px] whitespace-nowrap">Po Line No</th>
+          <th class="min-w-[100px] whitespace-nowrap">Po No</th>
+          <th class="min-w-[220px] whitespace-nowrap">Account</th>
+          <th class="min-w-[100px] whitespace-nowrap">Qty</th>
+          <th class="min-w-[180px] whitespace-normal break-words">
             Line Description
           </th>
-          <th style="width: 180px" class="whitespace-nowrap">Tax Code</th>
-          <th style="width: 120px" class="whitespace-nowrap !text-right">
-            Net Amount
-          </th>
-          <th style="width: 120px" class="whitespace-nowrap !text-right">
-            Tax Amount
-          </th>
-          <th style="width: 120px" class="whitespace-nowrap hidden">Amount</th>
-          <th style="width: 180px" class="whitespace-normal break-words">
-            Note
-          </th>
-          <th style="width: 120px" class="whitespace-nowrap">Actions</th>
+          <th class="min-w-[100px] whitespace-nowrap">Tax Code</th>
+          <th class="min-w-[100px] whitespace-nowrap">Net Amount</th>
+          <th class="min-w-[100px] whitespace-nowrap">Tax Amount</th>
+          <th class="min-w-[100px] whitespace-nowrap hidden">Amount</th>
+          <th class="min-w-[180px] whitespace-normal break-words">Note</th>
+          <th class="w-32 whitespace-nowrap">Actions</th>
+
         </tr>
       </ng-template>
 
@@ -62,7 +53,7 @@
         <tr [pEditableRow]="item">
           <ng-container [formGroup]="invAllocForms[ri]">
             <!-- PO Line No -->
-            <td style="width: 100px">
+            <td>
               <ng-container *ngIf="editingRowIndex === ri; else showpoLineNo">
                 <input
                   type="text"
@@ -77,7 +68,7 @@
             </td>
 
             <!-- PO No -->
-            <td style="width: 100px">
+            <td>
               <ng-container *ngIf="editingRowIndex === ri; else showPONo">
                 <input
                   type="text"
@@ -93,7 +84,7 @@
 
             <!-- Account-->
 
-            <!--  <td style="width:220px">
+            <td>
               <ng-container *ngIf="editingRowIndex === ri; else showAccount">
                 <p-input-group>
                   <input
@@ -117,29 +108,6 @@
               <ng-template #showAccount>
                 {{ getAccountLabel(item.account) }}</ng-template
               >
-            </td>
-          -->
-
-            <!-- Account-->
-
-            <td style="width: 180px">
-              <ng-container *ngIf="editingRowIndex === ri; else showAccount">
-                <p-select
-                  class="w-full"
-                  styleClass="w-full"
-                  formControlName="account"
-                  [options]="accountOptions"
-                  [filter]="true"
-                  filterBy="label"
-                  [showClear]="false"
-                  [appendTo]="'body'"
-                >
-                </p-select>
-                <!-- <input type="text" formControlName="taxCodeID" class="p-inputtext-sm w-full" /> -->
-              </ng-container>
-              <ng-template #showAccount>{{
-                getAccountLabel(item.account)
-              }}</ng-template>
             </td>
 
             <!-- Dimension 1 
@@ -190,7 +158,7 @@
             -->
 
             <!-- Quantity -->
-            <td style="width: 100px">
+            <td>
               <ng-container *ngIf="editingRowIndex === ri; else showQty">
                 <input
                   type="number"
@@ -206,7 +174,11 @@
 
             <!-- Line Description -->
             <td
-              style="width: 180px; white-space: normal; word-break: break-word"
+              style="
+                white-space: normal;
+                word-break: break-word;
+                max-width: 600px;
+              "
             >
               <ng-container *ngIf="editingRowIndex === ri; else showDesc">
                 <input
@@ -224,12 +196,12 @@
             </td>
 
             <!-- Tax Code -->
-            <td style="width: 180px">
+            <td>
               <ng-container *ngIf="editingRowIndex === ri; else showTaxCode">
                 <p-select
                   class="w-full"
-                  styleClass="w-full"
                   formControlName="taxCodeID"
+                
                   [options]="taxCodeOptions"
                   [filter]="true"
                   filterBy="label"
@@ -243,10 +215,8 @@
                 getTaxCodeLabel(item.taxCodeID)
               }}</ng-template>
             </td>
-
             <!-- Net Amount -->
-
-            <td style="width: 120px">
+            <td>
               <ng-container
                 *ngIf="editingRowIndex === ri; else showlineNetAmount"
               >
@@ -254,8 +224,7 @@
                   formControlName="lineNetAmount"
                   mode="decimal"
                   [minFractionDigits]="2"
-                  class="w-full"
-                  inputStyleClass="w-full text-right"
+                  class="w-full text-right blur-on-readonly"
                   [readonly]="item.isFromPOMatching"
                   [ngClass]="{ ' blur-on-readonly': item.isFromPOMatching }"
                 />
@@ -263,20 +232,19 @@
               </ng-container>
               <ng-template #showlineNetAmount>
                 <p class="text-right">
-                  {{ item.lineNetAmount | number: "1.2-2" }}
+                  {{ item.lineNetAmount | number : "1.2-2" }}
                 </p>
               </ng-template>
             </td>
 
             <!-- Tax Amount -->
-            <td style="width: 120px">
+            <td>
               <ng-container *ngIf="editingRowIndex === ri; else showTaxAmount">
                 <p-inputnumber
                   formControlName="lineTaxAmount"
                   mode="decimal"
                   [minFractionDigits]="2"
-                  class="w-full"
-                  inputStyleClass="w-full text-right"
+                  class="w-full text-right blur-on-readonly"
                   [readonly]="item.isFromPOMatching"
                   [ngClass]="{ ' blur-on-readonly': item.isFromPOMatching }"
                 />
@@ -284,13 +252,13 @@
               </ng-container>
               <ng-template #showTaxAmount>
                 <p class="text-right">
-                  {{ item.lineTaxAmount | number: "1.2-2" }}
+                  {{ item.lineTaxAmount | number : "1.2-2" }}
                 </p>
               </ng-template>
             </td>
 
             <!-- Amount -->
-            <td style="width: 120px" class="hidden">
+            <td class="hidden">
               <ng-container *ngIf="editingRowIndex === ri; else showAmount">
                 <p-inputnumber
                   formControlName="lineAmount"
@@ -305,13 +273,13 @@
               </ng-container>
               <ng-template #showAmount>
                 <p class="text-right">
-                  {{ item.lineAmount | number: "1.2-2" }}
+                  {{ item.lineAmount | number : "1.2-2" }}
                 </p>
               </ng-template>
             </td>
 
             <!-- Note -->
-            <td style="width: 180px">
+            <td>
               <ng-container *ngIf="editingRowIndex === ri; else showNote">
                 <input
                   type="text"
@@ -322,8 +290,8 @@
               </ng-container>
               <ng-template #showNote>{{ item.note }}</ng-template>
             </td>
-            <!-- Actions -->
-            <td style="width: 120px" class="whitespace-nowrap">
+               <!-- Actions -->
+            <td class="whitespace-nowrap">
               <ng-container *ngIf="editingRowIndex !== ri">
                 <button
                   pButton
@@ -332,7 +300,6 @@
                   (click)="editAllocRow(ri)"
                   *ngIf="isAddAllocationLineVisible"
                   severity="contrast"
-                  [disabled]="disableInvoiceLineAllocation()"
                 ></button>
               </ng-container>
 
@@ -343,7 +310,6 @@
                   class="p-button-sm p-button-success p-button-text"
                   (click)="saveRow(ri)"
                   *ngIf="isAddAllocationLineVisible"
-                  [disabled]="disableInvoiceLineAllocation()"
                 ></button>
                 <button
                   pButton
@@ -351,7 +317,6 @@
                   class="p-button-sm p-button-warning p-button-text"
                   (click)="cancelEdit(ri)"
                   *ngIf="isAddAllocationLineVisible"
-                  [disabled]="disableInvoiceLineAllocation()"
                 ></button>
               </ng-container>
 
@@ -362,7 +327,6 @@
                   icon="pi pi-trash"
                   class="p-button-sm p-button-danger p-button-text"
                   (click)="deleteRow(ri)"
-                  [disabled]="disableInvoiceLineAllocation()"
                 ></button>
               </ng-container>
             </td>
@@ -372,148 +336,82 @@
 
       <!-- Footer Summary -->
       <ng-template pTemplate="footer">
-        <!-- Invoice Line Amount -->
         <tr>
-          <!-- Empty columns before Line Description -->
-          <td colspan="4"></td>
-
-          <!-- Label aligned under Line Description -->
-          <td
-            class="font-semibold text-right whitespace-nowrap"
-            style="min-width: 180px"
-          >
-            Invoice Line Amount:
+          <td colspan="6" style="text-align: right; font-weight: 600">
+            Invoice Line Amount
           </td>
-
-          <!-- Tax Code -->
           <td></td>
-
-          <!-- Net Amount -->
           <td>
             <p class="font-semibold text-right">
-              {{ totalNetAmount | number: "1.2-2" }}
+              {{ totalNetAmount | number : "1.2-2" }}
             </p>
           </td>
-
-          <!-- Tax Amount -->
           <td>
             <p class="font-semibold text-right">
-              {{ totalTaxAmount | number: "1.2-2" }}
+              {{ totalTaxAmount | number : "1.2-2" }}
             </p>
           </td>
-
-          <!-- Amount -->
           <td class="hidden">
             <p class="font-semibold text-right">
-              {{ totalAmount | number: "1.2-2" }}
+              {{ totalAmount | number : "1.2-2" }}
             </p>
           </td>
-
-          <!-- Note -->
-          <td></td>
-
-          <!-- Actions -->
           <td></td>
         </tr>
-
-        <!-- Invoice Header Amount -->
         <tr>
-          <!-- Empty columns before Line Description -->
-          <td colspan="4"></td>
-
-          <!-- Label aligned under Line Description -->
-          <td
-            class="font-semibold text-right whitespace-nowrap"
-            style="min-width: 180px"
-          >
-            Invoice Header Amount:
+          <td colspan="6" style="text-align: right; font-weight: 600">
+            Invoice Header Amount
           </td>
-
-          <!-- Tax Code -->
           <td></td>
-
-          <!-- Net Amount -->
           <td>
             <p class="font-semibold text-right">
-              {{ amounts?.netAmount | number: "1.2-2" }}
+              {{ amounts?.netAmount | number : "1.2-2" }}
             </p>
           </td>
-
-          <!-- Tax Amount -->
           <td>
             <p class="font-semibold text-right">
-              {{ amounts?.taxAmount | number: "1.2-2" }}
+              {{ amounts?.taxAmount | number : "1.2-2" }}
             </p>
           </td>
-
-          <!-- Amount -->
           <td class="hidden">
             <p class="font-semibold text-right">
-              {{ amounts?.totalAmount | number: "1.2-2" }}
+              {{ amounts?.totalAmount | number : "1.2-2" }}
             </p>
           </td>
-
-          <!-- Note -->
-          <td></td>
-
-          <!-- Actions -->
           <td></td>
         </tr>
-
         <tr>
-          <td colspan="11"></td>
+          <td colspan="6"></td>
         </tr>
-
-        <!-- Difference in Invoice Total -->
         <tr>
-          <!-- Empty columns before Line Description -->
-          <td colspan="4"></td>
-
-          <!-- Label aligned under Line Description -->
-          <td
-            class="font-semibold text-right whitespace-nowrap"
-            style="min-width: 180px"
-          >
-            Difference in Invoice Total:
+          <td colspan="6" style="text-align: right; font-weight: 600">
+            Difference in Invoice Total
           </td>
-
-          <!-- Tax Code -->
           <td></td>
-
-          <!-- Net Amount -->
           <td>
             <p
               [class.text-red-500]="isNetAmountMatch"
               class="font-semibold text-right"
             >
-              {{ differenceInNetAmount | number: "1.2-2" }}
+              {{ differenceInNetAmount | number : "1.2-2" }}
             </p>
           </td>
-
-          <!-- Tax Amount -->
           <td>
             <p
               [class.text-red-500]="isTaxAmountMatch"
               class="font-semibold text-right"
             >
-              {{ differenceInTaxAmount | number: "1.2-2" }}
+              {{ differenceInTaxAmount | number : "1.2-2" }}
             </p>
           </td>
-
-          <!-- Amount -->
           <td class="hidden">
             <p
               [class.text-red-500]="isAmountMatch"
               class="font-semibold text-right"
             >
-              {{ differenceInTotalAmount | number: "1.2-2" }}
+              {{ differenceInTotalAmount | number : "1.2-2" }}
             </p>
           </td>
-
-          <!-- Note -->
-          <td></td>
-
-          <!-- Actions -->
           <td></td>
         </tr>
       </ng-template>

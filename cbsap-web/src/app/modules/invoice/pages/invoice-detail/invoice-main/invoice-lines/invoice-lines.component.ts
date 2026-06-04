@@ -36,12 +36,10 @@ import {
 } from 'rxjs';
 import {
   AlertService,
-  AuthService,
   InvoiceDetailService,
   InvoiceFormService,
   LookupOptionsService,
 } from 'src/app/core/services';
-import { Permission } from '@core/model/auth/permission';
 
 @Component({
   selector: 'app-invoice-lines',
@@ -102,7 +100,6 @@ export class InvoiceLinesComponent implements OnInit, OnDestroy {
   constructor(
     private lookUpOptionService: LookupOptionsService,
     private invDetailService: InvoiceDetailService,
-    private authService: AuthService,
     private message: AlertService,
     private activeRoute: ActivatedRoute,
     private invFormService: InvoiceFormService,
@@ -460,9 +457,5 @@ export class InvoiceLinesComponent implements OnInit, OnDestroy {
   getAccountLabel(account: any): string {
     const detail = this.accountOptions?.find((acc) => acc.value === account);
     return account ? detail?.label! : '';
-  }
-
-  disableInvoiceLineAllocation(){
-    return !this.authService.userHasPermission(Permission.CanModifyInvoiceLine);
   }
 }

@@ -121,11 +121,6 @@ export class TaxCodeSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const stored = localStorage.getItem('taxcode-search');
-    if (stored) {
-      this.taxCodeSearchModel = JSON.parse(stored);
-    }
-
     this.columns = this.gridService.taxCodeManagementColumn();
   }
 
@@ -135,7 +130,6 @@ export class TaxCodeSearchComponent implements OnInit, OnDestroy {
 
   editTaxCode(taxCode: TaxCode) {
     const id = taxCode.taxCodeID;
-    localStorage.setItem('taxcode-search', JSON.stringify(this.taxCodeSearchModel));
     this.router.navigate(['taxcode-management/edit-taxcode', id]);
   }
 
@@ -151,8 +145,6 @@ export class TaxCodeSearchComponent implements OnInit, OnDestroy {
   }
 
   onClear() {
-    localStorage.removeItem('taxcode-grid');
-    localStorage.removeItem('taxcode-search');
     this.taxCodeSearchModel = {
       entityName: '',
       taxCodeName: '',

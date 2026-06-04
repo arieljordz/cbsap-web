@@ -52,7 +52,7 @@ export function createInvRoutingFlowForm(): InvRoutingFlowGroup {
     invRoutingFlowName: new FormControl('', Validators.required),
     supplierInfoID: new FormControl<number | null>(null),
     isActive: new FormControl<boolean | null>(true),
-    matchReference: new FormControl(''),
+    matchReference: new FormControl('', Validators.required),
     selectedRoleID: new FormControl<number | null>(0),
     invRoutingFlowLevels: new FormArray<RoutingFlowLevelFormGroup>(
       [],

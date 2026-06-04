@@ -38,7 +38,6 @@ import { YesnoPipe } from '@shared/pipes/yesno.pipe';
 import { QuickSearchComponent } from '@shared/quick-search/quick-search.component';
 import { Table } from 'primeng/table';
 import { Subject, takeUntil } from 'rxjs';
-import { stream } from 'xlsx';
 
 @Component({
   selector: 'app-supplier-search',
@@ -145,10 +144,6 @@ export class SupplierSearchComponent implements OnInit, OnDestroy {
     this.destroySubject.complete();
   }
   ngOnInit(): void {
-    const stored = localStorage.getItem('supplier-search');
-    if(stored){
-      this.searchSupplierModel = JSON.parse(stored);
-    }
     this.columns = this.gridService.supplierGridColumn();
     this.sizes = { name: 'Small', class: 'p-table?-sm' };
   }
@@ -166,8 +161,6 @@ export class SupplierSearchComponent implements OnInit, OnDestroy {
   }
 
   clear() {
-    localStorage.removeItem('supplier-search');
-    localStorage.removeItem('supplier-grid');
     this.searchSupplierModel = {
       entityName: '',
       supplierID: '',
@@ -185,7 +178,6 @@ export class SupplierSearchComponent implements OnInit, OnDestroy {
 
   editSupplier(supplier: any): void {
     const id = supplier.supplierInfoID;
-    localStorage.setItem('supplier-search',JSON.stringify(this.searchSupplierModel));
     this.router.navigate(['supplier-management/edit-supplier', id]);
   }
   searchSupplier() {

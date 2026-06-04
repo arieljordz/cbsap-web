@@ -22,6 +22,4 @@ export class Permission {
     'CanSubmitInvoice';
   public static readonly CanModifyManualMatching: PermissionValues =
     'CanModifyManualMatching';
-    public static readonly CanModifyInvoiceLine: PermissionValues =
-    'CanModifyInvLine';  
 }

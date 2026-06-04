@@ -4,5 +4,4 @@ export interface InvValidationResponseDto {
     queueType: InvoiceQueue;
     invoiceActionType: string;
     failureMessages: string;
-    isOnLoad:boolean
 }

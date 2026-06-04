@@ -5,6 +5,4 @@ export interface InvSearchSupplierDto {
     entity: string | null;
     supplierName: string | null;
     isActive: boolean;
-    invoiceRoutingFlowID: number | null;
-    invoiceRoutingFlowName: string | null;
 }

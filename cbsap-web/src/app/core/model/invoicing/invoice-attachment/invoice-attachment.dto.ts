@@ -4,8 +4,6 @@ export interface InvAttachmentDto {
     originalFileName: string | null;
     storageFileName: string | null;
     fileType: string | null;
-    uploadedBy: string | null;
-    createdDate: Date;
 }
 
 export interface InvAttachmentFromDto {

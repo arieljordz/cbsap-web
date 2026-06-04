@@ -33,11 +33,6 @@ export interface InvInfoDto {
   approvedUser: string;
   freeFields: FreeFieldDto[] | [];
   spareAmounts: SpareAmountDto[] | [];
-  createdDate: Date;
-  invDueDateCalculation:number;
-  defaultInvoiceDueInDays: number;
-  nextRole: string;
-  reason : string;
 }
 
 export interface FreeFieldDto {
@@ -86,13 +81,10 @@ export interface InvoiceDto {
   statusType: InvoiceStatusEnum;
   keywordID: number;
   keyword: string;
-  invRoutingFlowID: number;
-  invRoutingFlowName: string;
   freeFields: FreeFieldDto[];
   spareAmount: SpareAmountDto[];
   invoiceAllocationLines: InvAllocEntryDto[];
   invInfoRoutingLevels: InvInfoRoutingLevelDto[];
-  reason : string;
 }
 
 export interface InvMyInvoiceSearchDto {
@@ -132,9 +124,9 @@ export interface RejectedInvoiceSearchDto {
   poNo: string | null;
   dueDate: string | null;
   grossAmount: number | null;
+
   invoiceApprover: string | null;
   archiveDate: string | null;
-  reason : string | null;
 }
 
 /**Exception Queue */

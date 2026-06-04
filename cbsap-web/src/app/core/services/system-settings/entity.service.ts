@@ -24,8 +24,6 @@ export class EntityService {
     matchingLevel: SelectItem[];
     invoiceMatchBasis: SelectItem[];
     allowPresets: SelectItem[];
-    dueDateCalculations: SelectItem[];
-
   }>;
 
   constructor(
@@ -39,7 +37,6 @@ export class EntityService {
     matchingLevel: SelectItem[];
     invoiceMatchBasis: SelectItem[];
     allowPresets: SelectItem[];
-    dueDateCalculations: SelectItem[];
   }> {
     if (!this.drowpdownEntityData$) {
       this.drowpdownEntityData$ = this.httpClient
@@ -49,7 +46,6 @@ export class EntityService {
             matchingLevel: this.toSelectItems(data.matchingLevel),
             invoiceMatchBasis: this.toSelectItems(data.invoiceMatchBasis),
             allowPresets: data.allowPresets,
-            dueDateCalculations: data.dueDateCalculations,
           })),
           shareReplay(1)
         );
@@ -164,18 +160,4 @@ export class EntityService {
           })
         );
     }
-
-  getAllEntitiesByRole(roleID: number): Observable<ResponseResult<GetAllEntityDto[]>> {
-    return this.resultHttpClient
-      .get<GetAllEntityDto[]>(`${ENTITYPROFILE}/role/${roleID}/entities`, true)
-      .pipe(
-        map((response) => {
-          return response;
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return throwError(() => error);
-        })
-      );
-  }
-
 }
