@@ -97,6 +97,7 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
   invoiceID: number = 0;
   keywordID:number | null = 0;
   supplierInfoID:number | null = 0;
+  
 
   invoiceTotalAmount: number = 0;
   authorisationLimit: number = this.authService.authorisationLimit;
@@ -118,6 +119,7 @@ export class InvoiceMainComponent implements OnInit, OnDestroy, AfterViewInit {
   invoiceValidationHeader: string = '';
 
   invSubmissionMessages: string[] = [];
+  validationInfoMessages: string[] = [];
   invoiceSubmissionnHeader: string = '';
 
   invApproveMessages: string[] = [];
@@ -532,14 +534,15 @@ getAttachments() {
 
   onToggleHold() {
     const action = this.isHeld
-      ? InvoiceActionButton.Unhold
-      : InvoiceActionButton.Hold;
+    ? InvoiceActionButton.Unhold
+    : InvoiceActionButton.Hold;
+
 
     this.invDetail.getInvoiceStatus(this.invoiceID).subscribe({
       next: (response) => {
         if (response.isSuccess) {
           const ref = this.dialogService.open(InvoiceStatusChangeComponent, {
-            header: this.isHeld ? 'Un-hold invoice' : 'Hold invoice',
+            header: this.isHeld ? 'un-hold invoice' : 'Hold invoice',
             modal: true,
             closable: true,
             width: '800px',
@@ -715,10 +718,12 @@ getAttachments() {
     if (!status) return false;
 
     return [
+
       InvoiceStatusEnum.ApprovalOnHold,
       InvoiceStatusEnum.ExceptionOnHold
+    
     ].includes(status);
-  }
+  }  
 
   getInvoiceStatus() {
     this.invDetail
@@ -734,7 +739,9 @@ getAttachments() {
             this.status = statusInfo.label;
             this.queueroute = response.responseData?.queue;
             this.invoiceStatus = response.responseData?.status;
+
             this.isHeld = this.updateHoldState(this.invoiceStatus);
+
           }
         },
         error: (error: ResponseResult<boolean>) => {
@@ -798,9 +805,9 @@ getAttachments() {
 
           const { validationMessage, validationHeader } =
             this.extractValidationDetails(validateResponse, response.messages!);
-          this.invValidationMessages = validationMessage;
-          this.invoiceValidationHeader = validationHeader;
-          this.loaderService.hide();
+            this.invValidationMessages = validationMessage;
+            this.invoiceValidationHeader = validationHeader;
+            this.loaderService.hide();
         }
       },
       error: (error: ResponseResult<InvValidationResponseDto>) => {
@@ -835,16 +842,20 @@ getAttachments() {
             );
             this.loadNext();
           }
-          const { validationMessage, validationHeader } =
+          const { validationMessage, validationHeader, validationInfoMessages } =
             this.extractValidationDetails(submitresponse, response.messages!);
           this.invSubmissionMessages = validationMessage;
           this.invoiceSubmissionnHeader = validationHeader;
+          this.validationInfoMessages = validationInfoMessages;
+
 
           this.OpenInvoiceValidation(
             this.invSubmissionMessages,
+            this.validationInfoMessages,
             'Approve Action',
             validationHeader
           );
+         
         }
       },
       error: (error: ResponseResult<boolean>) => {
@@ -857,6 +868,10 @@ getAttachments() {
       },
       complete: () => {
         this.getInvoiceStatus();
+        this.invroutingFlowComp.invoiceID = invoiceForm.invoiceID;
+        this.invroutingFlowComp.keywordID = invoiceForm.keywordID;
+        this.invroutingFlowComp.supplierInfoID = invoiceForm.supplierInfoID;
+        this.invroutingFlowComp.loadInvoiceRoutingFlow();
       },
     });
   }
@@ -909,13 +924,14 @@ getAttachments() {
         console.log(error.responseData!);
         const validateResponse = error.responseData!;
         if(validateResponse.queueType != null){
-          const { validationMessage, validationHeader } =
+          const { validationMessage, validationHeader, validationInfoMessages } =
             this.extractValidationDetails(validateResponse);
           this.invSubmissionMessages = validationMessage;
           this.invoiceSubmissionnHeader = validationHeader;
-
+          this.validationInfoMessages = validationInfoMessages;
           this.OpenInvoiceValidation(
             this.invSubmissionMessages,
+            this.validationInfoMessages,
             'Submit Action',
             validationHeader
           );
@@ -937,34 +953,43 @@ getAttachments() {
 
   private extractValidationDetails(
     response: InvValidationResponseDto,
-    message?: string[]
+    message?: string[] 
   ): {
     validationMessage: string[];
+    validationInfoMessages: string[];
     validationHeader: InvoiceActionButton;
   } {
     const raw = response?.failureMessages || '';
+    const infoMessages = response?.infoMessages || '';
     const header =
       response!.invoiceActionType.toString() as InvoiceActionButton;
 
-    if (raw) {
-      let filteredMessages = raw
-        .split(';')
-        .map((m) => m.trim())
-        .filter(
-          (m) =>
-            m.length > 0 &&  //(response?.queueType !== InvoiceQueue.ExceptionQueue)
-            (response?.queueType !== InvoiceQueue.ExceptionQueue || !m.toLowerCase().includes('potential duplicate'))
-        );
-      filteredMessages = filteredMessages.length > 0 ? filteredMessages : [raw];
+    if (raw || infoMessages) {
+      let filteredMessages:string[]= [];
+      if (raw){
+           filteredMessages = raw
+            .split(';')
+            .map((m) => m.trim())
+            .filter(
+              (m) =>
+                m.length > 0 && // (response?.queueType !== InvoiceQueue.ExceptionQueue)
+              (response?.queueType !== InvoiceQueue.ExceptionQueue || !m.toLowerCase().includes('invoice duplicate'))
+            );
+          filteredMessages = filteredMessages.length > 0 ? filteredMessages : [raw];
+      }
+
+      let validationInfoMessages = infoMessages.split(';').map((m) => m.trim()).filter((m) => m.length > 0) ?? [];
 
       return {
         validationMessage: filteredMessages,
         validationHeader: header,
+        validationInfoMessages: validationInfoMessages
       };
     }
     return {
       validationMessage: message!,
       validationHeader: header,
+      validationInfoMessages: []
     };
   }
 
@@ -1195,19 +1220,19 @@ getAttachments() {
 
 
 
-  OpenInvoiceValidation(messages: string[], title: string, action: string) {
+  OpenInvoiceValidation(messages: string[],infoMessages: string[], title: string, action: string) {
     const ref = this.dialogService.open(InvoiceValidationResponseComponent, {
       header: title,
       modal: true,
       closable: true,
       width: '800px',
-      data: { messages: messages, action: action, invoiceID: this.invoiceID },
+      data: { messages: messages,infoMessages:infoMessages, action: action, invoiceID: this.invoiceID },
       style: { minHeight: '200px' },
       dismissableMask: false,
       draggable: false,
       baseZIndex: 1200,
     });
-
+    
     ref.onClose.subscribe((result) => {
       if (result) {
         if (title === 'Submit Action') {
@@ -1216,6 +1241,7 @@ getAttachments() {
           this.getInvoiceStatus();
         }
       }
+      
     });
   }
 

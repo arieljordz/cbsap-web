@@ -515,16 +515,16 @@ getGridPageDetails(queueType?: InvoiceQueue): string {
 
   changeHoldState(dto: InvStatusChangeDto): Observable<ResponseResult<boolean>> {
     return this.resultHttpClient
-      .put<boolean>(`${INV_ENPOINT.CHANGE_HOLD_STATE}`, dto, true)
-      .pipe(
-        map((response) => {
-          return response;
+   .put<boolean>(`${INV_ENPOINT.CHANGE_HOLD_STATE}`, dto, true)
+    .pipe(
+      map((response) => {
+        return response;
         }),
         catchError((error: HttpErrorResponse) => {
-          return throwError(() => error);
+        return throwError(() => error);
         })
-      );
-  }
+        );
+       }
 
   routeToException(
     dto: InvStatusChangeDto
@@ -774,16 +774,6 @@ goodReceiptNoSearch(
             })
           );
 
-}
-
-validateInvoices(
-  invoiceIds: number[]
-): Observable<ResponseResult<InvValidationResponseDto[]>> {
-  return this.resultHttpClient.post<InvValidationResponseDto[]>(
-    INV_ENPOINT.VALIDATE_INVOICE_BY_IDS,
-    invoiceIds,
-    true
-  );
 }
 
 deleteInvoiceComment(comment: LoadInvoiceCommentsDto): Observable<ResponseResult<boolean>> {

@@ -38,7 +38,7 @@ export function buildSearchPOConfig(): SearchPOConfig {
       },
       {
         key: 'supplierName',
-        label: 'Supplier Name',
+        label: 'Supplier',
         type: 'text',
         fieldType: 'input',
       },

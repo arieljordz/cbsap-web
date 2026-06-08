@@ -33,7 +33,7 @@ export class EntityService {
     private resultHttpClient: ResultsHttpService,
     private errorHandlingService: ErrorHandlerService,
     private excelService: ExcelService
-  ) {}
+  ) { }
 
   getDropdownOptions(): Observable<{
     matchingLevel: SelectItem[];
@@ -152,19 +152,18 @@ export class EntityService {
       );
   }
 
-   deleteEntity(entityProfileID: number): Observable<ResponseResult<boolean>> {
-      return this.resultHttpClient
-        .delete<boolean>(`${ENTITYPROFILE}/${entityProfileID}`, entityProfileID, true)
-        .pipe(
-          map((response) => {
-            return response;
-          }),
-          catchError((error: HttpErrorResponse) => {
-            return throwError(() => error);
-          })
-        );
-    }
-
+  deleteEntity(entityProfileID: number): Observable<ResponseResult<boolean>> {
+    return this.resultHttpClient
+      .delete<boolean>(`${ENTITYPROFILE}/${entityProfileID}`, entityProfileID, true)
+      .pipe(
+        map((response) => {
+          return response;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+        })
+      );
+  }
   getAllEntitiesByRole(roleID: number): Observable<ResponseResult<GetAllEntityDto[]>> {
     return this.resultHttpClient
       .get<GetAllEntityDto[]>(`${ENTITYPROFILE}/role/${roleID}/entities`, true)
@@ -173,7 +172,9 @@ export class EntityService {
           return response;
         }),
         catchError((error: HttpErrorResponse) => {
+          
           return throwError(() => error);
+
         })
       );
   }

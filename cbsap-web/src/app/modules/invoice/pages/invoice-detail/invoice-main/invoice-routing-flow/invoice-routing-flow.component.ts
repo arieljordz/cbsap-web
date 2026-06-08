@@ -346,29 +346,115 @@ export class InvoiceRoutingFlowComponent
     return !_permissions.includes('CanModifyInvFlow');
   }
 
+ // isRestrictedLockedStatus(): boolean {
+  //  return [
+   //   InvoiceStatusEnum.ReadyForExport,
+   //   InvoiceStatusEnum.Exported,
+  //    InvoiceStatusEnum.Approved,
+  //    InvoiceStatusEnum.Archived
+ //   ].includes(this.invoiceStatus!) && this.disableAddRole();
+ // }
+ 
+ // isRestrictedMidEditStatus(): boolean {
+
+ //   return [
+
+ //     InvoiceStatusEnum.ForApproval,
+//      InvoiceStatusEnum.ApprovalOnHold,
+ //     InvoiceStatusEnum.Exception,
+   //   InvoiceStatusEnum.ExceptionOnHold
+  //  ].includes(this.invoiceStatus!);
+
+ // }
+
+ // private readonly blockedFlowStatuses = new Set<FlowStatus>([
+
+ //   FlowStatus.Submitted
+    
+
+ // ]);
+
+   //      private isSingleRoleLevel(): boolean {
+   //       return this.routingFlowLevels.length === 1;
+
+    //     }
+
+  
+
+ // canRemoveLevel(index: number): boolean {
+ //   const level = this.routingFlowLevels.at(index).value;
+
+ //   if (level.flowStatus == null) return false;
+
+//    if (this.isSingleRoleLevel()) return true;
+
+ //   if (this.blockedFlowStatuses.has(level.flowStatus)) return false;
+
+ //   if (this.isRestrictedLockedStatus()) return false;
+
+
+
+   // if (this.isRestrictedMidEditStatus()) {
+   //   return index === this.routingFlowLevels.length - 1;
+  //  }
+
+
+ //  return true;
+ // }
+
+
+ // canAddLevel(index: number): boolean {
+ //   const level = this.routingFlowLevels.at(index).value;
+
+//    if (level.flowStatus == null) return false;
+
+ //   if (this.isSingleRoleLevel()) return true;
+
+//    if (this.blockedFlowStatuses.has(level.flowStatus)) return false;
+
+//    if (this.isRestrictedLockedStatus()) return false;
+
+
+
+  //  if (this.isRestrictedMidEditStatus()) {
+   //   return index === this.routingFlowLevels.length - 1;
+   // }
+
+ //   return true;
+// }
+    
   private readonly lockedInvoiceStatuses = new Set<InvoiceStatusEnum>([
+
     InvoiceStatusEnum.ReadyForExport,
     InvoiceStatusEnum.Exported,
     InvoiceStatusEnum.Approved,
     InvoiceStatusEnum.Archived
-  ]);
+
+  ]); 
+
 
   private readonly nonEditableFlowStatuses = new Set<FlowStatus>([
-    FlowStatus.Submitted
+
+     FlowStatus.Submitted
   ]);
 
   private readonly nonRemovableFlowStatuses = new Set<FlowStatus>([
     FlowStatus.Assigned
+
   ]);
 
-  isInvoiceLocked(): boolean {
+   isInvoiceLocked(): boolean {
+     
     return this.lockedInvoiceStatuses.has(this.invoiceStatus!);
-  }
 
-  hasSingleLevel(): boolean {
-    return this.routingFlowLevels.length === 1;
-  }
+    
+}
 
+   hasSingleLevel(): boolean {  return this.routingFlowLevels.length === 1;
+
+                                       
+
+   }
 
    canRemoveLevel(index:number): boolean {
 

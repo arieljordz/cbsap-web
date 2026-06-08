@@ -28,6 +28,7 @@ import { ResponseResult } from '@core/model/common/responseResult';
 import { AdvanceSearchDto } from '@core/model/advance-search/advanceSearchDto';
 import { ADVANCESEARCH_CONSTANT } from '@core/constants/advance-search/advance-search-constants';
 import { INV_ENPOINT } from '@core/constants';
+import { AdvanceSearchEventService } from '@core/services/shared/advance-search.service';
 
 
     @Component({
@@ -50,8 +51,6 @@ import { INV_ENPOINT } from '@core/constants';
 
     private destroy$ = new Subject<void>();
     invInfoForm!: InvInfoFormGroup;
-
-    
 
     private supplierDataList$ = new BehaviorSubject<any[]>([]);
     private supplierTotalRecord$ = new BehaviorSubject<number>(0);
@@ -100,12 +99,6 @@ import { INV_ENPOINT } from '@core/constants';
     
       @Output() amounts = new EventEmitter<AmountDto>();
 
-      gridConfig: GridConfig<InvMyInvoiceSearchDto> | null = null;
-      @ViewChild('selectInvoiceTemplate', { static: false })
-      selectInvoiceTemplate!: TemplateRef<any>;
-      @ViewChild(DynamicGridComponent)
-      dynamicGridComponent?: DynamicGridComponent<any>;
-
       myInvoiceFilter: MyInvoiceSearchQuery = {
         AdvanceSearchId : 0,
         SupplierName: '',
@@ -149,7 +142,8 @@ import { INV_ENPOINT } from '@core/constants';
       private dynamicGridService: DynamicGridService<InvMyInvoiceSearchDto>,
       private router: Router,
       private advanceSearchService: AdvanceSearchService,  
-      private dialogConfig : DynamicDialogConfig   
+      private dialogConfig : DynamicDialogConfig,
+      private searchEvent: AdvanceSearchEventService   
     ){
       this.invInfoForm = createInvInfoForm();
     }
@@ -498,7 +492,7 @@ this.myInvoiceFilter.AdvanceSearchId = entity.advanceSearchId;
     return {
       PONo: filters.poNo?.trim() ?? null,
       EntityName: filters.entityName?.trim() ?? null,
-      SupplierName: supplierValue ? supplierValue : null,
+      Supplier: supplierValue ? supplierValue : null,
       IsActive: normalizedActive,
       PageNumber: filters.pageNumber ?? 1,
       PageSize: filters.pageSize ?? 10,
@@ -789,56 +783,16 @@ this.myInvoiceFilter.AdvanceSearchId = entity.advanceSearchId;
 
     //#region search
       onSearch() {
-
       this.transferFilter();
 
-      setTimeout(() => {
-          this.loadData(1);
-        if(this.invInfoForm.controls.isSaveAsTemplate.value){
-          this.updateAdvanceSearch();
-        }
+      if(this.invInfoForm.controls.isSaveAsTemplate.value){
+        this.updateAdvanceSearch();
+      }
 
-        this.saveToLocalStorange();
-      });
-    }
+      this.saveToLocalStorange();
 
-  
-    loadData(pageNumber: number) {
-      const query: MyInvoiceSearchQuery = {
-        AdvanceSearchId : this.myInvoiceFilter.AdvanceSearchId! || 0,
-        SupplierName: this.myInvoiceFilter.SupplierName! || '',
-        InvoiceNo: this.myInvoiceFilter.InvoiceNo! || '',
-        PONo: this.myInvoiceFilter.PONo! || '',
-        PageNumber: pageNumber,
-        PageSize: this.gridConfig?.pageSize ?? 10,
-        SortField: this.gridConfig?.sortField ?? '',
-        SortOrder: this.gridConfig?.sortOrder ?? -1,
-        SuppBankAccount: this.myInvoiceFilter.SuppBankAccount! || '',
-        SuppABN : this.myInvoiceFilter.SuppABN! || '',
-        PaymentTerm : this.myInvoiceFilter.PaymentTerm! || '',
-        SupplierNo : this.myInvoiceFilter.SupplierNo! || '',
-        EntityProfileID: this.myInvoiceFilter.EntityProfileID! || 0,
-        GrNo : this.myInvoiceFilter.GrNo! || '',
-        DateRangeInvoiceDate: this.myInvoiceFilter.DateRangeInvoiceDate! || '',
-        StartInvoiceDate : this.myInvoiceFilter.StartInvoiceDate! || '',
-        EndInvoiceDate : this.myInvoiceFilter.EndInvoiceDate! || '',
-        DateRangeDueDate: this.myInvoiceFilter.DateRangeDueDate! || '',
-        DaystillDue: this.myInvoiceFilter.DaystillDue! || 0,
-        NetAmount: this.myInvoiceFilter.NetAmount! || 0,
-        TaxCodeID: this.myInvoiceFilter.TaxCodeID! || 0,
-        TaxAmount: this.myInvoiceFilter.TaxAmount! || 0,
-        Currency: this.myInvoiceFilter.Currency! || '',
-        TotalAmount: this.myInvoiceFilter.TotalAmount! || 0,
-        InvRoutingFlowName: this.myInvoiceFilter.InvRoutingFlowName! || '',
-        NextRole: this.myInvoiceFilter.NextRole! || '',
-        Keyword: this.myInvoiceFilter.Keyword! || '',
-        MapID: this.myInvoiceFilter.MapID! || '',
-        DateRangeScanDate: this.myInvoiceFilter.DateRangeScanDate! || '',
-        InvoiceID: this.myInvoiceFilter.InvoiceID! || '',
-      };
+      this.searchEvent.emitReloadSubject(this.formName);
 
-      this.dynamicGridService.setLoading(true);
-      this.searchMyInvoice(query);
     }
 
 
@@ -875,6 +829,7 @@ this.myInvoiceFilter.AdvanceSearchId = entity.advanceSearchId;
               );
   
               this.totalRecords = res.responseData?.totalCount ?? 0;
+
             }
           },
           error: () => {
@@ -923,6 +878,7 @@ this.myInvoiceFilter.AdvanceSearchId = entity.advanceSearchId;
 
   private removeAdvanceSearch(){
 
+
     console.log(this.myInvoiceFilter.AdvanceSearchId!);
     this.advanceSearchService.deleteAdvanceSearch(this.myInvoiceFilter.AdvanceSearchId!).subscribe({
       next: (response) => {
@@ -937,7 +893,7 @@ this.myInvoiceFilter.AdvanceSearchId = entity.advanceSearchId;
         
       }
   });
-  //#endregion
+//#endregion
   }
 
   private saveToLocalStorange(){
@@ -979,16 +935,19 @@ this.myInvoiceFilter.AdvanceSearchId = entity.advanceSearchId;
   }
 
   private clear () {
-    
+    localStorage.removeItem(ADVANCESEARCH_CONSTANT.LOCALSTORAGE.MYINVOICEQUEUE);
     this.invInfoForm.reset();
     this.transferFilter();
-    this.dynamicGridComponent?.resetTable();
-    this.loadData(1);
+    this.searchEvent.emitReloadSubject(this.formName);
   }
 
   onClear () {
 
-    this.removeAdvanceSearch();
+    if(this.myInvoiceFilter.AdvanceSearchId! > 0){
+      this.removeAdvanceSearch();
+    }else{
+      this.clear();
+    }
 
   }
 

@@ -217,7 +217,6 @@ export class PoMatchingComponent
     // ref.onClose.subscribe((polines: PoLinesDto[] | null | undefined) => {
     ref.onClose.subscribe((result: SearchPOResult) => {
       const polines = result.polines! as PoLinesDto[] | null;
-
       if (result.polines === undefined) {
         return;
       }
@@ -226,9 +225,9 @@ export class PoMatchingComponent
         return;
       }
 
+      /*
       if (this.availablesPOs.length > 0) {
         const mergedRecords = [...this.availablesPOs];
-        //console.log('first loaad', mergedRecords);
 
         polines?.forEach((newRecord) => {
           const index = mergedRecords.findIndex(
@@ -236,7 +235,6 @@ export class PoMatchingComponent
           );
           if (index !== -1) {
             // mergedRecords[index] = newRecord;
-
             mergedRecords[index] = {
               ...mergedRecords[index],
               ...newRecord,
@@ -251,7 +249,11 @@ export class PoMatchingComponent
         });
 
         this.availablesPOs = mergedRecords;
-      } else {
+      }
+      else 
+      */
+
+      {
         this.availablesPOs = polines;
       }
 

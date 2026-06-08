@@ -5,8 +5,8 @@
             <h5 class="font-semibold text-xl">{{ pagelabel }}</h5>
             <div class="flex gap-3">
 
-                <p-button  [raised]="true" [rounded]="true"  icon="pi pi-refresh"  label="Clear" (click)="reset()" />
-                <p-button  [raised]="true" [rounded]="true" [severity]="!permissionForm.valid ? 'secondary':'primary'" [disabled]="!permissionForm.valid" icon="pi pi-check" type="submit" label="Save" />
+                <p-button  [raised]="true" [rounded]="true"  icon="pi pi-refresh"  [disabled]="!hasManagePermission()" label="Clear" (click)="reset()" />
+                <p-button  [raised]="true" [rounded]="true" [severity]="!permissionForm.valid ? 'secondary':'primary'" [disabled]="!permissionForm.valid || !hasManagePermission()" icon="pi pi-check" type="submit" label="Save" />
                 <p-button  [raised]="true" [rounded]="true"  severity="contrast" icon="pi pi-times" type="submit" label="Cancel" (click)="confirm($event)" />
               
             </div>

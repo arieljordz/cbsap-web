@@ -24,6 +24,7 @@ import {
 } from '@core/model/invoicing/invoicing.index';
 import { AlertService, ExcelService, GridService } from '@core/services';
 import { InvoiceDetailService } from '@core/services/invoicing/invoice-detail.service';
+import { AdvanceSearchEventService } from '@core/services/shared/advance-search.service';
 import { DynamicGridService } from '@core/services/shared/dynamic-grid.service';
 import { DynamicGridComponent } from '@shared/grid/dynamic-grid/dynamic-grid.component';
 import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
@@ -72,6 +73,37 @@ export class RejectedQueueSearchComponent
     invNo: '',
     poNo: '',
   };
+
+
+  advanceSearchFilter: RejectedSearchQuery = {
+    SupplierName: '',
+    InvoiceNo: '',
+    PONo: '',
+    PaymentTerm: '',
+    SupplierNo: '',
+    SuppABN: '',
+    SuppBankAccount: '',
+    EntityProfileID: 0,
+    GrNo: '',
+    DateRangeInvoiceDate: [],
+    DateRangeDueDate: [],
+    DaystillDue: 0,
+    NetAmount: 0,
+    TaxCodeID: 0,
+    TaxAmount: 0,
+    Currency: '',
+    TotalAmount: 0,
+    InvRoutingFlowName: '',
+    NextRole: '',
+    Keyword: '',
+    MapID: '',
+    DateRangeScanDate: [],
+    InvoiceID: '',
+    PageNumber: 0,
+    PageSize: 0
+  };
+
+
   /**
    *
    */
@@ -84,8 +116,19 @@ export class RejectedQueueSearchComponent
     private invDetailService: InvoiceDetailService,
     private datePipe: DatePipe,
     private dialogService: DialogService,
+    private searchEvent: AdvanceSearchEventService
   ) {}
   ngOnInit(): void {
+
+    this.searchEvent.reloadSubject$.subscribe(data => {
+      if (data === ADVANCESEARCH_CONSTANT.FORMNAME.REJECTIONQUEUE) {
+        this.loadData(1);
+      }
+    });
+
+     // just remove this since - want to refresh every reload of page
+ localStorage.removeItem(ADVANCESEARCH_CONSTANT.LOCALSTORAGE.REJECTIONQUEUE);
+
     this.dynamicGridService.setGridKey("reject-queue-grid");
     const stored = localStorage.getItem("reject-queue-search");
     if(stored){
@@ -107,6 +150,7 @@ export class RejectedQueueSearchComponent
     this.loadData(1);
   }
   clear() {
+    localStorage.removeItem(ADVANCESEARCH_CONSTANT.LOCALSTORAGE.REJECTIONQUEUE);
     localStorage.removeItem("reject-queue-grid");
     localStorage.removeItem("reject-queue-search");    
     this.searchConfig.model.suppName = '';
@@ -139,6 +183,36 @@ export class RejectedQueueSearchComponent
       InvoiceNo: this.myInvoiceFilter.invNo! || '',
       PONo: this.myInvoiceFilter.poNo! || '',
     };
+
+    var store = localStorage.getItem(ADVANCESEARCH_CONSTANT.LOCALSTORAGE.REJECTIONQUEUE);
+    if(store != null){
+        this.advanceSearchFilter = JSON.parse(store);
+        
+        exportQuery.SupplierName = this.advanceSearchFilter.SupplierName ?? exportQuery.SupplierName;
+        exportQuery.InvoiceNo = this.advanceSearchFilter.InvoiceNo ?? exportQuery.InvoiceNo;
+        exportQuery.PONo  =this.advanceSearchFilter.PONo ?? exportQuery.PONo;
+        exportQuery.PaymentTerm = this.advanceSearchFilter.PaymentTerm ?? '';
+        exportQuery.SupplierNo = this.advanceSearchFilter.SupplierNo ?? '';
+        exportQuery.SuppABN = this.advanceSearchFilter.SuppABN ?? '';
+        exportQuery.SuppBankAccount = this.advanceSearchFilter.SuppBankAccount ?? '';
+        exportQuery.EntityProfileID = this.advanceSearchFilter.EntityProfileID ?? 0;
+        exportQuery.GrNo = this.advanceSearchFilter.GrNo ?? '';
+        exportQuery.DaystillDue = this.advanceSearchFilter.DaystillDue ?? 0;
+        exportQuery.NetAmount = this.advanceSearchFilter.NetAmount ?? 0;
+        exportQuery.TaxCodeID = this.advanceSearchFilter.TaxCodeID ?? 0;
+        exportQuery.TaxAmount  = this.advanceSearchFilter.TaxAmount ?? 0;
+        exportQuery.Currency = this.advanceSearchFilter.Currency ?? '';
+        exportQuery.TotalAmount = this.advanceSearchFilter.TotalAmount ?? 0;
+        exportQuery.InvRoutingFlowName = this.advanceSearchFilter.InvRoutingFlowName ?? '';
+        exportQuery.NextRole = this.advanceSearchFilter.NextRole ?? '';
+        exportQuery.Keyword = this.advanceSearchFilter.Keyword ?? '';
+        exportQuery.MapID = this.advanceSearchFilter.MapID ?? '';
+        exportQuery.InvoiceID  = this.advanceSearchFilter.InvoiceID ?? '';
+        exportQuery.StartDueDate = this.advanceSearchFilter.StartDueDate ?? '';
+        exportQuery.EndDueDate = this.advanceSearchFilter.EndDueDate ?? '';
+              
+    }
+
     this.loading = true;
     this.invDetailService
       .exportRejectInvoice(exportQuery)
@@ -220,6 +294,46 @@ export class RejectedQueueSearchComponent
     query.SupplierName = this.myInvoiceFilter.suppName! || '';
     query.InvoiceNo = this.myInvoiceFilter.invNo! || '';
     query.PONo = this.myInvoiceFilter.poNo! || '';
+
+    
+
+    //Advance Search Filter
+    var store = localStorage.getItem(ADVANCESEARCH_CONSTANT.LOCALSTORAGE.REJECTIONQUEUE);
+    if(store){
+      this.advanceSearchFilter = JSON.parse(store);
+
+      query.SupplierName = this.advanceSearchFilter.SupplierName != '' ? this.advanceSearchFilter.SupplierName : query.SupplierName;
+      query.InvoiceNo = this.advanceSearchFilter.InvoiceNo  != '' ? this.advanceSearchFilter.InvoiceNo : query.InvoiceNo;
+      query.PONo = this.advanceSearchFilter.PONo  != '' ? this.advanceSearchFilter.PONo : query.PONo;
+      query.PaymentTerm = this.advanceSearchFilter.PaymentTerm;
+      query.SupplierNo = this.advanceSearchFilter.SupplierNo;
+      query.SuppABN = this.advanceSearchFilter.SuppABN;
+      query.SuppBankAccount = this.advanceSearchFilter.SuppBankAccount;
+      query.EntityProfileID = this.advanceSearchFilter.EntityProfileID;
+      query.GrNo = this.advanceSearchFilter.GrNo;
+      query.DateRangeInvoiceDate = this.advanceSearchFilter.DateRangeInvoiceDate;
+      query.StartInvoiceDate = this.advanceSearchFilter.StartInvoiceDate;
+      query.EndInvoiceDate = this.advanceSearchFilter.EndInvoiceDate;
+      query.DateRangeDueDate = this.advanceSearchFilter.DateRangeDueDate;
+      query.StartDueDate = this.advanceSearchFilter.StartDueDate;
+      query.EndDueDate = this.advanceSearchFilter.EndDueDate;
+      query.DaystillDue = this.advanceSearchFilter.DaystillDue;
+      query.NetAmount = this.advanceSearchFilter.NetAmount;
+      query.TaxCodeID = this.advanceSearchFilter.TaxCodeID;
+      query.TaxAmount = this.advanceSearchFilter.TaxAmount;
+      query.Currency = this.advanceSearchFilter.Currency;
+      query.TotalAmount = this.advanceSearchFilter.TotalAmount;
+      query.InvRoutingFlowName = this.advanceSearchFilter.InvRoutingFlowName;
+      query.NextRole = this.advanceSearchFilter.NextRole;
+      query.Keyword = this.advanceSearchFilter.Keyword;
+      query.MapID = this.advanceSearchFilter.MapID;
+      query.DateRangeScanDate = this.advanceSearchFilter.DateRangeScanDate;
+      query.StartScanDate = this.advanceSearchFilter.StartScanDate;
+      query.EndScanDate = this.advanceSearchFilter.EndScanDate;
+      query.InvoiceID = this.advanceSearchFilter.InvoiceID;
+    }
+
+
     this.invDetailService
       .rejectedQueueSearch(query)
       .pipe(takeUntil(this.destroySubject))

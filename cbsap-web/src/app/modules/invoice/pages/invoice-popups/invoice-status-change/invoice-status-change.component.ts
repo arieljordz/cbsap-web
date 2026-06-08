@@ -98,8 +98,8 @@ export class InvoiceStatusChangeComponent implements OnInit, OnDestroy {
     if (this.invAddReasonForm.valid) {
       switch (this.action) {
         case InvoiceActionButton.Hold:
-        case InvoiceActionButton.Unhold:
-          this.changeHoldState(formValue);
+          case InvoiceActionButton.Unhold:
+            this.changeHoldState(formValue);
           break;
         case InvoiceActionButton.Reject:
           this.rejectInvoice(formValue);

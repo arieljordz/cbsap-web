@@ -29,6 +29,7 @@ import { Subject, takeUntil } from 'rxjs';
 export class RoutingflowRoleSelectorComponent implements OnInit, OnDestroy {
   roleSelectorForm!: FormGroup;
   private destroy$ = new Subject<void>();
+  
   rolesOptions?: SelectItem[] = [];
   readonly roleOptions$ = this.lookUpOptionService.canBeAddedRolesLookUpOptions$;
 
@@ -48,17 +49,20 @@ export class RoutingflowRoleSelectorComponent implements OnInit, OnDestroy {
       selectedRoleID: new FormControl(null, Validators.required),
     });
 
-    this.roleOptions$.pipe(takeUntil(this.destroy$)).subscribe((options) => {
-      options[0].label = '-- Please Select --';
-      this.rolesOptions = options.filter(
-        (roleID) => !this.excludesSelectedRoleIds.includes(roleID.value!)
-      );
-    });
+  this.roleOptions$.pipe(takeUntil(this.destroy$)).subscribe((options) => {
+
+    options[0].label = "--Please Select --";
+    this.rolesOptions = options.filter(
+     (roleID) => !this.excludesSelectedRoleIds.includes(roleID.value!)
+    );
+  });
+
   }
 
   get f() {
     return this.roleSelectorForm.controls;
   }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

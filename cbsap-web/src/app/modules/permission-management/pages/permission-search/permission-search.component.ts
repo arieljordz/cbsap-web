@@ -116,14 +116,15 @@ export class PermissionSearchComponent implements OnInit, OnDestroy {
     search: true,
     clear: true,
     export: true,
-    custom: [
-      {
-        label: 'Adv Search',
-        icon: 'pi pi-search',
-        severity: 'secondary',
-        action: () => this.onAdvancedSearch(),
-      },
-    ],
+    //Requested to Remove Ticket 1995
+    // custom: [
+    //   {
+    //     label: 'Adv Search',
+    //     icon: 'pi pi-search',
+    //     severity: 'secondary',
+    //     action: () => this.onAdvancedSearch(),
+    //   },
+    // ],
   };
 
   constructor(

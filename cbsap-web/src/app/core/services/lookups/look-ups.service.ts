@@ -25,6 +25,7 @@ import {
   GOODS_RECEIPT_EXPORT,
   ROUTING_FLOWS_LOOKUP,
   CAN_BE_ADDED_ROLES_LOOKUP
+  
 } from '../../constants';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { TaxCodeLookupDto } from '../../model/taxcode-management';
@@ -43,8 +44,8 @@ import { ExcelService } from '../util-services/excel.service';
 })
 export class LookUpsService {
   constructor(private resultHttpClient: ResultsHttpService,
-      private excelService: ExcelService,
-      private httpClient: ResultsHttpService) {}
+    private excelService: ExcelService,
+    private httpClient: ResultsHttpService) { }
 
   getAccountLookUps(): Observable<ResponseResult<AccountLookupDto[]>> {
     return this.resultHttpClient
@@ -79,6 +80,8 @@ export class LookUpsService {
       })
     );
   }
+
+
   getInvRoutingFlowLookUps(): Observable<
     ResponseResult<InvRoutingFlowLookupDto[]>
   > {
@@ -94,7 +97,7 @@ export class LookUpsService {
       );
   }
 
-  getInvRoutingFlowByEntityIDLookUps(entityId:number): Observable<
+  getInvRoutingFlowByEntityIDLookUps(entityId: number): Observable<
     ResponseResult<InvRoutingFlowLookupDto[]>
   > {
     return this.resultHttpClient
@@ -156,7 +159,7 @@ export class LookUpsService {
 
   routingFlowSearchLookUp(
     query: RoutingFlowLookupQuery
-  ): Observable<ResponseResult<Pagination<RoutingFlowLookupDto>>>{
+  ): Observable<ResponseResult<Pagination<RoutingFlowLookupDto>>> {
     return this.resultHttpClient
       .getSearchWithPagination<RoutingFlowLookupDto>(
         `${ROUTING_FLOWS_LOOKUP}?${this.resultHttpClient.serialiazeQueryString(

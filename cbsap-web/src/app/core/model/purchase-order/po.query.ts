@@ -9,13 +9,13 @@ export interface SearchPOModel {
 export interface POSearchQuery extends BasePaginationQuery {
   PONo?: string | null;
   EntityName?: string | null;
-  SupplierName?: string | null;
+  Supplier?: string | null;
   IsActive?: boolean | null;
 }
 
 export interface ExportPOSearchQuery {
   PONo?: string | null;
   EntityName?: string | null;
-  SupplierName?: string | null;
+  Supplier?: string | null;
   IsActive?: boolean | null;
 }

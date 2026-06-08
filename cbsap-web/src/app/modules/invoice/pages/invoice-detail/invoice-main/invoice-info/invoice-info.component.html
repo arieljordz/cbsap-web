@@ -81,6 +81,11 @@
           <div class="col-span-12 md:col-span-8">
             <p-select class="w-full" formControlName="entityProfileID"  [options]="entityOptionsByRole"
               [filter]="true" filterBy="label" [showClear]="false" [ngClass]="{ 'readonly-select': isReadOnly('entityProfileID') }"> </p-select>
+            <div class="mt-1 flex justify-between items-center text-xs text-gray-500">
+                <small *ngIf="f['entityProfileID'].invalid && f['entityProfileID'].touched" class="text-red-500">
+                  {{ getErrorMessage(f['entityProfileID'], 'Entity ') }}
+                </small>
+            </div>
           </div>
         </div>
         <div class="grid grid-cols-12 items-center gap-2">
