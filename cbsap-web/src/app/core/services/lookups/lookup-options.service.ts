@@ -172,21 +172,21 @@ export class LookupOptionsService {
     shareReplay(1)
   );
 
-  private canBeAddedRolesLookUp$ = this.lookUpService
-    .getCanBeAddedRolesLookUps()
-    .pipe(shareReplay(1));
-  readonly canBeAddedRolesLookUpOptions$ = this.canBeAddedRolesLookUp$.pipe(
-    map((roles) =>
-      roles.isSuccess
-        ? [
-            { label: '\u00A0', value: null },
-            ...(roles.responseData ?? []).map((role) => ({
-              label: role.roleName,
-              value: role.roleID,
-            })),
-          ]
-        : []
-    ),
-    shareReplay(1)
-  );
+  getCanBeAddedRolesLookUpOptions$(invoiceID: number) {
+    return this.lookUpService
+      .getCanBeAddedRolesLookUps(invoiceID)
+      .pipe(
+        map((roles) =>
+          roles.isSuccess
+            ? [
+                { label: '\u00A0', value: null },
+                ...(roles.responseData ?? []).map((role) => ({
+                  label: role.roleName,
+                  value: role.roleID,
+                })),
+              ]
+            : []
+        )
+      );
+  }
 }

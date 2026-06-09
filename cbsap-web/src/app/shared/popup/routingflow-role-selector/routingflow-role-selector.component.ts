@@ -16,7 +16,7 @@ import {
   DynamicDialogRef,
   DialogService,
 } from 'primeng/dynamicdialog';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-routingflow-role-selector',
@@ -30,7 +30,7 @@ export class RoutingflowRoleSelectorComponent implements OnInit, OnDestroy {
   roleSelectorForm!: FormGroup;
   private destroy$ = new Subject<void>();
   rolesOptions?: SelectItem[] = [];
-  readonly roleOptions$ = this.lookUpOptionService.canBeAddedRolesLookUpOptions$;
+  roleOptions$!: Observable<SelectItem[]>;
 
   excludesSelectedRoleIds: number[] = [];
 
@@ -43,17 +43,31 @@ export class RoutingflowRoleSelectorComponent implements OnInit, OnDestroy {
     this.excludesSelectedRoleIds =
       (this.config.data?.excludesSelectedRoleIds as number[]) ?? null;
   }
+
   ngOnInit(): void {
     this.roleSelectorForm = new FormGroup({
       selectedRoleID: new FormControl(null, Validators.required),
     });
 
-    this.roleOptions$.pipe(takeUntil(this.destroy$)).subscribe((options) => {
-      options[0].label = '-- Please Select --';
-      this.rolesOptions = options.filter(
-        (roleID) => !this.excludesSelectedRoleIds.includes(roleID.value!)
+    const invoiceID = this.config.data?.invoiceID;
+
+    this.roleOptions$ =
+      this.lookUpOptionService.getCanBeAddedRolesLookUpOptions$(
+        invoiceID
       );
-    });
+
+    this.roleOptions$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((options) => {
+        options[0].label = '-- Please Select --';
+
+        this.rolesOptions = options.filter(
+          (role) =>
+            !this.excludesSelectedRoleIds.includes(
+              Number(role.value)
+            )
+        );
+      });
   }
 
   get f() {

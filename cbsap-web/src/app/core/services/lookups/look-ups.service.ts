@@ -69,16 +69,22 @@ export class LookUpsService {
     );
   }
 
-  getCanBeAddedRolesLookUps(): Observable<ResponseResult<RoleDTO[]>> {
-    return this.resultHttpClient.get<RoleDTO[]>(`${CAN_BE_ADDED_ROLES_LOOKUP}`, true).pipe(
-      map((response) => {
-        return response;
-      }),
-      catchError((error: HttpErrorResponse) => {
-        return throwError(() => error);
-      })
-    );
+  getCanBeAddedRolesLookUps(
+    invoiceID: number
+  ): Observable<ResponseResult<RoleDTO[]>> {
+    return this.resultHttpClient
+      .get<RoleDTO[]>(
+        `${CAN_BE_ADDED_ROLES_LOOKUP}/${invoiceID}`,
+        true
+      )
+      .pipe(
+        map((response) => response),
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+        })
+      );
   }
+
   getInvRoutingFlowLookUps(): Observable<
     ResponseResult<InvRoutingFlowLookupDto[]>
   > {
