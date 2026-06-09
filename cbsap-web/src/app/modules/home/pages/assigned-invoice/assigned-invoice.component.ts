@@ -3,8 +3,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { distinctUntilChanged, filter, Subject, takeUntil } from 'rxjs';
 import { TableColumn, ResponseResult } from 'src/app/core/model/common';
 import { AssignedInvoice, AssignedInvoiceResult } from 'src/app/core/model/dashboard/assigned-invoice.model';
-
-import { GridService, MenuService, AuthService } from 'src/app/core/services';
+import { GridService, MenuService, AuthService, LookupOptionsService } from 'src/app/core/services';
 import { DashboardService } from 'src/app/core/services/dashboard/dashboard.service';
 import { TableModule, TableRowSelectEvent } from 'primeng/table';
 import { PrimeTemplate } from 'primeng/api';
@@ -49,7 +48,8 @@ export class AssignedInvoiceComponent implements OnInit {
     private gridService: GridService,
     private router:Router,
     private menuService:MenuService,
-    private authService:AuthService
+    private authService:AuthService,
+    private lookUpOptionService: LookupOptionsService,
   ) {}
 
   ngOnInit(): void {
@@ -79,6 +79,9 @@ export class AssignedInvoiceComponent implements OnInit {
   onRowSelect($event: TableRowSelectEvent) {
     const roleId = $event.data?.assignedRoleId;
     const role = $event.data?.assignedRole;
+    if (roleId !== null && !Number.isNaN(roleId)) {
+      this.lookUpOptionService.setRoleID(roleId);
+    }
     this.menuService.setRole(roleId);
     this.authService.switchRole(roleId).subscribe({
       next: (response) => {
