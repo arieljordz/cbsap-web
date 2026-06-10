@@ -23,7 +23,7 @@ import {
   ExportExceptionInvoiceQuery,
   MyInvoiceSearchModel,
 } from '@core/model/invoicing/invoicing.index';
-import { AlertService, ExcelService, GridService } from '@core/services';
+import { AlertService, ExcelService, GridService, LoaderService } from '@core/services';
 import { InvoiceDetailService } from '@core/services/invoicing/invoice-detail.service';
 import { DynamicGridService } from '@core/services/shared/dynamic-grid.service';
 import { DynamicGridComponent } from '@shared/grid/dynamic-grid/dynamic-grid.component';
@@ -33,6 +33,7 @@ import { QuickSearchComponent } from '@shared/quick-search/quick-search.componen
 import { DialogService } from 'primeng/dynamicdialog';
 import { Subject, takeUntil } from 'rxjs';
 import { MyInvoiceAdvanceSearchComponent } from '../my-invoice-advance-search/my-invoice-advance-search.component';
+import { LoaderComponent } from '@shared/loader/loader.component';
 
 @Component({
   selector: 'app-exception-queue-search',
@@ -44,6 +45,7 @@ import { MyInvoiceAdvanceSearchComponent } from '../my-invoice-advance-search/my
     PrimeImportsModule,
     DynamicGridComponent,
     QuickSearchComponent,
+    LoaderComponent,
   ],
   templateUrl: './exception-queue-search.component.html',
   styleUrl: './exception-queue-search.component.scss',
@@ -100,7 +102,8 @@ export class ExceptionQueueSearchComponent
     private dynamicGridService: DynamicGridService<ExceptionInvoiceSearchDto>,
     private invDetailService: InvoiceDetailService,
     private datePipe: DatePipe,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private loaderService: LoaderService,
   ) {}
   ngOnInit(): void {
     this.dynamicGridService.setGridKey("exception-queue-grid");
@@ -185,7 +188,7 @@ export class ExceptionQueueSearchComponent
       return;
     }
 
-    this.loading = true;
+    this.loaderService.show();
 
     const invoiceIds = this.selectedInvoices.map(x => x.invoiceID);
 
@@ -206,10 +209,10 @@ export class ExceptionQueueSearchComponent
             this.loadData(1);
           }
 
-          this.loading = false;
+          this.loaderService.hide();
         },
         error: () => {
-          this.loading = false;
+          this.loaderService.hide();
 
           this.message.showToast(
             MessageSeverity.error,

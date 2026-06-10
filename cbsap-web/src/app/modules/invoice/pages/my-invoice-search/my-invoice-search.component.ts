@@ -16,7 +16,7 @@ import { DynamicGridComponent } from '@shared/grid/dynamic-grid/dynamic-grid.com
 import { GridConfig } from '@core/model/dynamic-grid/grid.config';
 import { InvMyInvoiceSearchDto } from '@core/model/invoicing/invoice/invoice-info.dto';
 import { Router } from '@angular/router';
-import { AlertService, ExcelService, GridService } from '@core/services';
+import { AlertService, ExcelService, GridService, LoaderService } from '@core/services';
 import { DynamicGridService } from '@core/services/shared/dynamic-grid.service';
 import { DialogService } from 'primeng/dynamicdialog';
 import { InvoiceDetailService } from '@core/services/invoicing/invoice-detail.service';
@@ -33,6 +33,7 @@ import {
 } from '@core/model/invoicing/invoice/invoice-search.configs';
 import { MyInvoiceAdvanceSearchComponent } from '../my-invoice-advance-search/my-invoice-advance-search.component';
 import { ADVANCESEARCH_CONSTANT } from '@core/constants/advance-search/advance-search-constants';
+import { LoaderComponent } from '@shared/loader/loader.component';
 
 @Component({
   selector: 'app-my-invoice-search',
@@ -44,6 +45,7 @@ import { ADVANCESEARCH_CONSTANT } from '@core/constants/advance-search/advance-s
     PrimeImportsModule,
     DynamicGridComponent,
     QuickSearchComponent,
+    LoaderComponent,
   ],
   templateUrl: './my-invoice-search.component.html',
   styleUrl: './my-invoice-search.component.scss',
@@ -98,6 +100,7 @@ export class MyInvoiceSearchComponent
     private invDetailService: InvoiceDetailService,
     private datePipe: DatePipe,
     private dialogService: DialogService,
+    private loaderService: LoaderService,
   ) {}
 
   ngOnDestroy(): void {
@@ -185,7 +188,7 @@ export class MyInvoiceSearchComponent
       return;
     }
 
-    this.loading = true;
+    this.loaderService.show();
 
     const invoiceIds = this.selectedInvoices.map(x => x.invoiceID);
 
@@ -206,10 +209,10 @@ export class MyInvoiceSearchComponent
             this.loadData(1);
           }
 
-          this.loading = false;
+          this.loaderService.hide();
         },
         error: () => {
-          this.loading = false;
+          this.loaderService.hide();
 
           this.message.showToast(
             MessageSeverity.error,
