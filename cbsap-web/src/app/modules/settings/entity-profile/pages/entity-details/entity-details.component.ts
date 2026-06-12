@@ -301,7 +301,7 @@ export class EntityDetailsComponent implements OnInit {
       case 'POMT':
         return 'Purchase Order Match Type';
       case 'PO':
-    return 'Purchace Order Variance';
+    return 'PO Processing & Matching';
     case 'GR':
       default:
         return 'Matching Configuration';
