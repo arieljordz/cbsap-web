@@ -10,7 +10,6 @@
       class="rounded-full p-button-outlined p-button-sm"
       (click)="addAlocationRow()"
       *ngIf="isAddAllocationLineVisible"
-      [disabled]="disableInvoiceLineAllocation()"
     >
     <i class="pi pi-plus"></i>
       <span class="font-bold"> Add Invoice Line</span>
@@ -85,7 +84,7 @@
 
             <!-- Account-->
 
-          <!--  <td>
+            <td>
               <ng-container *ngIf="editingRowIndex === ri; else showAccount">
                 <p-input-group>
                   <input
@@ -110,30 +109,6 @@
                 {{ getAccountLabel(item.account) }}</ng-template
               >
             </td>
-          -->
-
-            <!-- Account-->
-
-              <td>
-              <ng-container *ngIf="editingRowIndex === ri; else showAccount">
-                <p-select
-                  class="w-full"
-                  formControlName="account"
-                
-                  [options]="accountOptions"
-                  [filter]="true"
-                  filterBy="label"
-                  [showClear]="false"
-                  [appendTo]="'body'"
-                >
-                </p-select>
-                <!-- <input type="text" formControlName="taxCodeID" class="p-inputtext-sm w-full" /> -->
-              </ng-container>
-              <ng-template #showAccount>{{
-                getAccountLabel(item.account)
-              }}</ng-template>
-            </td>
-
 
             <!-- Dimension 1 
             <td>
@@ -240,12 +215,7 @@
                 getTaxCodeLabel(item.taxCodeID)
               }}</ng-template>
             </td>
-
-
-
-
             <!-- Net Amount -->
-
             <td>
               <ng-container
                 *ngIf="editingRowIndex === ri; else showlineNetAmount"
@@ -330,7 +300,6 @@
                   (click)="editAllocRow(ri)"
                   *ngIf="isAddAllocationLineVisible"
                   severity="contrast"
-                  [disabled]="disableInvoiceLineAllocation()"
                 ></button>
               </ng-container>
 
@@ -341,7 +310,6 @@
                   class="p-button-sm p-button-success p-button-text"
                   (click)="saveRow(ri)"
                   *ngIf="isAddAllocationLineVisible"
-                  [disabled]="disableInvoiceLineAllocation()"
                 ></button>
                 <button
                   pButton
@@ -349,7 +317,6 @@
                   class="p-button-sm p-button-warning p-button-text"
                   (click)="cancelEdit(ri)"
                   *ngIf="isAddAllocationLineVisible"
-                  [disabled]="disableInvoiceLineAllocation()"
                 ></button>
               </ng-container>
 
@@ -360,7 +327,6 @@
                   icon="pi pi-trash"
                   class="p-button-sm p-button-danger p-button-text"
                   (click)="deleteRow(ri)"
-                  [disabled]="disableInvoiceLineAllocation()"
                 ></button>
               </ng-container>
             </td>

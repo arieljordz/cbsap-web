@@ -4,5 +4,4 @@ export interface EntityDropdownDto {
     matchingLevel: string[];
     invoiceMatchBasis: string[];
     allowPresets: SelectItem[];
-    dueDateCalculations: SelectItem[];
   }

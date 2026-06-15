@@ -24,8 +24,6 @@ export class EntityService {
     matchingLevel: SelectItem[];
     invoiceMatchBasis: SelectItem[];
     allowPresets: SelectItem[];
-    dueDateCalculations: SelectItem[];
-
   }>;
 
   constructor(
@@ -33,13 +31,12 @@ export class EntityService {
     private resultHttpClient: ResultsHttpService,
     private errorHandlingService: ErrorHandlerService,
     private excelService: ExcelService
-  ) { }
+  ) {}
 
   getDropdownOptions(): Observable<{
     matchingLevel: SelectItem[];
     invoiceMatchBasis: SelectItem[];
     allowPresets: SelectItem[];
-    dueDateCalculations: SelectItem[];
   }> {
     if (!this.drowpdownEntityData$) {
       this.drowpdownEntityData$ = this.httpClient
@@ -49,7 +46,6 @@ export class EntityService {
             matchingLevel: this.toSelectItems(data.matchingLevel),
             invoiceMatchBasis: this.toSelectItems(data.invoiceMatchBasis),
             allowPresets: data.allowPresets,
-            dueDateCalculations: data.dueDateCalculations,
           })),
           shareReplay(1)
         );
@@ -152,31 +148,16 @@ export class EntityService {
       );
   }
 
-  deleteEntity(entityProfileID: number): Observable<ResponseResult<boolean>> {
-    return this.resultHttpClient
-      .delete<boolean>(`${ENTITYPROFILE}/${entityProfileID}`, entityProfileID, true)
-      .pipe(
-        map((response) => {
-          return response;
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return throwError(() => error);
-        })
-      );
-  }
-  getAllEntitiesByRole(roleID: number): Observable<ResponseResult<GetAllEntityDto[]>> {
-    return this.resultHttpClient
-      .get<GetAllEntityDto[]>(`${ENTITYPROFILE}/role/${roleID}/entities`, true)
-      .pipe(
-        map((response) => {
-          return response;
-        }),
-        catchError((error: HttpErrorResponse) => {
-          
-          return throwError(() => error);
-
-        })
-      );
-  }
-
+   deleteEntity(entityProfileID: number): Observable<ResponseResult<boolean>> {
+      return this.resultHttpClient
+        .delete<boolean>(`${ENTITYPROFILE}/${entityProfileID}`, entityProfileID, true)
+        .pipe(
+          map((response) => {
+            return response;
+          }),
+          catchError((error: HttpErrorResponse) => {
+            return throwError(() => error);
+          })
+        );
+    }
 }

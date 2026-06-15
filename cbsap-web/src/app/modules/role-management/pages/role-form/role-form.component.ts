@@ -20,8 +20,7 @@ import {
   UpdateRoleCommand,
 } from '@core/model/roles-management';
 import { MessageSeverity } from '@core/constants';
-import { AlertService, RoleService, AuthService } from '@core/services';
-import { Permission, PermissionValues } from '@core/model/auth/permission';
+import { AlertService, RoleService } from '@core/services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ResponseResult } from '@core/model/common';
@@ -58,8 +57,7 @@ export class RoleFormComponent implements OnInit, OnDestroy {
     private roleService: RoleService,
     private message: AlertService,
     private router: Router,
-    private activetRoute: ActivatedRoute,
-    private authService: AuthService
+    private activetRoute: ActivatedRoute
   ) {
     this.initializeForm();
     this.roleId = Number(this.activetRoute.snapshot.params['roleID'] ?? 0);
@@ -286,8 +284,4 @@ export class RoleFormComponent implements OnInit, OnDestroy {
   get userRolesGroup(): FormGroup {
     return this.roleDetailForm.get('userRoles') as FormGroup;
   }
-
-  hasManagePermission():boolean{
-    return this.authService.userHasPermission(Permission.CanManageRole);
-  }   
 }

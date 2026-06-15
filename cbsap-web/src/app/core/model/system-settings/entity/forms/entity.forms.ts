@@ -26,14 +26,8 @@ export type EntityProfileFormGroup = FormGroup<{
   invAllowPresetDimension: FormControl<boolean | null>;
   taxDollarAmt: FormControl<number | null>;
   taxPercentageAmt: FormControl<number | null>;
-  invDueDateCalculation: FormControl<number | null>;
   createdDate: FormControl<Date | null>;
   matchingConfigs: FormArray<MatchingConfigFormGroup>;
-  automaticGoodsDelivered: FormControl<boolean>;
-  invoiceNetLessThanPOException: FormControl<boolean>;
-  invoiceNetGreaterThanPOApproved: FormControl<boolean>;
-  invoiceNetLessThanPOApproved: FormControl<boolean>;
-  invoiceRequiredToBeCoded: FormControl<boolean>;
 }>;
 
 
@@ -63,14 +57,8 @@ export function createMatchingConfigGroup(config?: Partial<EntityMatchingConfigD
       invAllowPresetDimension: new FormControl<boolean | null >(null),
       taxDollarAmt: new FormControl<number | null >(null),
       taxPercentageAmt: new FormControl<number | null >(null),
-      invDueDateCalculation: new FormControl<number | null >(null),
       createdDate: new FormControl<Date | null>(null),
-      matchingConfigs: new FormArray<MatchingConfigFormGroup>([]),
-      automaticGoodsDelivered: new FormControl(false,{nonNullable: true}),
-      invoiceNetLessThanPOException: new FormControl(false,{nonNullable: true}),
-      invoiceNetGreaterThanPOApproved: new FormControl(false,{nonNullable: true}),
-      invoiceNetLessThanPOApproved: new FormControl(false,{nonNullable: true}),
-      invoiceRequiredToBeCoded : new FormControl(false,{nonNullable: true}),
+      matchingConfigs: new FormArray<MatchingConfigFormGroup>([])
     });
   }
 

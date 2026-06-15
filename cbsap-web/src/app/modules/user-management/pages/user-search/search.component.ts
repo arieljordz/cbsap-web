@@ -11,10 +11,8 @@ import {
   GridService,
   ExcelService,
   AlertService,
-  AuthService
 } from 'src/app/core/services/index';
-import { Permission, PermissionValues } from '@core/model/auth/permission';
-import { first, Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { User } from 'src/app/core/model/user-management/user.model';
 import { ConfirmationService, SelectItem, PrimeTemplate } from 'primeng/api';
 import { TableColumn } from 'src/app/core/model/common/grid-column';
@@ -149,16 +147,14 @@ export class SearchComponent implements OnInit, OnDestroy {
     search: true,
     clear: true,
     export: true,
-
-    //Requested to Remove Ticket 1995
-    // custom: [
-    //   {
-    //     label: 'Adv Search',
-    //     icon: 'pi pi-search',
-    //     severity: 'secondary',
-    //     action: () => this.onAdvancedSearch(),
-    //   },
-    // ],
+    custom: [
+      {
+        label: 'Adv Search',
+        icon: 'pi pi-search',
+        severity: 'secondary',
+        action: () => this.onAdvancedSearch(),
+      },
+    ],
   };
 
   @ViewChild('dtUsers') table: Table | undefined;
@@ -169,7 +165,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     private excelService: ExcelService,
     private confirmationService: ConfirmationService,
     private message: AlertService,
-    private authService: AuthService,
     private router: Router,
     private datePipe: DatePipe
   ) {}
@@ -179,10 +174,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const stored = localStorage.getItem('user-search');
-    if(stored){
-      this.searchUserModel = JSON.parse(stored);
-    }
     this.statusFilterOptions = getStatusFilterOptions();
     this.columns = this.gridService.userSearchManagementColGrid();
     this.sizes = { name: 'Small', class: 'p-table?-sm' };
@@ -195,7 +186,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   editUser(user: User) {
-    localStorage.setItem('user-search',JSON.stringify(this.searchUserModel));
     this.router.navigate(['user-management/edit-user', user.userAccountID]);
   }
 
@@ -242,8 +232,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   clear(): void {
-    localStorage.removeItem('user-search');
-    localStorage.removeItem('user-grid');
     this.searchUserModel = {
       name: '',
       username: '',
@@ -374,9 +362,5 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.pageNumber = event.first + 1; //page starts from 0, so incrementing by 1
     this.pageSize = event.rows;
     this.searchUser(); // Call search again when page changes
-  }
-
-  hasManagePermission():boolean{
-    return this.authService.userHasPermission(Permission.CanManageUser);
   }
 }

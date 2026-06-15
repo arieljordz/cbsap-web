@@ -58,6 +58,3 @@ export * from './invoicing/invoice-form.service';
 //keywords
 export * from './keyword-management/keyword.service';
 
-export * from './reports/invoice-inquiry.service';
-
-

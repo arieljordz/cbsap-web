@@ -169,6 +169,7 @@ export class AccountSearchComponent implements OnInit, OnDestroy {
   }
 
   searchAccounts(query: SearchAccountLookUpQuery) {
+    console.log('searchAccounts', query);
     this.lookOptionService
       .accountSearchLookUp(query)
       .pipe(takeUntil(this.destroySubject))

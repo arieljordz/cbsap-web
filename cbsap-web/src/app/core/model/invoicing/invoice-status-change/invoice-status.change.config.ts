@@ -16,41 +16,21 @@ export const QueueActionConfigMap: Partial<
   [InvoiceQueue.MyInvoices]: {
     [InvoiceActionButton.Hold]: {
       status: InvoiceStatusEnum.ApprovalOnHold,
-      buttonLabel: 'Place On Hold',
+      buttonLabel: 'Put on Approval Hold',
       color: 'warn',
     },
-
-[InvoiceActionButton.Unhold]: {
-
-      status: InvoiceStatusEnum.ForApproval,
-      buttonLabel: 'Un-hold Invoice',
-      color: 'success',
-    },
-
     [InvoiceActionButton.RouteToException]: {
       status: InvoiceStatusEnum.Exception,
       buttonLabel: 'Route to Exception',
       color: 'warn',
     },
-    
   },
   [InvoiceQueue.ExceptionQueue]: {
     [InvoiceActionButton.Hold]: {
       status: InvoiceStatusEnum.ExceptionOnHold,
-      buttonLabel: 'Place On Hold',
+      buttonLabel: 'Put on Hold',
       color: 'warn',
     },
-    [InvoiceActionButton.Unhold]: {
-
-      status: InvoiceStatusEnum.Exception,
-      buttonLabel: 'Un-hold Invoice',
-      color: 'success',
-
-    },
-
-
-
-
     [InvoiceActionButton.Reject]: {
       status: InvoiceStatusEnum.Rejected,
       buttonLabel: 'Reject Invoice',

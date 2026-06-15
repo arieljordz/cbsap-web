@@ -16,9 +16,8 @@ import {
   AlertService,
   PermissionService,
   ValidationService,
-  AuthService
 } from 'src/app/core/services/index';
-import { Permission, PermissionValues } from '@core/model/auth/permission';
+
 import { Subject, takeUntil } from 'rxjs';
 import { MessageSeverity } from 'src/app/core/constants';
 import { ResponseResult } from 'src/app/core/model/common/index';
@@ -84,8 +83,7 @@ export class PermissionDetailComponent implements OnInit, OnDestroy {
     private router: Router,
     private confirmationService: ConfirmationService,
     private formBuilder: FormBuilder,
-    private validationService: ValidationService,
-    private authServices: AuthService
+    private validationService: ValidationService
   ) {
     this.permissionID = Number(this.route.snapshot.paramMap.get('id') ?? 0);
   }
@@ -347,8 +345,4 @@ export class PermissionDetailComponent implements OnInit, OnDestroy {
   onFocusChange(field: string, isFocused: boolean) {
     this.focusStates[field] = isFocused;
   }
-
-  hasManagePermission():boolean{
-    return this.authServices.userHasPermission(Permission.CanManagePermission);
-  }  
 }

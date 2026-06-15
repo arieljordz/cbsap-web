@@ -1,6 +1,5 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { InvInfoRoutingLevelDto } from './invoice-routing-level.dto';
-import { FlowStatus } from '@core/enums/invoice.enum';
 
 export type InvInfoRoutingLevelFormGroup = FormGroup<{
   invInfoRoutingLevelID: FormControl<number>;
@@ -8,7 +7,6 @@ export type InvInfoRoutingLevelFormGroup = FormGroup<{
   invoiceID: FormControl<number>;
   roleID: FormControl<number>;
   level: FormControl<number>;
-  flowStatus: FormControl<FlowStatus>;
 }>;
 
 export type InvInfoRoutingFlowFormGroup = FormGroup<{
@@ -34,9 +32,6 @@ export function createInvRoutingFlowLevelFormGroup(
       nonNullable: true,
     }),
     level: new FormControl(invInfoRoutingLevels?.level ?? 0, {
-      nonNullable: true,
-    }),
-     flowStatus: new FormControl(invInfoRoutingLevels?.flowStatus ?? FlowStatus.Pending, {
       nonNullable: true,
     }),
   });

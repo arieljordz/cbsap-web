@@ -8,8 +8,6 @@ import { Permission, PermissionValues } from '@core/model/auth/permission';
 import { InvoiceFormService } from '@core/services/invoicing/invoice-form.service';
 import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
 import { MenuItem } from 'primeng/api';
-import { Badge } from 'primeng/badge';
-import { Action } from 'rxjs/internal/scheduler/Action';
 
 @Component({
   selector: 'app-invoice-actions',
@@ -45,15 +43,8 @@ export class InvoiceActionsComponent {
     return this._statusQueue;
   }
 
- @Input() set attachmentCount(value: number | null) {
-   
-  this._attachmentCount = value ?? 0;
-  this.buildMenuItems();// Rebuild menu so badge updates when count changes
- }
-
   private _currentQueue!: InvoiceQueue | null;
   private _statusQueue!: InvoiceStatusEnum | null;
-  private _attachmentCount!: number;
 
   constructor(private formService: InvoiceFormService) {}
 
@@ -79,7 +70,27 @@ export class InvoiceActionsComponent {
         command: () => this.onValidate(),
         visibleIn: [InvoiceQueue.MyInvoices, InvoiceQueue.ExceptionQueue],
         action: InvoiceActionButton.Validate,
-      },    
+      },
+      {
+        label: 'Submit',
+        icon: 'pi pi-check',
+        command: () => this.onSubmit(),
+        visibleIn: [InvoiceQueue.MyInvoices, InvoiceQueue.ExceptionQueue],
+        action: InvoiceActionButton.Submit,
+        permission: Permission.CanSubmitInvoice,
+      },     
+      {
+        label: 'Add Comment',
+        icon: 'pi pi-comments',
+        command: () => this.onOpenAddComment(),
+        visibleIn: [
+          InvoiceQueue.MyInvoices,
+          InvoiceQueue.ExceptionQueue,
+          InvoiceQueue.RejectionQueue,
+          InvoiceQueue.ArchiveQueue,
+        ],
+        action: InvoiceActionButton.AddComment,
+      },
       {
         label: 'More ..',
         icon: 'pi pi-bars',
@@ -94,7 +105,13 @@ export class InvoiceActionsComponent {
         ],
         action: InvoiceActionButton.ActivityLog,
         items: [
-          
+          {
+            label: 'Add Attachments',
+            icon: 'pi pi-paperclip',
+            command: () => this.onOpenInvAttachment(),
+            visibleIn: [InvoiceQueue.MyInvoices, InvoiceQueue.ExceptionQueue],
+            action: InvoiceActionButton.AddAttachments,
+          },
           {
             label: 'Invoice Activity Log',
             icon: 'pi pi-bolt',
@@ -140,25 +157,7 @@ export class InvoiceActionsComponent {
         ],
         action: InvoiceActionButton.Cancel,
       },
-    
-
-     {
-      label: 'Attachment',
-      icon: 'pi pi-paperclip',
-      command: () => this.onOpenInvAttachment(),
-      visibleIn: [InvoiceQueue.MyInvoices, InvoiceQueue.ExceptionQueue],
-      action: InvoiceActionButton.AddAttachments,
-      badge: this._attachmentCount > 0 ? String(this._attachmentCount) : '0',
-
-     }
-
     ];
-
-    
-
-    
-      
-    
 
     const filterVisibleItems = (items: any[]): MenuItem[] =>
       items

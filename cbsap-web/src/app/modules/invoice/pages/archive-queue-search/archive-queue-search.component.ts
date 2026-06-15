@@ -10,7 +10,6 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageSeverity } from '@core/constants';
-import { ADVANCESEARCH_CONSTANT } from '@core/constants/advance-search/advance-search-constants';
 import { ResponseResult, TableColumn } from '@core/model/common';
 import { GridConfig } from '@core/model/dynamic-grid/grid.config';
 import {
@@ -29,14 +28,12 @@ import {
 } from '@core/model/invoicing/invoicing.index';
 import { AlertService, ExcelService, GridService } from '@core/services';
 import { InvoiceDetailService } from '@core/services/invoicing/invoice-detail.service';
-import { AdvanceSearchEventService } from '@core/services/shared/advance-search.service';
 import { DynamicGridService } from '@core/services/shared/dynamic-grid.service';
 import { DynamicGridComponent } from '@shared/grid/dynamic-grid/dynamic-grid.component';
 import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
 import { QuickSearchComponent } from '@shared/quick-search/quick-search.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Subject, takeUntil } from 'rxjs';
-import { MyInvoiceAdvanceSearchComponent } from '../my-invoice-advance-search/my-invoice-advance-search.component';
 
 @Component({
   selector: 'app-archive-queue-search',
@@ -84,36 +81,6 @@ export class ArchiveQueueSearchComponent
     poNo: '',
   };
 
-  
-  advanceSearchFilter: ArchiveSearchQuery = {
-    SupplierName: '',
-    InvoiceNo: '',
-    PONo: '',
-    PaymentTerm: '',
-    SupplierNo: '',
-    SuppABN: '',
-    SuppBankAccount: '',
-    EntityProfileID: 0,
-    GrNo: '',
-    DateRangeInvoiceDate: [],
-    DateRangeDueDate: [],
-    DaystillDue: 0,
-    NetAmount: 0,
-    TaxCodeID: 0,
-    TaxAmount: 0,
-    Currency: '',
-    TotalAmount: 0,
-    InvRoutingFlowName: '',
-    NextRole: '',
-    Keyword: '',
-    MapID: '',
-    DateRangeScanDate: [],
-    InvoiceID: '',
-    PageNumber: 0,
-    PageSize: 0
-  };
-
-
   /**
    *
    */
@@ -124,25 +91,9 @@ export class ArchiveQueueSearchComponent
     private excelService: ExcelService,
     private dynamicGridService: DynamicGridService<ExceptionInvoiceSearchDto>,
     private invDetailService: InvoiceDetailService,
-    private datePipe: DatePipe,
-    private dialogService: DialogService,
-    private searchEvent: AdvanceSearchEventService
+    private datePipe: DatePipe
   ) {}
   ngOnInit(): void {
-
-    this.searchEvent.reloadSubject$.subscribe(data => {
-      if (data === ADVANCESEARCH_CONSTANT.FORMNAME.ARCHIVEINVOICE) {
-        this.loadData(1);
-      }
-    });
- 
-    // just remove this since - want to refresh every reload of page
-    localStorage.removeItem(ADVANCESEARCH_CONSTANT.LOCALSTORAGE.ARCHIVEINVOICE);
-    this.dynamicGridService.setGridKey("archive-queue-grid");
-    const stored = localStorage.getItem("archive-queue-search");
-    if(stored){
-      this.myInvoiceFilter = JSON.parse(stored);
-    }
     this.sizes = { name: 'Small', class: 'p-table?-sm' };
   }
   ngOnDestroy(): void {
@@ -164,9 +115,6 @@ export class ArchiveQueueSearchComponent
     });
   }
   clear() {
-    localStorage.removeItem(ADVANCESEARCH_CONSTANT.LOCALSTORAGE.ARCHIVEINVOICE);
-    localStorage.removeItem("archive-queue-grid");
-    localStorage.removeItem("archive-queue-search");
     this.searchConfig.model.suppName = '';
     this.searchConfig.model.invNo = '';
     this.searchConfig.model.poNo = '';
@@ -196,37 +144,6 @@ export class ArchiveQueueSearchComponent
       InvoiceNo: this.myInvoiceFilter.invNo! || '',
       PONo: this.myInvoiceFilter.poNo! || '',
     };
-
-
-    var store = localStorage.getItem(ADVANCESEARCH_CONSTANT.LOCALSTORAGE.ARCHIVEINVOICE);
-    if(store != null){
-        this.advanceSearchFilter = JSON.parse(store);
-        
-        exportQuery.SupplierName = this.advanceSearchFilter.SupplierName ?? exportQuery.SupplierName;
-        exportQuery.InvoiceNo = this.advanceSearchFilter.InvoiceNo ?? exportQuery.InvoiceNo;
-        exportQuery.PONo  =this.advanceSearchFilter.PONo ?? exportQuery.PONo;
-        exportQuery.PaymentTerm = this.advanceSearchFilter.PaymentTerm ?? '';
-        exportQuery.SupplierNo = this.advanceSearchFilter.SupplierNo ?? '';
-        exportQuery.SuppABN = this.advanceSearchFilter.SuppABN ?? '';
-        exportQuery.SuppBankAccount = this.advanceSearchFilter.SuppBankAccount ?? '';
-        exportQuery.EntityProfileID = this.advanceSearchFilter.EntityProfileID ?? 0;
-        exportQuery.GrNo = this.advanceSearchFilter.GrNo ?? '';
-        exportQuery.DaystillDue = this.advanceSearchFilter.DaystillDue ?? 0;
-        exportQuery.NetAmount = this.advanceSearchFilter.NetAmount ?? 0;
-        exportQuery.TaxCodeID = this.advanceSearchFilter.TaxCodeID ?? 0;
-        exportQuery.TaxAmount  = this.advanceSearchFilter.TaxAmount ?? 0;
-        exportQuery.Currency = this.advanceSearchFilter.Currency ?? '';
-        exportQuery.TotalAmount = this.advanceSearchFilter.TotalAmount ?? 0;
-        exportQuery.InvRoutingFlowName = this.advanceSearchFilter.InvRoutingFlowName ?? '';
-        exportQuery.NextRole = this.advanceSearchFilter.NextRole ?? '';
-        exportQuery.Keyword = this.advanceSearchFilter.Keyword ?? '';
-        exportQuery.MapID = this.advanceSearchFilter.MapID ?? '';
-        exportQuery.InvoiceID  = this.advanceSearchFilter.InvoiceID ?? '';
-        exportQuery.StartDueDate = this.advanceSearchFilter.StartDueDate ?? '';
-        exportQuery.EndDueDate = this.advanceSearchFilter.EndDueDate ?? '';
-              
-    }
-
     this.loading = true;
     this.invDetailService
       .exportArchiveInvoice(exportQuery)
@@ -271,7 +188,6 @@ export class ArchiveQueueSearchComponent
           allow: false,
         },
       ],
-      gridKey: 'archive-queue-grid'
     });
     this.loadData(1);
   }
@@ -288,7 +204,6 @@ export class ArchiveQueueSearchComponent
     };
 
     this.dynamicGridService.setLoading(true);
-    this.dynamicGridService
     this.searchArchiveInvoice(query);
   }
 
@@ -315,47 +230,6 @@ export class ArchiveQueueSearchComponent
     query.SupplierName = this.myInvoiceFilter.suppName! || '';
     query.InvoiceNo = this.myInvoiceFilter.invNo! || '';
     query.PONo = this.myInvoiceFilter.poNo! || '';
-
-
-    
-
-    //Advance Search Filter
-    var store = localStorage.getItem(ADVANCESEARCH_CONSTANT.LOCALSTORAGE.ARCHIVEINVOICE);
-    if(store){
-      this.advanceSearchFilter = JSON.parse(store);
-
-      query.SupplierName = this.advanceSearchFilter.SupplierName != '' ? this.advanceSearchFilter.SupplierName : query.SupplierName;
-      query.InvoiceNo = this.advanceSearchFilter.InvoiceNo  != '' ? this.advanceSearchFilter.InvoiceNo : query.InvoiceNo;
-      query.PONo = this.advanceSearchFilter.PONo  != '' ? this.advanceSearchFilter.PONo : query.PONo;
-      query.PaymentTerm = this.advanceSearchFilter.PaymentTerm;
-      query.SupplierNo = this.advanceSearchFilter.SupplierNo;
-      query.SuppABN = this.advanceSearchFilter.SuppABN;
-      query.SuppBankAccount = this.advanceSearchFilter.SuppBankAccount;
-      query.EntityProfileID = this.advanceSearchFilter.EntityProfileID;
-      query.GrNo = this.advanceSearchFilter.GrNo;
-      query.DateRangeInvoiceDate = this.advanceSearchFilter.DateRangeInvoiceDate;
-      query.StartInvoiceDate = this.advanceSearchFilter.StartInvoiceDate;
-      query.EndInvoiceDate = this.advanceSearchFilter.EndInvoiceDate;
-      query.DateRangeDueDate = this.advanceSearchFilter.DateRangeDueDate;
-      query.StartDueDate = this.advanceSearchFilter.StartDueDate;
-      query.EndDueDate = this.advanceSearchFilter.EndDueDate;
-      query.DaystillDue = this.advanceSearchFilter.DaystillDue;
-      query.NetAmount = this.advanceSearchFilter.NetAmount;
-      query.TaxCodeID = this.advanceSearchFilter.TaxCodeID;
-      query.TaxAmount = this.advanceSearchFilter.TaxAmount;
-      query.Currency = this.advanceSearchFilter.Currency;
-      query.TotalAmount = this.advanceSearchFilter.TotalAmount;
-      query.InvRoutingFlowName = this.advanceSearchFilter.InvRoutingFlowName;
-      query.NextRole = this.advanceSearchFilter.NextRole;
-      query.Keyword = this.advanceSearchFilter.Keyword;
-      query.MapID = this.advanceSearchFilter.MapID;
-      query.DateRangeScanDate = this.advanceSearchFilter.DateRangeScanDate;
-      query.StartScanDate = this.advanceSearchFilter.StartScanDate;
-      query.EndScanDate = this.advanceSearchFilter.EndScanDate;
-      query.InvoiceID = this.advanceSearchFilter.InvoiceID;
-    }
-
-
     this.invDetailService
       .archiveQueueSearch(query)
       .pipe(takeUntil(this.destroySubject))
@@ -384,7 +258,6 @@ export class ArchiveQueueSearchComponent
   editInvoice(invoice: any) {
     const id = invoice.invoiceID;
     // this.router.navigate(['invoices', id, 'edit']);
-    localStorage.setItem('archive-queue-search',JSON.stringify(this.myInvoiceFilter));
     this.router.navigate(['invoices', id, 'edit'], {
       state: { returnUrl: this.router.url },
     });
@@ -393,19 +266,5 @@ export class ArchiveQueueSearchComponent
   getTimestampedFileName(): string {
     const timestamp = this.datePipe.transform(new Date(), 'yyyyMMdd_HHmmss');
     return `ArchiveInvoice_${timestamp}.xlsx`;
-  }
-
-  advanceSearch() {
-    this.dialogService.open(MyInvoiceAdvanceSearchComponent, {
-      width: '900px',
-      style: { minHeight: '200px' },
-      modal: true,
-      closable: true,
-      baseZIndex: 1200,
-      header : 'Advance Search',
-      data :{
-        formName : ADVANCESEARCH_CONSTANT.FORMNAME.ARCHIVEINVOICE
-      }
-    });
   }
 }

@@ -4,12 +4,8 @@ export interface SearchField<T> {
   key: keyof T;
   label: string;
   type: 'text' | 'number' | 'date' | 'bool'; // input types
-  fieldType: 'input' | 'dropdown' | 'calendar' | 'multiselect' | 'range';
+  fieldType: 'input' | 'dropdown' | 'calendar';
   options?: SelectItem[]; // updated to use SelectItem from PrimeNG
-  range?: boolean;
-  row?: number;
-  filter?: boolean;
-  colSpan?: number;
 }
 
 export type ButtonSeverity =
