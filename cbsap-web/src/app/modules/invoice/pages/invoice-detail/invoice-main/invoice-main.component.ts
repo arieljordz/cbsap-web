@@ -555,7 +555,7 @@ getAttachments() {
           ref.onClose.subscribe((result) => {
             if (result) {
               this.getInvoiceStatus();
-              this.navigationBack();
+              // this.navigationBack();
             }
           });
         }
