@@ -24,6 +24,23 @@
             />
           </ng-container>
 
+          <ng-container *ngSwitchCase="'date-range'">
+            <label
+            [for]="filter.key"
+            class="block mb-1 text-sm font-medium text-gray-700"
+            >
+              {{filter.label}}
+          </label>
+          <p-datepicker
+          [(ngModel)]="filterValues[filter.key]"
+          [showIcon]="true"
+          dateFormat="mm/dd/yy"
+          selectionMode="range"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          ></p-datepicker>
+          </ng-container>
+
           <!-- Boolean -->
           <ng-container *ngSwitchCase="'boolean'">
             <label
@@ -121,20 +138,32 @@
             }"
           >
             <td *ngFor="let col of columns; trackBy: trackByFn" [ngSwitch]="col.type">
-              <ng-container *ngSwitchCase="'tag'">
-                <p-tag
-                  [value]="rowData[col.field] | yesno"
-                  [severity]="rowData[col.field] ? 'success' : 'danger'"
-                ></p-tag>
-              </ng-container>
-              <ng-container *ngSwitchCase="'boolean'">
-                {{ rowData[col.field] | yesno }}
-              </ng-container>
-              <ng-container *ngSwitchDefault>
-                {{ rowData[col.field] }}
-              </ng-container>
-            </td>
-          </tr>
+ 
+            <!-- Tag -->
+            <ng-container *ngSwitchCase="'tag'">
+            <p-tag
+                [value]="rowData[col.field] | yesno"
+                [severity]="rowData[col.field] ? 'success' : 'danger'">
+            </p-tag>
+            </ng-container>
+ 
+            <!-- Boolean -->
+            <ng-container *ngSwitchCase="'boolean'">
+              {{ rowData[col.field] | yesno }}
+               </ng-container>
+ 
+            <!-- Date -->
+            <ng-container *ngSwitchCase="'date'">
+              {{ rowData[col.field] ? (rowData[col.field] | date:'dd/MM/yyyy') : '' }}
+           </ng-container>
+ 
+            <!-- Default -->
+            <ng-container *ngSwitchDefault>
+              {{ rowData[col.field] }}
+          </ng-container>
+ 
+          </td>
+         </tr>
         </ng-template>
 
         <ng-template pTemplate="emptymessage">

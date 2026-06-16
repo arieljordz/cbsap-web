@@ -1,7 +1,9 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { MessageSeverity } from '@core/constants';
+import { PO_CONSTANT } from '@core/constants/purchase-order/purchase-order.constants';
 import { ResponseResult, TableColumn } from '@core/model/common';
 import { GridConfig } from '@core/model/dynamic-grid/grid.config';
 import {
@@ -21,7 +23,7 @@ import { DynamicGridService } from '@core/services/shared/dynamic-grid.service';
 import { DynamicGridComponent } from '@shared/grid/dynamic-grid/dynamic-grid.component';
 import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
 import { QuickSearchComponent } from '@shared/quick-search/quick-search.component';
-import { Subject, takeUntil } from 'rxjs';
+import { first, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-po-reference',
@@ -39,12 +41,13 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class PoReferenceComponent implements OnInit, OnDestroy {
   private destroySubject: Subject<void> = new Subject();
-  readonly searchPOConfig: SearchPOConfig = buildSearchPOConfig();
+
 
   columns: TableColumn[] = [];
   sizes: any;
 
   totalRecords: number = 0;
+  totalPages : number = 0;
   pageNumber: number = 0;
   pageSize: number = 10;
   loading: boolean = true;
@@ -53,12 +56,13 @@ export class PoReferenceComponent implements OnInit, OnDestroy {
   sortOrder: number = 1;
 
   gridConfig: GridConfig<POSearchDto> | null = null;
-
-  searchFilters: Record<string, any> = {
+  readonly searchPOConfig: SearchPOConfig = buildSearchPOConfig();
+  searchFilters: SearchPOModel = {
     entityName: '',
     poNo: '',
-    supplier: '',
+    supplierName: '',
     isActive: null,
+    goodReceipt:'',
   };
 
   @ViewChild(DynamicGridComponent)
@@ -70,18 +74,33 @@ export class PoReferenceComponent implements OnInit, OnDestroy {
     private purchaseOrderService: PurchaseOrderService,
     private message: AlertService,
     private datePipe: DatePipe,
-    private excelService: ExcelService
+    private excelService: ExcelService,
+    private router: Router
   ) {}
 
-  ngOnInit(): void {
-    this.sizes = { name: 'Small', class: 'p-table?-sm' };
-    this.initializeDynamicGrid();
-  }
 
+  ngOnInit(): void {
+    this.dynamicGridService.setGridKey('purchase-order-grid');
+    const stored = localStorage.getItem("purchase-order-search");
+    if(stored){
+      this.searchFilters = JSON.parse(stored);
+
+      console.log(this.searchFilters)
+
+    }
+    this.sizes = { name: 'Small', class: 'p-table?-sm' };
+
+
+  }
   ngOnDestroy(): void {
     this.destroySubject.next();
     this.destroySubject.complete();
   }
+
+  ngAfterViewInit(): void {
+    this.initializeDynamicGrid();
+  }
+
 
   private initializeDynamicGrid() {
     const columns = this.gridService.POSearchColumn();
@@ -97,13 +116,16 @@ export class PoReferenceComponent implements OnInit, OnDestroy {
       loading: false,
       rowClick: [
         {
-          allow: false,
+          clickable: (item) => this.ViewPOReference(item),
+          allow: true,
         },
       ],
+      gridKey: 'purchase-order-grid'
     });
   }
 
   onLazyLoad(event: any): void {
+
     const pageNumber = event.pageNumber;
 
     const rows = event.pageSize ?? 10;
@@ -111,35 +133,69 @@ export class PoReferenceComponent implements OnInit, OnDestroy {
     const sortOrder = event.sortOrder ?? -1;
     const searchCriteria: SearchPOModel = this.searchFilters as SearchPOModel;
 
-    const query: POSearchQuery = {
+    var query: POSearchQuery = {
       EntityName: searchCriteria.entityName! ?? null,
       PONo: searchCriteria.poNo! ?? null,
-      Supplier: searchCriteria.supplierName! ?? null,
+      SupplierName: searchCriteria.supplierName! ?? null,
       IsActive: searchCriteria.isActive! ?? null,
+      GoodReceipt : searchCriteria.goodReceipt! ?? null,
       PageNumber: pageNumber,
       PageSize: rows,
       SortField: sortField,
       SortOrder: sortOrder,
     };
+
     this.dynamicGridService.setLoading(true);
     this.poSearch(query);
+
+
   }
   loadData(pageNumber: number) {
+
     const searchCriteria: SearchPOModel = this.searchFilters as SearchPOModel;
 
     let query: POSearchQuery = {
       PONo: searchCriteria.poNo ?? null,
       EntityName: searchCriteria.entityName ?? null,
-      Supplier: searchCriteria.supplierName ?? null,
+      SupplierName: searchCriteria.supplierName ?? null,
       IsActive: searchCriteria.isActive ?? null,
+      GoodReceipt : searchCriteria.goodReceipt! ?? null,
       PageNumber: pageNumber,
       PageSize: this.gridConfig?.pageSize ?? 10,
       SortField: this.gridConfig?.sortField ?? '',
       SortOrder: this.gridConfig?.sortOrder ?? -1,
     };
 
+
+
     this.dynamicGridService.setLoading(true);
     this.poSearch(query);
+  }
+
+  ViewPOReference(item: any) {
+    const id = item.purchaseOrderID;
+
+    const searchCriteria: SearchPOModel = this.searchFilters as SearchPOModel;
+
+    let query: POSearchQuery = {
+      PONo: searchCriteria.poNo ?? null,
+      EntityName: searchCriteria.entityName ?? null,
+      SupplierName: searchCriteria.supplierName ?? null,
+      IsActive: searchCriteria.isActive ?? null,
+      GoodReceipt : searchCriteria.goodReceipt! ?? null,
+      PageNumber: this.pageNumber,
+      PageSize: this.gridConfig?.pageSize ?? 10,
+      SortField: this.gridConfig?.sortField ?? '',
+      SortOrder: this.gridConfig?.sortOrder ?? -1,
+      TotalPage: this.totalPages
+    };
+
+  
+
+    localStorage.setItem('purchase-order-search',JSON.stringify(this.searchFilters));
+    localStorage.setItem(PO_CONSTANT.SEARCH_FILTER_LOCALSTORAGE.PURCHASEORDER,JSON.stringify(query));
+
+    this.router.navigate(['/reference-data-lookup', 'view-purchaseorder', id]);
   }
 
   search(event: SearchPOModel) {
@@ -154,20 +210,45 @@ export class PoReferenceComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           if (res.isSuccess) {
+      
             this.dynamicGridService.updateData(
               res.responseData?.data ?? [],
               res.responseData?.totalCount ?? 0,
-              query.PageSize
+              query.PageSize,
             );
 
+
             this.totalRecords = res.responseData?.totalCount ?? 0;
+            this.pageNumber = query.PageNumber ;
+           this.totalPages = res.responseData?.totalPages ?? 0;
+              
           }
         },
       });
   }
 
+
   clear() {
     this.searchFilters = getDefaultSearchPOModel();
+
+    localStorage.removeItem("purchase-order-grid");
+    localStorage.removeItem("purchase-order-search");   
+  
+    
+    this.searchFilters = {
+      entityName: '',
+      poNo: '',
+      supplierName: '',
+      isActive: null,
+      goodReceipt : ''
+    };
+
+    this.pageNumber = 1;
+    this.pageSize = 10;
+    this.sortField = '';
+    this.sortOrder = 1;
+    this.dynamicGridComponent?.resetTable();
+
     this.loadData(1);
   }
   exportToExcel() {
@@ -183,8 +264,9 @@ export class PoReferenceComponent implements OnInit, OnDestroy {
     let exportQuery: ExportPOSearchQuery = {
       PONo: searchCriteria.poNo ?? null,
       EntityName: searchCriteria.entityName ?? null,
-      Supplier: searchCriteria.supplierName ?? null,
+      SupplierName: searchCriteria.supplierName ?? null,
       IsActive: searchCriteria.isActive ?? null,
+      GoodReceipt : searchCriteria.goodReceipt! ?? null,
     };
     this.purchaseOrderService
       .exportPO(exportQuery)

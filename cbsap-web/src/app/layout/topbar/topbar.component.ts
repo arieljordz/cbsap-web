@@ -52,7 +52,7 @@ export class TopbarComponent implements OnInit {
     this.userName = this.localStorageService.get('username');
   }
   menuItems = [
-    { label: 'Logout', icon: 'pi pi-sign-out', route: 'auth/login' },
+    { label: 'Logout', icon: 'pi pi-sign-out', command: () => this.Logout() },
   ];
 
   ngOnInit(): void {
@@ -72,7 +72,7 @@ export class TopbarComponent implements OnInit {
             ? this.userRoles?.find((r) => r.roleID == roleselectd) ??
               this.userRoles?.[0]
             : this.userRoles?.[0];
-          this.menuService.setRole(this.selectedUserRoles!.roleID);
+          this.menuService.setRole(this.selectedUserRoles!.roleID);    
         }
       },
 
@@ -80,8 +80,10 @@ export class TopbarComponent implements OnInit {
     });
   }
   onRoleChange(role: RoleDTO) {
+    const roleselectd = this.localStorageService.get('sr') as number;
     this.selectedUserRoles = role;
     this.menuService.setRole(role.roleID);
+   
     this.router.navigate(['/home']);
 
     this.authService.switchRole(role.roleID).subscribe({
@@ -90,6 +92,11 @@ export class TopbarComponent implements OnInit {
           }
         });
   }
+
+    Logout(){
+      this.authService.logout();
+      this.router.navigate(['/auth/login'],{ replaceUrl: true });
+    }
 
    userThumbnail() {
 

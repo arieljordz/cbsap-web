@@ -6,6 +6,7 @@ export interface DynamicGridColumn {
   sort?: boolean;
   isSearchFilter: boolean;
   pipe?: string;
+  width?: string;
   type?:
     | 'text'
     | 'number'
@@ -15,7 +16,7 @@ export interface DynamicGridColumn {
     | 'actionButtons'
     | 'checkbox'
     | 'tag';
-  filterType?: 'text' | 'number' | 'boolean';
+  filterType?: 'text' | 'number' | 'boolean'| "date-range";
   customTemplate?: TemplateRef<any>;
   buttonConfig?: {
     label: string;
@@ -24,6 +25,7 @@ export interface DynamicGridColumn {
     severity?: string;
   };
   wrap?: boolean;
+  
 }
 
 export interface GridAction {
@@ -47,6 +49,9 @@ export interface GridConfig<T> {
   actions?: GridAction[];
   loading?: boolean;
   rowClick?: RowGridAction[];
+  rowDblClick?: RowGridAction[];
+  gridKey?: string;
+  tablewidth? : string | null;
 }
 
 export interface BasePaginationQuery {

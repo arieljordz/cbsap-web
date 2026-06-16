@@ -22,6 +22,7 @@ export class DynamicGridService<T> {
 
   updateData(data: T[], totalRecords: number, pageSize?: number): void {
     const current = this.configSubject.value;
+
     if (current) {
       this.setConfig({
         ...current,
@@ -32,6 +33,17 @@ export class DynamicGridService<T> {
       });
     }
   }
+
+  setGridKey(gridKey: string){
+    var current = this.configSubject.value;
+    if(current){
+      this.setConfig({
+        ...current,
+        gridKey: gridKey
+      });
+    }
+  }
+
   updateActions(actions: GridConfig<T>['actions']) {
     const current = this.configSubject.value;
     this.configSubject.next({ ...current, actions });

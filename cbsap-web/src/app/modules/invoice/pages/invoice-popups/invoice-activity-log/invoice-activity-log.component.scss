@@ -17,3 +17,25 @@ $grid-fontSize: 0.781rem;
   > tr:not(.p-datatable-row-selected):hover {
   cursor: pointer !important;
 }
+
+:host ::ng-deep .p-datatable table {
+ 
+    border-collapse: collapse;
+
+}
+
+
+:host ::ng-deep .p-datatable th,
+:host ::ng-deep .p-datatable td {
+
+  border: 1px solid #d1d5db;
+  padding: 6px 8px;
+}
+
+:host ::ng-deep .p-datatable th {
+
+    background: #2f3b52;
+    color:white;
+}
+  
+  

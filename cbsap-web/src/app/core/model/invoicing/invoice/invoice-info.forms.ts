@@ -40,6 +40,8 @@ export type InvInfoFormGroup = FormGroup<{
   approvedUser: FormControl<string | null>;
   keywordID: FormControl<number | null>;
   keyword: FormControl<string | null>;
+  invRoutingFlowID: FormControl<number | null>;
+  invRoutingFlowName: FormControl<string | null>;
   freeFields: FormArray<FreeFieldsFormGroup>;
   spareAmount: FormArray<SpareAmountFormGroup>;
 }>;
@@ -76,7 +78,7 @@ export function createInvInfoForm(): InvInfoFormGroup {
     invoiceDate: new FormControl<Date | null>(null, [Validators.required]),
     mapID: new FormControl<string | null>({ value: null, disabled: true }),
     scanDate: new FormControl<Date | null>({ value: null, disabled: true }),
-    entityProfileID: new FormControl<number | null>(null),
+    entityProfileID: new FormControl<number | null>(null, [Validators.required]),
     supplierInfoID: new FormControl<number | null>(null),
     supplierNo: new FormControl<string | null>({value:'', disabled:true}),
     suppABN: new FormControl<string | null>({value:'', disabled:true}),
@@ -96,6 +98,8 @@ export function createInvInfoForm(): InvInfoFormGroup {
     approvedUser: new FormControl<string | null>(''),
     keywordID: new FormControl<number | null>(null),
     keyword: new FormControl<string | null>(null),
+    invRoutingFlowID: new FormControl<number | null>(null),
+    invRoutingFlowName: new FormControl<string | null>(null),
     freeFields: new FormArray<FreeFieldsFormGroup>([]),
     spareAmount: new FormArray<SpareAmountFormGroup>([]),
   });

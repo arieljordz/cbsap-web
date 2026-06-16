@@ -39,7 +39,7 @@
         <p-carousel [value]="notices" [numScroll]="2" [numVisible]="4" [circular]="false" showIndicators="false"
             [responsiveOptions]="responsiveOptions">
             <ng-template let-notice pTemplate="notice">
-                <div class="border-1 surface-border border-round m-2 p-3 card" style="height: 200px;" [class.new-message]="notice.isNew">
+                <div class="border-1 surface-border border-round m-2 p-3 card" style="height: 200px;" [class.new-message]="notice.isNew">            
                     <div class="mb-3 gap-2 flex justify-between items-center text-gray-500 text-xs">
                         <div class="flex truncate-text items-center">
                              <p-avatar 
@@ -52,7 +52,18 @@
                          
                         </div>
                         <div class="flex gap-2 items-center">
-                            <div class="truncate-text">{{ notice.messageDate | datetimeformat }}</div>
+                            
+                            <div class="truncate-text">
+                            <ng-container *ngIf="notice.isEdited; else showOriginalDate">
+                                {{ notice.messageDate | datetimeformat }}
+                                <span class="ml-1 text-gray-400 text-xs italic">(Edited)</span>
+                            </ng-container>
+
+                            <ng-template #showOriginalDate>
+                                {{ notice.messageDate | datetimeformat }}
+                            </ng-template>
+                            </div>
+
                             <a pTooltip="Edit" [routerLink]="" (click)="editNotice(notice)"
                                 class="text-blue-500 hover:text-blue-700">
                                 <i class="pi pi-pencil"></i>

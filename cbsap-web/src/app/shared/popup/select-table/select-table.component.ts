@@ -5,6 +5,7 @@ import {
   NgSwitch,
   NgSwitchCase,
   NgSwitchDefault,
+  DatePipe
 } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -12,6 +13,7 @@ import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { YesnoPipe } from '@shared/pipes/yesno.pipe';
+import { formatToIsoDate } from '@core/utils/shared-utils';
 
 @Component({
   selector: 'app-select-table',
@@ -26,6 +28,7 @@ import { YesnoPipe } from '@shared/pipes/yesno.pipe';
     NgSwitchCase,
     NgSwitchDefault,
     YesnoPipe,
+    DatePipe
   ],
   templateUrl: './select-table.component.html',
   styleUrl: './select-table.component.scss',
@@ -93,7 +96,9 @@ export class SelectTableComponent implements OnInit, OnDestroy {
     } else {
       this.data = d.data || []; // fallback to static data
     }
+    console.log(this.filters);
   }
+
 
   get selectionMode(): 'single' | 'multiple' {
     return this.multiple ? 'multiple' : 'single';
@@ -102,8 +107,18 @@ export class SelectTableComponent implements OnInit, OnDestroy {
   handleSearch(): void {
     this.pagination.pageNumber = 0;
 
+    const range: Date[] = this.filterValues['deliveryDate'] ?? [];
+    const deliveryDateFrom = range[0]
+      ? formatToIsoDate(range[0])
+      :null;
+      const deliveryDateTo = range[1]
+      ? formatToIsoDate(range[1])
+      : null;
+
     const filters = {
       ...this.filterValues,
+      deliveryDateFrom: deliveryDateFrom,
+      deliveryDateTo:deliveryDateTo,
       pageNumber: this.pagination.pageNumber + 1,
       pageSize: this.pagination.pageSize,
       ...(this.sortField && this.sortOrder != null
@@ -114,10 +129,13 @@ export class SelectTableComponent implements OnInit, OnDestroy {
         : {}),
     };
 
+    console.log('Search filters:', filters);
+
     this.onSearchCallback?.(filters);
   }
 
   handleRowSelection(row: any): void {
+    console.log('Row selected:', row);
     if (this.isRowDisabled(row?.data)) {
       return;
     }

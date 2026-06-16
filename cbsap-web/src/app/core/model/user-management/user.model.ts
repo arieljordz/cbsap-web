@@ -10,6 +10,7 @@ export interface User {
   fullName: string;
   userRoles: Role[];
   countOfAssignedRoles: number;
-  lastLoginDateTime: string;
+  lastLoginDateTime: Date;
+  displayLastLoginDateTime : string
   isLockedOut: boolean;
 }

@@ -5,8 +5,8 @@
             <h5 class="font-semibold text-xl">{{ pagelabel }}</h5>
             <div class="flex gap-3">
 
-                <p-button  [raised]="true" [rounded]="true"  icon="pi pi-refresh"  label="Clear" (click)="reset()" />
-                <p-button  [raised]="true" [rounded]="true" [severity]="!permissionForm.valid ? 'secondary':'primary'" [disabled]="!permissionForm.valid" icon="pi pi-check" type="submit" label="Save" />
+                <p-button  [raised]="true" [rounded]="true"  icon="pi pi-refresh"  [disabled]="!hasManagePermission()" label="Clear" (click)="reset()" />
+                <p-button  [raised]="true" [rounded]="true" [severity]="!permissionForm.valid ? 'secondary':'primary'" [disabled]="!permissionForm.valid || !hasManagePermission()" icon="pi pi-check" type="submit" label="Save" />
                 <p-button  [raised]="true" [rounded]="true"  severity="contrast" icon="pi pi-times" type="submit" label="Cancel" (click)="confirm($event)" />
               
             </div>
@@ -17,7 +17,7 @@
                 <div class="flex flex-col gap-2 w-full md:w-1/2 max-w-sm">
                     <label for="permissionGroupName" >Name</label>
                     <input type="text" pInputText  id="permissionGroupName" formControlName="permissionGroupName" autocomplete="off"  maxlength="50" class=" w-10rem" 
-                    appCharacterFocusTracker (focusChange)="onFocusChange('permissionGroupName', $any($event))"/>
+                    appCharacterFocusTracker (focusChange)="onFocusChange('permissionGroupName', $any($event))"   [class.readonly-style]="userRoles.length > 0"/>
                     <div class="flex justify-between">
                         <div class="flex-1">
                           <small *ngIf="f['permissionGroupName'].invalid && f['permissionGroupName'].touched"  class="pt-2 text-xs text-red-500">

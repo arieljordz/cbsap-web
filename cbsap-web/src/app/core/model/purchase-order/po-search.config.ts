@@ -18,6 +18,7 @@ export function getDefaultSearchPOModel(): SearchPOModel {
     poNo: '',
     supplierName: '',
     isActive: null,
+    goodReceipt: '',
   };
 }
 
@@ -49,8 +50,20 @@ export function buildSearchPOConfig(): SearchPOConfig {
         fieldType: 'dropdown',
         options: getStatusFilterOptions(),
       },
+      {
+        key: 'goodReceipt',
+        label: 'Good Receipt',
+        type: 'text',
+        fieldType: 'input',
+      },
     ],
-    model: getDefaultSearchPOModel(),
+    model: {  
+      entityName: '',
+      poNo: '',
+      supplierName: '',
+      isActive: null,
+      goodReceipt: '',
+    },
     buttons: {
       search: true,
       clear: true,
@@ -58,3 +71,5 @@ export function buildSearchPOConfig(): SearchPOConfig {
     },
   };
 }
+
+

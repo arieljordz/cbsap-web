@@ -15,7 +15,7 @@ import { SelectItem } from 'primeng/api';
 import { Observable, catchError, map, shareReplay, throwError } from 'rxjs';
 import { ResultsHttpService } from '../common/results-http.service';
 import { Pagination, ResponseResult } from '@core/model/common';
-import { HttpErrorResponse, INV_ENPOINT } from '@core/constants/index';
+import { GOODS_RECEIPT_SEARCH_LOOKUP, HttpErrorResponse,INV_ENPOINT } from '@core/constants/index';
 import {
   ArchiveSearchQuery,
   ExceptionsSearchQuery,
@@ -25,6 +25,7 @@ import {
   ExportRejectedInvoiceQuery,
   GetInvAllocLineQuery,
   InvActivityLogDto,
+  InvActivityLogEntriesDto,
   InvoiceCommentDto,
   LoadInvoiceCommentQuery,
   LoadInvoiceCommentsDto,
@@ -39,6 +40,9 @@ import { ExcelService } from '@core/services/util-services/excel.service';
 import { InvValidationResponseDto } from '@core/model/invoicing/invoice-status-change/submit-validation-response.dto';
 import { InvInfoRoutingLevelDto } from '@core/model/invoicing/invoice/invoice-routing-level.dto';
 import { InvoiceQueue, InvoiceStatusEnum } from '@core/enums';
+import { SearchGoodsReceiptQuery } from '@core/model/goods-receipt/search-goods-receipt.query';
+import { SearchGoodsReceiptLookupDto } from '@core/model/goods-receipt/search-goods-receipt.dto';
+import { getRule } from '@primeng/themes';
 
 @Injectable({
   providedIn: 'root',
@@ -177,7 +181,37 @@ export class InvoiceDetailService {
         })
       );
   }
+
+  getInvoiceActivityLogByInvID2(
+    invoiceID: number
+  ): Observable<ResponseResult<InvActivityLogEntriesDto[]>> {
+
+        return this.resultHttpClient
+        .get<InvActivityLogEntriesDto[]>(
+
+          INV_ENPOINT.Get_INV_ACTIVITY_LOG2(invoiceID),
+          true
+        )
+
+        .pipe(
+
+          map((response) => {
+
+            return response;
+
+          }),
+
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+
+        })
+
+        );
+        
+
+  }
   
+
   getInvoiceStatus(
     invoiceID: number
   ): Observable<ResponseResult<GetInvoiceStatusDto>> {
@@ -193,17 +227,75 @@ export class InvoiceDetailService {
       );
   }
 
+  
+
+getGridPageDetails(queueType?: InvoiceQueue): string {
+  let gridDetails = '';
+
+  switch (queueType) {
+    case InvoiceQueue.MyInvoices:
+      gridDetails = localStorage.getItem('myinvoice-grid') ?? '';
+      break;
+
+    case InvoiceQueue.ExceptionQueue:
+      gridDetails = localStorage.getItem('exception-queue-grid') ?? '';
+      break;
+
+    case InvoiceQueue.RejectionQueue:
+      gridDetails = localStorage.getItem('reject-queue-grid') ?? '';
+      break; 
+
+    default:
+      gridDetails = '';
+  }
+
+  return gridDetails;
+}
+
+
+  getGridFilterDetails(queueType?: InvoiceQueue){
+      let filterDetails = '';
+
+    switch (queueType) {
+      case InvoiceQueue.MyInvoices:
+        filterDetails = localStorage.getItem('myinvoice-search') ?? '';
+        break;
+
+      case InvoiceQueue.ExceptionQueue:
+        filterDetails = localStorage.getItem('exception-queue-search') ?? '';
+        break;
+
+      case InvoiceQueue.RejectionQueue:
+        filterDetails = localStorage.getItem('reject-queue-search') ?? '';
+        break;
+
+      default:
+        filterDetails = '';
+    }
+
+    return filterDetails;
+  }
+
+
   getNextInvoiceId(
     invoiceID: number,
     statusType?: InvoiceStatusEnum | null,
     queueType?: InvoiceQueue | null
   ): Observable<ResponseResult<number | null>> {
-    const query: Record<string, number> = {};
+    const query: Record<string, string> = {};
     if (statusType !== undefined && statusType !== null) {
-      query['statusType'] = statusType;
+      query['statusType'] = statusType.toString(); //number
     }
     if (queueType !== undefined && queueType !== null) {
-      query['queueType'] = queueType;
+      query['queueType'] = queueType.toString(); //number
+    }
+
+    if (queueType !== undefined && queueType !== null) {
+      query['gridFilter'] = this.getGridFilterDetails(queueType); //string
+    }
+
+    if (queueType !== undefined && queueType !== null) {
+      query['gridRowDetails'] = this.getGridPageDetails(queueType); //string
     }
 
     const baseUrl = INV_ENPOINT.GET_NEXT_INVOICE(invoiceID);
@@ -229,12 +321,20 @@ export class InvoiceDetailService {
     statusType?: InvoiceStatusEnum | null,
     queueType?: InvoiceQueue | null
   ): Observable<ResponseResult<number | null>> {
-    const query: Record<string, number> = {};
+    const query: Record<string, string> = {};
     if (statusType !== undefined && statusType !== null) {
-      query['statusType'] = statusType;
+      query['statusType'] = statusType.toString(); //number
     }
     if (queueType !== undefined && queueType !== null) {
-      query['queueType'] = queueType;
+      query['queueType'] = queueType.toString(); //number
+    }
+
+    if (queueType !== undefined && queueType !== null) {
+      query['gridFilter'] = this.getGridFilterDetails(queueType); //string
+    }
+
+    if (queueType !== undefined && queueType !== null) {
+      query['gridRowDetails'] = this.getGridPageDetails(queueType); //string
     }
 
     const baseUrl = INV_ENPOINT.GET_PREVIOUS_INVOICE(invoiceID);
@@ -306,6 +406,28 @@ export class InvoiceDetailService {
         })
       );
   }
+
+  invoiceDynamicAdvanceSearch(
+    query: MyInvoiceSearchQuery,
+    url : string
+  ): Observable<ResponseResult<Pagination<InvMyInvoiceSearchDto>>> {
+    return this.resultHttpClient
+      .getSearchWithPagination<InvMyInvoiceSearchDto>(
+        `${
+          url
+        }${this.resultHttpClient.serialiazeQueryString(query)}`,
+        true
+      )
+      .pipe(
+        map((response) => {
+          return response;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+        })
+      );
+  }
+
   exportMyInvoices(
     exportMyInvoiceQuery: ExportMyInvoiceQuery
   ): Observable<ResponseResult<Blob>> {
@@ -377,6 +499,7 @@ export class InvoiceDetailService {
         })
       );
   }
+
   forHold(dto: InvStatusChangeDto): Observable<ResponseResult<boolean>> {
     return this.resultHttpClient
       .put<boolean>(`${INV_ENPOINT.FOR_HOLD}`, dto, true)
@@ -389,6 +512,19 @@ export class InvoiceDetailService {
         })
       );
   }
+
+  changeHoldState(dto: InvStatusChangeDto): Observable<ResponseResult<boolean>> {
+    return this.resultHttpClient
+   .put<boolean>(`${INV_ENPOINT.CHANGE_HOLD_STATE}`, dto, true)
+    .pipe(
+      map((response) => {
+        return response;
+        }),
+        catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+        })
+        );
+       }
 
   routeToException(
     dto: InvStatusChangeDto
@@ -404,6 +540,7 @@ export class InvoiceDetailService {
         })
       );
   }
+  
   submitInvoice(
     invoice: InvoiceDto
   ): Observable<ResponseResult<InvValidationResponseDto>> {
@@ -423,11 +560,12 @@ export class InvoiceDetailService {
       );
   }
   validateInvoice(
-    invoice: InvoiceDto
+    invoice: InvoiceDto,
+    isOnLoad: boolean
   ): Observable<ResponseResult<InvValidationResponseDto>> {
     return this.resultHttpClient
       .post<InvValidationResponseDto>(
-        `${INV_ENPOINT.VALIDATE_INVOICE}`,
+        `${INV_ENPOINT.VALIDATE_INVOICE}?isOnLoad=${isOnLoad}` ,
         invoice,
         true
       )
@@ -613,5 +751,52 @@ export class InvoiceDetailService {
           return throwError(() => error);
         })
       );
+
+
   }
+
+goodReceiptNoSearch(
+        query: SearchGoodsReceiptQuery
+      ): Observable<ResponseResult<Pagination<SearchGoodsReceiptLookupDto>>> {
+        return this.resultHttpClient
+          .getSearchWithPagination<SearchGoodsReceiptLookupDto>(
+            `${GOODS_RECEIPT_SEARCH_LOOKUP}?${this.resultHttpClient.serialiazeQueryString(
+              query
+            )}`,
+            true
+          )
+          .pipe(
+            map((response) => {
+              return response;
+            }),
+            catchError((error: HttpErrorResponse) => {
+              return throwError(() => error);
+            })
+          );
+
+}
+
+deleteInvoiceComment(comment: LoadInvoiceCommentsDto): Observable<ResponseResult<boolean>> {
+       return this.resultHttpClient
+      .post<boolean>(`${INV_ENPOINT.DELETE_COMMENT}`, comment, true)
+       .pipe(
+        map((response) => {
+        return response;
+        }),
+        catchError((error: HttpErrorResponse) => {
+       return throwError(() => error);
+       })
+     );
+ }
+
+ validateInvoices(
+  invoiceIds: number[]
+): Observable<ResponseResult<InvValidationResponseDto[]>> {
+  return this.resultHttpClient.post<InvValidationResponseDto[]>(
+    INV_ENPOINT.VALIDATE_INVOICE_BY_IDS,
+    invoiceIds,
+    true
+  );
+}
+
 }

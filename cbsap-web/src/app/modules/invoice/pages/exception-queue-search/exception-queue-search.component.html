@@ -1,3 +1,4 @@
+<app-loader></app-loader>
 <div class="grid grid-cols-1 gap-4">
   <div class="col">
     <h5 class="mb-4 font-semibold text-lg">Exception Queue</h5>
@@ -10,6 +11,8 @@
   (searchEvent)="search($event)"
   (clearEvent)="clear()"
   (exportEvent)="exportToExcel()"
+  [searchKey]="'exception-queue-search'"  
+  (advanceSearchEvent)="advanceSearch()"  
 />
 
 <div class="card user-card mt-6">

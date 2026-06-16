@@ -152,7 +152,6 @@ export class SearchPurchaseOrderComponent implements OnInit, OnDestroy {
         next: (res) => {
           if (res.isSuccess) {
             const lines = res.responseData?.flatMap((items) => items.poLines);
-
             const result: SearchPOResult = {
               polines: lines!,
               isAvailableOrder: query.isAvailableOrder,

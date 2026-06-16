@@ -5,6 +5,7 @@ export interface Notice {
   message:string;
   messageDate: Date;
   userFullName:string;
-  userName:string;  
+  userName:string;
+  isEdited:boolean;  
   isNew:boolean;
 }

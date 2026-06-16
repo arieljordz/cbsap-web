@@ -7,7 +7,8 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { LookupOptionsService } from '@core/services';
+import { InvRoutingFlowService, LookupOptionsService } from '@core/services';
+import { ThemeService } from '@primeng/themes';
 import { PrimeImportsModule } from '@shared/moduleResources/prime-imports';
 import { SelectItem } from 'primeng/api';
 import {
@@ -28,15 +29,17 @@ import { Subject, takeUntil } from 'rxjs';
 export class RoutingflowRoleSelectorComponent implements OnInit, OnDestroy {
   roleSelectorForm!: FormGroup;
   private destroy$ = new Subject<void>();
+  
   rolesOptions?: SelectItem[] = [];
-  readonly roleOptions$ = this.lookUpOptionService.rolesLookUpOptions$;
+  readonly roleOptions$ = this.lookUpOptionService.canBeAddedRolesLookUpOptions$;
 
   excludesSelectedRoleIds: number[] = [];
 
   constructor(
     private lookUpOptionService: LookupOptionsService,
     private dialogRef: DynamicDialogRef,
-    private config: DynamicDialogConfig
+    private config: DynamicDialogConfig,
+    private invRoutingFlowService: InvRoutingFlowService
   ) {
     this.excludesSelectedRoleIds =
       (this.config.data?.excludesSelectedRoleIds as number[]) ?? null;
@@ -46,23 +49,47 @@ export class RoutingflowRoleSelectorComponent implements OnInit, OnDestroy {
       selectedRoleID: new FormControl(null, Validators.required),
     });
 
-    this.roleOptions$.pipe(takeUntil(this.destroy$)).subscribe((options) => {
-      options[0].label = '-- Please Select --';
-      this.rolesOptions = options.filter(
-        (roleID) => !this.excludesSelectedRoleIds.includes(roleID.value!)
-      );
-    });
+  this.roleOptions$.pipe(takeUntil(this.destroy$)).subscribe((options) => {
+
+    options[0].label = "--Please Select --";
+    this.rolesOptions = options.filter(
+     (roleID) => !this.excludesSelectedRoleIds.includes(roleID.value!)
+    );
+  });
+
   }
 
   get f() {
     return this.roleSelectorForm.controls;
   }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   submit() {
-    this.dialogRef.close(this.f['selectedRoleID'].value);
-  }
+    if (this.roleSelectorForm.invalid) return;
+
+
+
+ const assignRoleCommand = {
+ roleID: this.f['selectedRoleID'].value,
+ invoiceID: this.config.data?.invoiceID,
+ level: this.config.data?.level,
+ isNew: this.config.data?.isNew
+};
+
+
+ this.invRoutingFlowService.assignRole(assignRoleCommand).subscribe({
+ 
+ next: () => {
+ this.dialogRef.close(assignRoleCommand.roleID);
+ },
+ error: (err) => {
+ console.error('Failed to assign role', err);
+ },
+ });
+}
+  
 }

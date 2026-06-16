@@ -3,6 +3,7 @@ import { AccountsComponent } from './accounts/accounts.component';
 import { PoReferenceComponent } from './po-reference/po-reference.component';
 import { DimensionComponent } from './dimension/dimension.component';
 import { GoodsReceiptComponent } from './goods-receipt/goods-receipt.component';
+import { PoReferenceDetailComponent } from './po-reference/po-reference-detail/po-reference-detail.component';
 
 export const REFERENCE_DATA_LOOKUP_ROUTES: Routes = [
   {
@@ -21,4 +22,8 @@ export const REFERENCE_DATA_LOOKUP_ROUTES: Routes = [
     path: 'purchase-orders',
     component: PoReferenceComponent,
   },
+  {
+    path: 'view-purchaseorder/:id',
+    component: PoReferenceDetailComponent
+  }
 ];

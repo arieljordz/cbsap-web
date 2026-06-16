@@ -10,6 +10,7 @@ export interface UserSearchPaginationDTO {
   fullName: string;
   userRoles: RoleDTO[];
   countOfAssignedRoles: number;
-  lastLoginDateTime : string;
+  lastLoginDateTime : Date;
+  displayLastLoginDateTime: string
   isLockedOut : boolean
 }

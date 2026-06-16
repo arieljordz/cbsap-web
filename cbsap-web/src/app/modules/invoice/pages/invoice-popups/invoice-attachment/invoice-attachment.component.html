@@ -17,26 +17,61 @@
    <p-button icon="pi pi-times"  variant="text" (onClick)="fu.clear()" severity="danger" />
 </div>
 
+<br/>
+<p-table
+    [value]="attachments"
+    [paginator]="false"
+    [rows]="10"
+    [rowsPerPageOptions]="[10,25,50]"
+    [scrollable]="true"
+    paginatorDropdownAppendTo="body"
+    styleClass="p-datatable-gridlines">
+  
+          <!--HEADER-->
+          
+ <ng-template pTemplate="header">
+ <tr>
+  <!-- <th pSortableColumn="invoiceAttachnmentID">
+            invoiceAttachnmentID
+<p-sortIcon field="invoiceAttachnmentID"></p-sortIcon></th>
+<th pSortableColumn="invoiceID">
+            invoiceID
+<p-sortIcon field="invoiceID"></p-sortIcon></th> -->
+ <th pSortableColumn="originalFileName">
+File Name
+<p-sortIcon field="originalFileName"></p-sortIcon></th>
+<!-- <th pSortableColumn="storageFileName">
+            storageFileName
+<p-sortIcon field="storageFileName"></p-sortIcon></th>
+<th pSortableColumn="fileType">
+            fileType
+<p-sortIcon field="fileType"></p-sortIcon></th> -->
+<th pSortableColumn="uploadedBy">
+Uploaded By
+<p-sortIcon field="uploadedBy"></p-sortIcon></th>
+<th pSortableColumn="createdDate">
+ Date/Time
+ <p-sortIcon field="createdDate"></p-sortIcon></th>
+ </tr>
+ </ng-template>
 
-<ul class="divide-y divide-gray-200">
-  <li *ngFor="let attachment of attachments" class="flex justify-between items-center py-2">
-   
-  <span class=" italic" title="{{ attachment.originalFileName }}">
-    (Original: <span class="font-medium">{{ attachment.originalFileName }}</span>)
-    → <span class="text-blue-600 font-bold">{{ attachment.storageFileName }}</span>
-  </span>
 
-    <div class="space-x-2">
-      <button
-        pButton
-        type="button"
-        icon="pi pi-download"
-        class="p-button-rounded p-button-text p-button-plain"
-        aria-label="Download"
-        (click)="download(attachment.invoiceAttachnmentID)">
-      </button>
+ <!-- BODY -->
+ <ng-template pTemplate="body" let-row>
+ <tr>
+ <!-- <td>{{row.invoiceAttachnmentID}}</td>
+ <td>{{row.invoiceID}}</td> -->
+ <td>{{row.originalFileName}} → <span class="text-blue-600 font-bold" style="cursor: pointer;" (click)="download(row.invoiceAttachnmentID)">{{ row.storageFileName }}</span></td>
+<!-- <td>{{row.storageFileName}}</td>
+ <td>{{row.fileType}}</td> -->
+ <td style="width: 10rem">{{row.uploadedBy}}</td>
+<td style="width: 10rem">{{row.createdDate | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+</tr>
+</ng-template>
+</p-table>
 
-     
-    </div>
-  </li>
-</ul>
+
+
+
+
+  

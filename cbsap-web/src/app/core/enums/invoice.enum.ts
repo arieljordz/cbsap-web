@@ -24,6 +24,7 @@ export enum InvoiceQueue {
 export enum InvoiceActionButton {
   Approve = 'approve',
   Hold = 'hold',
+  Unhold = 'unhold',
   Reject = 'reject',
   RouteToException = 'routeToException',
   Reactivate = 'reactivate',
@@ -36,4 +37,10 @@ export enum InvoiceActionButton {
   ActivityLog = 'activityLog',
   PurchaseOrder = 'purchaseOrder',
   Cancel = 'cancel',
+}
+
+export enum FlowStatus{
+  Pending = 0,
+  Assigned = 1,
+  Submitted = 2
 }

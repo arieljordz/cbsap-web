@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@core/constants';
 import { PO_ENDPOINT } from '@core/constants/purchase-order/purchase-order.constants';
 import { Pagination, ResponseResult } from '@core/model/common';
+import { batchListPurchaseOrderDto, poDetailDto, poDetailListDto } from '@core/model/purchase-order/po-detail.dto';
 import {
   SavePOMatchingDto,
   SearchPoLinesDto,
@@ -11,6 +12,7 @@ import { POSearchDto } from '@core/model/purchase-order/po-search.dto';
 import {
   ExportPOSearchQuery,
   POSearchQuery,
+  PurchaseOrderListSearchQuery,
 } from '@core/model/purchase-order/po.query';
 import { ResultsHttpService } from '@core/services/common/results-http.service';
 import { catchError, map, Observable, throwError } from 'rxjs';
@@ -166,6 +168,66 @@ export class PurchaseOrderService {
         true
       )
       .pipe(
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+        })
+      );
+  }
+
+
+  purchaseHeaderGetById(
+    purchaseOrderId: number,
+  ): Observable<ResponseResult<poDetailDto>> {
+    return this.resultHttpClient
+      .get<poDetailDto>(
+        PO_ENDPOINT.GET_PURCHASE_ORDER_BY_ID(purchaseOrderId),
+        true
+      )
+      .pipe(
+        map((response) => {
+          return response;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+        })
+      );
+  }
+
+  purchaseHeaderDetailLineListGetById(
+    query: PurchaseOrderListSearchQuery
+  ): Observable<ResponseResult<Pagination<poDetailListDto>>> {
+    return this.resultHttpClient
+      .getSearchWithPagination<poDetailListDto>(
+        `${PO_ENDPOINT.GET_PURCHASE_ORDER_LINE_LIST_BY_ID}?${this.resultHttpClient.serialiazeQueryString(
+          query
+        )}`,
+        true
+      )
+      .pipe(
+        map((response) => {
+          return response;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return throwError(() => error);
+        })
+      );
+  }
+
+
+  BatchListPurchaseOrder(
+    query: POSearchQuery
+  ): Observable<ResponseResult<Pagination<batchListPurchaseOrderDto>>> {
+    return this.resultHttpClient
+      .getSearchWithPagination<batchListPurchaseOrderDto>(
+        `${PO_ENDPOINT.BATCH_LIST_PURCHASEORDER}?${this.resultHttpClient.serialiazeQueryString(
+          query
+        )}`,
+        true
+      )
+      .pipe(
+        map((response) => {
+          return response;
+        }),
         catchError((error: HttpErrorResponse) => {
           return throwError(() => error);
         })

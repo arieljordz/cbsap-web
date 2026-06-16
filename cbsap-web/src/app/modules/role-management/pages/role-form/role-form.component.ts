@@ -17,10 +17,12 @@ import {
   CreateRoleCommand,
   RoleDto,
   RoleSearchDTO,
-  UpdateRoleCommand,
+  UpdateRoleCommand
 } from '@core/model/roles-management';
+import { ConfirmationService } from 'primeng/api';
 import { MessageSeverity } from '@core/constants';
-import { AlertService, RoleService } from '@core/services';
+import { AlertService, RoleService, AuthService } from '@core/services';
+import { Permission, PermissionValues } from '@core/model/auth/permission';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ResponseResult } from '@core/model/common';
@@ -28,6 +30,7 @@ import { ResponseResult } from '@core/model/common';
 @Component({
   selector: 'app-role-form',
   standalone: true,
+  providers: [ AlertService, ConfirmationService],
   imports: [
     PrimeImportsModule,
     FormsModule,
@@ -56,8 +59,10 @@ export class RoleFormComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private roleService: RoleService,
     private message: AlertService,
+    private confirmationService: ConfirmationService,
     private router: Router,
-    private activetRoute: ActivatedRoute
+    private activetRoute: ActivatedRoute,
+    private authService: AuthService
   ) {
     this.initializeForm();
     this.roleId = Number(this.activetRoute.snapshot.params['roleID'] ?? 0);
@@ -258,7 +263,49 @@ export class RoleFormComponent implements OnInit, OnDestroy {
   }
 
   confirmDelete(): void {
-    // TODO: Implement deletion logic
+
+     this.confirmationService.confirm({
+      message:
+        'Are you sure you want to delete role : ' +
+        this.roleId +
+        '?',
+      header: 'Confirm',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.deleteRole();
+
+      },
+    });       
+  }
+
+
+  private deleteRole() {
+    this.roleService
+      .deleteRole(this.roleId)
+      .subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.message.showToast(
+            MessageSeverity.success.toString(),
+            'Role Deletion',
+            'Role has been successfully deleted',
+            2000
+          );
+        }
+      },
+      error: (error: ResponseResult<boolean>) => {  
+        console.log(error);
+        this.message.showToast(
+          MessageSeverity.error.toString(),
+          'Error on Entity Deletion',
+          error.messages?.[0],
+          2000
+        );
+      },
+      complete: () => {
+          this.router.navigate(['role-management']);
+      }
+    });
   }
 
   cancel(): void {
@@ -284,4 +331,8 @@ export class RoleFormComponent implements OnInit, OnDestroy {
   get userRolesGroup(): FormGroup {
     return this.roleDetailForm.get('userRoles') as FormGroup;
   }
+
+  hasManagePermission():boolean{
+    return this.authService.userHasPermission(Permission.CanManageRole);
+  }   
 }

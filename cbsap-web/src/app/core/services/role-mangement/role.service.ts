@@ -202,4 +202,17 @@ export class RoleService {
           })
         );
     }
+
+    deleteRole(roleID: number): Observable<ResponseResult<string>> {
+        return this.resultHttpClient
+          .delete<string>(`${ROLE_MANAGEMENT}/${roleID}`, roleID, true)
+          .pipe(
+          map((response) => {
+            return response;
+          }),
+          catchError((error: HttpErrorResponse) => {
+            return throwError(() => error);
+          })
+        );
+      }
 }

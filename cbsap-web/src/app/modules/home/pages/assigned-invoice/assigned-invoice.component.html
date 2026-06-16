@@ -17,11 +17,25 @@
             Overdue ({{overdueCount}})
         </a>        
     </div>
-    <p-table id="dtAssigned" #dtAssigned [value]="assignedInvoices" [paginator]="true" [showCurrentPageReport]="true"
-        [columns]="columns" [rowHover]="true" [rows]="pageSize" selectionMode="single" [(first)]="first"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [loading]="loading"
-        (onRowSelect)="onRowSelect($event)" [rowsPerPageOptions]="[5, 10, 25]" [tableStyle]="{ 'min-width': '50rem' }"
-        styleClass="p-datatable-striped p-datatable-header-bgwhite">
+    <p-table 
+    id="dtAssigned" 
+    #dtAssigned 
+    [value]="assignedInvoices" 
+    [paginator]="true" 
+    [showCurrentPageReport]="true"
+    [columns]="columns" 
+    [rowHover]="true" 
+    [rows]="pageSize" 
+    selectionMode="single" 
+    [(first)]="first"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" 
+    [loading]="loading"
+    (onRowSelect)="onRowSelect($event)" 
+    [rowsPerPageOptions]="[5, 10, 25]" 
+    [tableStyle]="{ 'min-width': '50rem' }"
+    styleClass="p-datatable-striped p-datatable-header-bgwhite"
+    [stateStorage]="'local'"
+    [stateKey]="'dashboard-assigned-grid'"    >
         <ng-template pTemplate="header">
             <tr>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field"

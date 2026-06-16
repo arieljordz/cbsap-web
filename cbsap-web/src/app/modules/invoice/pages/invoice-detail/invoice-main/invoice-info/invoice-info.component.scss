@@ -1,0 +1,84 @@
+
+.readonly-input {
+  background-color: #e9ecef !important;
+  color: #6c757d !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+
+  input {
+    background-color: #e9ecef !important;
+    color: #6c757d !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+  }
+
+  .p-inputtext, 
+  .p-dropdown-label, 
+  .p-calendar input {
+    background-color: #e9ecef !important;
+    color: #6c757d !important;
+    cursor: not-allowed !important;
+  }
+}
+
+
+.readonly-select {
+  pointer-events: none !important;
+  opacity: 0.65 !important;
+  filter: grayscale(1);
+
+  
+  .p-select, 
+  .p-select-label,
+  .p-dropdown-label, 
+  .p-element,
+  .p-inputtext {
+    background-color: #e9ecef !important;
+    color: #6c757d !important;
+    cursor: not-allowed !important;
+  }
+}
+
+
+
+.readonly-datepicker {
+  pointer-events: none !important;
+  opacity: 0.65 !important;
+  filter: grayscale(1);
+
+
+  .p-inputtext,
+  input {
+    background-color: #e9ecef !important;
+    color: #6c757d !important;
+    cursor: not-allowed !important;
+  }
+
+  .p-datepicker-trigger,
+  .p-button {
+    background-color: #e9ecef !important;
+    border-color: #ced4da !important;
+    cursor: not-allowed !important;
+  }
+}
+
+
+
+.readonly-number {
+  pointer-events: none !important;
+  opacity: 0.65 !important;
+
+  .p-inputtext,
+  input {
+    background-color: #e9ecef !important;
+    color: #6c757d !important;
+    cursor: not-allowed !important;
+  }
+
+  .p-inputnumber-button {
+    background-color: #e9ecef !important;
+    border-color: #ced4da !important;
+    cursor: not-allowed !important;
+  }
+}
+

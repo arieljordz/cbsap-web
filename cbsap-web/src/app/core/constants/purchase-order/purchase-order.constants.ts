@@ -13,4 +13,14 @@ export const PO_ENDPOINT = {
     `${purchaseorder_endpoint}/${purchaseOrderLineID}/usage`,
   PO_SEARCH: `${purchaseorder_endpoint}/searchpo/paged`,
   EXPORT_SEARCH: `${purchaseorder_endpoint}/export/download?`,
+  GET_PURCHASE_ORDER_LINE_LIST_BY_ID: `${purchaseorder_endpoint}/GetPurchaseOrderListByID/paged`,
+  BATCH_LIST_PURCHASEORDER: `${purchaseorder_endpoint}/BatchListPurchaseOrder/paged`,
+  GET_PURCHASE_ORDER_BY_ID: (purchaseOrderId: number) =>
+  `${purchaseorder_endpoint}/GetPurchaseOrderByID/${purchaseOrderId}`,
 };
+
+export const PO_CONSTANT = {
+    SEARCH_FILTER_LOCALSTORAGE : {
+        PURCHASEORDER : 'po-local-storage-filter'
+    }
+}

@@ -1,0 +1,189 @@
+<form [formGroup]="formGroupData">
+
+    <div class="card flex flex-col gap-6 p-6">
+        
+      <p-fieldset legend="Purchase Order Header">
+        <div class="po-buttons grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+            <div class="flex items-center justify-end gap-4 p-4">
+            
+            </div>
+            <!-- RIGHT SIDE -->
+            <div class="flex items-center justify-end gap-4 p-4">
+              <span
+              class="p-button p-button-rounded p-button-sm p-button-outlined pointer-events-none select-none font-semibold"
+              [ngClass]="onChangeColorStatus()"
+            >
+              {{ Status }}
+            </span>
+                <p-button (click)="onClickPrevious()" icon="pi pi-chevron-left text-xl" />
+                <p-button (click)="onClickNext()" icon="pi pi-chevron-right text-xl" />
+                <p-button (click)="onClickCancel()" label="Cancel" icon="pi pi-times" severity="secondary"/>
+
+            </div>
+          
+          </div>
+          
+         <p-panel [toggleable]="true" styleClass="mb-4 panel-items">
+           <ng-template #header>
+                <div class="flex items-center gap-2">
+                  <span class="font-bold">Supplier Detail</span>
+                </div>
+              </ng-template>
+              <div class="p-4">       
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6  mb-1">
+                    <input type="hidden" formControlName="PurchaseOrderId" />
+                  <div class="grid grid-cols-12 items-center gap-2">
+                    <label f class="col-span-12 md:col-span-4 font-medium">Supplier Name</label>
+                    <div class="col-span-12 md:col-span-8">
+                      <input id="SupplierName" type="text" readonly pInputText formControlName="SupplierName" 
+                        class="w-full readonly-input" />
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-12 items-center gap-2">
+                    <label f class="col-span-12 md:col-span-4 font-medium">Supplier Number</label>
+                    <div class="col-span-12 md:col-span-8">
+                      <input id="SupplierNo" type="text" readonly pInputText formControlName="SupplierNo" 
+                        class="w-full readonly-input" />
+                    </div>
+                  </div>
+                </div>  
+            </div>
+        </p-panel>
+       <p-panel [toggleable]="true" styleClass="mb-4 panel-items">
+            <ng-template #header>
+                <div class="flex items-center gap-2">
+           
+                  <span class="font-bold">Purchase Order Detail</span>
+                </div>
+              </ng-template> 
+            <div class="p-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6  mb-1">
+                    <div class="grid grid-cols-12 items-center gap-2">
+                     
+                        <label f class="col-span-12 md:col-span-4 font-medium">Entity</label>
+                        <div class="col-span-12 md:col-span-8">
+                          <input id="Entity" type="text" readonly pInputText formControlName="Entity" 
+                            class="w-full readonly-input" />
+                        </div>
+                      </div>
+                    <div class="grid grid-cols-12 items-center gap-2">
+                      <label f class="col-span-12 md:col-span-4 font-medium">Purchase Order No</label>
+                      <div class="col-span-12 md:col-span-8">
+                        <input id="PurchaseOrderNo" type="text" readonly pInputText formControlName="PurchaseOrderNo" 
+                          class="w-full readonly-input" />
+                      </div>
+                    </div>
+                  </div>          
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6  mb-1">
+                    <div class="grid grid-cols-12 items-center gap-2">
+                      <label f class="col-span-12 md:col-span-4 font-medium">Purchase Date</label>
+                      <div class="col-span-12 md:col-span-8">
+                        <input id="PurchaseDate" type="text" readonly pInputText formControlName="PurchaseDate" 
+                          class="w-full readonly-input" />
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-12 items-center gap-2">
+                      <label f class="col-span-12 md:col-span-4 font-medium">Goods Receipt No</label>
+                      <div class="col-span-12 md:col-span-8">
+                        <input id="GoodsReceiptNo" type="text" readonly pInputText formControlName="GoodsReceiptNo" 
+                          class="w-full readonly-input" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6  mb-1">
+                    <div class="grid grid-cols-12 items-center gap-2">
+                      <label f class="col-span-12 md:col-span-4 font-medium">Goods Receipt Date</label>
+                      <div class="col-span-12 md:col-span-8">
+                        <input id="GoodsReceiptDate" type="text" readonly pInputText formControlName="GoodsReceiptDate" 
+                          class="w-full readonly-input" />
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-12 items-center gap-2">
+                      <label f class="col-span-12 md:col-span-4 font-medium">Currency</label>
+                      <div class="col-span-12 md:col-span-8">
+                        <input id="Currency" type="text" readonly pInputText formControlName="Currency" 
+                          class="w-full readonly-input" />
+                      </div>
+                    </div>
+                  </div> 
+            </div>
+        </p-panel>
+
+        <p-panel [toggleable]="true" styleClass="mb-4 panel-items">
+            <ng-template #header>
+                <div class="flex items-center gap-2">
+           
+                  <span class="font-bold">Other Detail</span>
+                </div>
+              </ng-template> 
+            <div class="p-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6  mb-1">
+
+                    <div class="grid grid-cols-12 items-center gap-2">
+                        <label f class="col-span-12 md:col-span-4 font-medium">FreeField1</label>
+                        <div class="col-span-12 md:col-span-8">
+                          <input id="FreeField1" type="text" readonly pInputText formControlName="FreeField1" 
+                            class="w-full readonly-input" />
+                        </div>
+                      </div>
+                      <div class="grid grid-cols-12 items-center gap-2">
+                        <label f class="col-span-12 md:col-span-4 font-medium">Keyword1</label>
+                        <div class="col-span-12 md:col-span-8">
+                          <input id="Keyword1" type="text" readonly pInputText formControlName="Keyword1" 
+                            class="w-full readonly-input" />
+                        </div>
+                      </div>
+  
+
+
+                  </div> 
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6  mb-1">
+
+                    <div class="grid grid-cols-12 items-center gap-2">
+                      <label f class="col-span-12 md:col-span-4 font-medium">FreeField2</label>
+                      <div class="col-span-12 md:col-span-8">
+                        <input id="FreeField2" type="text" readonly pInputText formControlName="FreeField2" 
+                          class="w-full readonly-input" />
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-12 items-center gap-2">
+                        <label f class="col-span-12 md:col-span-4 font-medium">Keyword2</label>
+                        <div class="col-span-12 md:col-span-8">
+                          <input id="Keyword2" type="text" readonly pInputText formControlName="Keyword2" 
+                            class="w-full readonly-input" />
+                        </div>
+                      </div>
+                  </div> 
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6  mb-1">
+                    <div class="grid grid-cols-12 items-center gap-2">
+                      <label f class="col-span-12 md:col-span-4 font-medium">FreeField3</label>
+                      <div class="col-span-12 md:col-span-8">
+                        <input id="FreeField3" type="text" readonly pInputText formControlName="FreeField3" 
+                          class="w-full readonly-input" />
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-12 items-center gap-2">
+                        <label f class="col-span-12 md:col-span-4 font-medium">Order Notes</label>
+                        <div class="col-span-12 md:col-span-8">
+                          <input id="OrderNotes" type="text" readonly pInputText formControlName="OrderNotes" 
+                            class="w-full readonly-input" />
+                        </div>
+                      </div>
+                  </div> 
+            </div>
+        </p-panel>
+      </p-fieldset>
+              
+      <p-fieldset legend="Purchase Order Line">
+
+        <div class="card user-card mt-6">
+            <app-dynamic-grid
+              (load)="onLazyLoad($event)"
+              [config]="gridConfig"
+              [tableStyle]="{ 'width': '95rem' }"
+            ></app-dynamic-grid>
+          </div>
+
+      </p-fieldset>
+    </div>
+  </form> 
