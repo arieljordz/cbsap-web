@@ -7,7 +7,7 @@
 
                 <p-button  [raised]="true" [rounded]="true"  icon="pi pi-refresh"  [disabled]="!hasManagePermission()" label="Clear" (click)="reset()" />
                 <p-button  [raised]="true" [rounded]="true" [severity]="!permissionForm.valid ? 'secondary':'primary'" [disabled]="!permissionForm.valid || !hasManagePermission()" icon="pi pi-check" type="submit" label="Save" />
-                <p-button  [raised]="true" [rounded]="true"  severity="contrast" icon="pi pi-times" type="submit" label="Cancel" (click)="confirm($event)" />
+                <p-button  [raised]="true" [rounded]="true"  severity="contrast" icon="pi pi-times" label="Cancel" (click)="cancel()" />
               
             </div>
         </div>
@@ -78,7 +78,7 @@
                                     <label for="access{{ operation.operationID }}" class="text-sm">{{ operation.operationName }}</label>
                                     <div class="flex-1 text-right">
                                         <!-- <p-toggle-switch   [formControlName]="operation.operationName +'_' + operation.operationID"  class="text-xs" [name]="'access' + operation.operationID"  /> -->
-                                            <p-toggle-switch [(ngModel)]="operation.access" class="text-xs" name="access{{ operation.operationID }}" [ngModelOptions]="{standalone: true}" />
+                                            <p-toggle-switch [(ngModel)]="operation.access" class="text-xs" name="access{{ operation.operationID }}" [ngModelOptions]="{standalone: true}" (ngModelChange)="onPermissionChange()" />
                                     </div>
                                 </div>
                             </p-panel>

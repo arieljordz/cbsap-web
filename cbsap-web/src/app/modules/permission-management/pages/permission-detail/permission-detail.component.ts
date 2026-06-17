@@ -16,7 +16,8 @@ import {
   AlertService,
   PermissionService,
   ValidationService,
-  AuthService
+  AuthService,
+  CustomConfirmDialogService
 } from 'src/app/core/services/index';
 import { Permission, PermissionValues } from '@core/model/auth/permission';
 import { Subject, takeUntil } from 'rxjs';
@@ -46,7 +47,7 @@ import { CharacterFocusTrackerDirective } from 'src/app/shared/directives/charac
   selector: 'app-permission-detail',
   templateUrl: './permission-detail.component.html',
   styleUrls: ['./permission-detail.component.scss'],
-  providers: [DialogService, AlertService, ConfirmationService],
+  providers: [DialogService, AlertService],
   standalone: true,
   imports: [
     FormsModule,
@@ -75,6 +76,7 @@ export class PermissionDetailComponent implements OnInit, OnDestroy {
   permissionID: number = 0;
   isFormSaved: boolean = false;
   formSubmitted: boolean = false;
+  hasPermissionChanges: boolean = false;
 
   constructor(
     private message: AlertService,
@@ -85,7 +87,8 @@ export class PermissionDetailComponent implements OnInit, OnDestroy {
     private confirmationService: ConfirmationService,
     private formBuilder: FormBuilder,
     private validationService: ValidationService,
-    private authServices: AuthService
+    private authServices: AuthService,
+    private customConfirmService: CustomConfirmDialogService
   ) {
     this.permissionID = Number(this.route.snapshot.paramMap.get('id') ?? 0);
   }
@@ -198,6 +201,10 @@ export class PermissionDetailComponent implements OnInit, OnDestroy {
       });
   }
 
+  onPermissionChange() {
+    this.hasPermissionChanges = true;
+  }
+
   assignRoles() {
     const ref = this.dialogService.open(SearchRoleComponent, {
       header: 'Roles Assignment',
@@ -210,16 +217,27 @@ export class PermissionDetailComponent implements OnInit, OnDestroy {
     });
     ref.onClose.subscribe((roles: Role[]) => {
       if (roles) {
-        this.permissionForm.controls['roles'].setValue(roles);
-        this.f['roles'].markAsTouched();
         this.userRoles = roles;
+
+        this.permissionForm.patchValue({
+          roles: roles
+        });
+
+        this.f['roles'].markAsDirty();
+        this.f['roles'].markAsTouched();
       }
-      ref.destroy();
     });
   }
 
   removeRole(role: number) {
     this.userRoles = this.userRoles.filter((r) => r.roleID !== role);
+
+    this.permissionForm.patchValue({
+      roles: this.userRoles
+    });
+
+    this.f['roles'].markAsDirty();
+    this.f['roles'].markAsTouched();
   }
 
   setPermissionValuesOnEdit(permissionID: number): void {
@@ -305,26 +323,20 @@ export class PermissionDetailComponent implements OnInit, OnDestroy {
       error
     );
   }
-  confirm(event: Event) {
-    if (this.permissionForm.touched && !this.isFormSaved) {
-      this.confirmUnsavedChanges(event);
+
+  cancel() {
+    if (this.permissionForm.touched || this.permissionForm.dirty || this.hasPermissionChanges) {
+      this.customConfirmService.confirmUnsavedChanges(
+        () => {
+          this.closeDialog();
+        },
+        () => {
+          // Stay on current page/dialog
+        }
+      );
     } else {
       this.closeDialog();
     }
-  }
-
-  confirmUnsavedChanges(event: Event) {
-    this.confirmationService.confirm({
-      target: event.target as EventTarget,
-      header: 'Save Changes', 
-      message: 'You have unsaved changes. Are you sure you want to leave this page?',
-      icon: 'pi pi-exclamation-triangle',
-         
-      accept: () => {
-        this.closeDialog();
-      },
-      reject: () => {},
-    });
   }
 
   //reactive form

@@ -32,7 +32,8 @@ import {
   RoleService,
   UserManagementService,
   ValidationService,
-  AuthService
+  AuthService,
+  CustomConfirmDialogService
 } from 'src/app/core/services';
 import { MessageSeverity } from './../../../../core/constants/index';
 
@@ -60,7 +61,7 @@ import { CharacterFocusTrackerDirective } from 'src/app/shared/directives/charac
   selector: 'app-user-details',
   templateUrl: './user-details.component.html',
   styleUrls: ['./user-details.component.scss'],
-  providers: [DialogService, AlertService, ConfirmationService],
+  providers: [DialogService, AlertService],
   standalone: true,
   imports: [
     FormsModule,
@@ -98,7 +99,8 @@ export class UserDetailsComponent implements OnInit, AfterViewInit {
     private formBuilder: FormBuilder,
     private validationService: ValidationService,
     private menuService: MenuService,
-    private authService: AuthService
+    private authService: AuthService,
+    private customConfirmService: CustomConfirmDialogService
   ) {
     this.userAccountID = Number(
       this.activeRoute.snapshot.params['userAccountID'] ?? 0
@@ -158,9 +160,16 @@ export class UserDetailsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  cancel(event: Event) {
+  cancel() {
     if (this.userForm.touched || this.userForm.dirty) {
-      this.confirmUnsavedChanges(event);
+      this.customConfirmService.confirmUnsavedChanges(
+        () => {
+          this.closeDialog();
+        },
+        () => {
+          // Stay on current page/dialog
+        }
+      );
     } else {
       this.closeDialog();
     }
@@ -403,20 +412,6 @@ export class UserDetailsComponent implements OnInit, AfterViewInit {
         validators: [MatchValidator('password', 'confirmPassword')],
       } as FormControlOptions
     );
-  }
-
-  confirmUnsavedChanges(event: Event) {
-    this.confirmationService.confirm({
-      target: event.target as EventTarget,
-      header: 'Save Changes',
-      message:
-        'You have unsaved changes. Are you sure you want to leave this page?',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.closeDialog();
-      },
-      reject: () => {},
-    });
   }
 
   readonly getErrorMessage = (

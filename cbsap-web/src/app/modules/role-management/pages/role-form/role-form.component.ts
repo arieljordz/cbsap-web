@@ -21,7 +21,7 @@ import {
 } from '@core/model/roles-management';
 import { ConfirmationService } from 'primeng/api';
 import { MessageSeverity } from '@core/constants';
-import { AlertService, RoleService, AuthService } from '@core/services';
+import { AlertService, RoleService, AuthService, CustomConfirmDialogService } from '@core/services';
 import { Permission, PermissionValues } from '@core/model/auth/permission';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -30,7 +30,7 @@ import { ResponseResult } from '@core/model/common';
 @Component({
   selector: 'app-role-form',
   standalone: true,
-  providers: [ AlertService, ConfirmationService],
+  providers: [ AlertService],
   imports: [
     PrimeImportsModule,
     FormsModule,
@@ -62,7 +62,8 @@ export class RoleFormComponent implements OnInit, OnDestroy {
     private confirmationService: ConfirmationService,
     private router: Router,
     private activetRoute: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
+    private customConfirmService: CustomConfirmDialogService
   ) {
     this.initializeForm();
     this.roleId = Number(this.activetRoute.snapshot.params['roleID'] ?? 0);
@@ -307,9 +308,24 @@ export class RoleFormComponent implements OnInit, OnDestroy {
       }
     });
   }
+  
+  cancel() {
+    if (this.roleDetailForm.touched || this.roleDetailForm.dirty) {
+      this.customConfirmService.confirmUnsavedChanges(
+        () => {
+          this.closeDialog();
+        },
+        () => {
+          // Stay on current page/dialog
+        }
+      );
+    } else {
+      this.closeDialog();
+    }
+  }
 
-  cancel(): void {
-    this.router.navigate(['role-management']);
+  closeDialog() {
+    this.router.navigate(['/role-management']);
   }
 
   get basicInfoGroup(): FormGroup {
