@@ -12,4 +12,5 @@ export interface UpdateRoleCommand {
   rolePermissionGroups: number[];
   userRoles: number[];
   roleEntities: number[];
+  roleDimensions: number[];
 }

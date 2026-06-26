@@ -460,6 +460,36 @@ export class GridService {
     ];
   }
 
+  accountDimensionSelectGridColumn(): TableColumn[] {
+    return [
+      {
+        field: 'entity',
+        header: 'Entity',
+        sort: true,
+        isSearchFilter: true,
+      },
+      {
+        field: 'category',
+        header: 'Category',
+        sort: true,
+        isSearchFilter: true,
+      },
+      {
+        field: 'assigned',
+        header: 'Assigned',
+        sort: true,
+        isSearchFilter: true,
+      },
+      {
+        field: 'isAssigned',
+        header: 'Is Assigned',
+        type: 'checkbox',
+        sort: true,
+        isSearchFilter: true,
+      },
+    ];
+  }
+
   permissionSelectGridColumn(): TableColumn[] {
     return [
       {

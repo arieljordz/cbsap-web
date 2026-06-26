@@ -12,16 +12,23 @@ import { BasicInfoComponent } from './basic-info/basic-info.component';
 import { ReminderNotificationComponent } from './reminder-notification/reminder-notification.component';
 import { RoleEntitiesComponent } from './role-entities/role-entities.component';
 import { RolePermissionsComponent } from './role-permissions/role-permissions.component';
+import { AccountDimensionPermissionsComponent } from './account-dimension-permissions/account-dimension-permissions.component';
 import { RoleUsersComponent } from './role-users/role-users.component';
 import {
   CreateRoleCommand,
   RoleDto,
   RoleSearchDTO,
-  UpdateRoleCommand
+  UpdateRoleCommand,
+  DropdownOptionDto,
 } from '@core/model/roles-management';
 import { ConfirmationService } from 'primeng/api';
 import { MessageSeverity } from '@core/constants';
-import { AlertService, RoleService, AuthService, CustomConfirmDialogService } from '@core/services';
+import {
+  AlertService,
+  RoleService,
+  AuthService,
+  CustomConfirmDialogService,
+} from '@core/services';
 import { Permission, PermissionValues } from '@core/model/auth/permission';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -30,7 +37,7 @@ import { ResponseResult } from '@core/model/common';
 @Component({
   selector: 'app-role-form',
   standalone: true,
-  providers: [ AlertService],
+  providers: [AlertService],
   imports: [
     PrimeImportsModule,
     FormsModule,
@@ -40,6 +47,7 @@ import { ResponseResult } from '@core/model/common';
     ReminderNotificationComponent,
     RoleEntitiesComponent,
     RolePermissionsComponent,
+    AccountDimensionPermissionsComponent,
     RoleUsersComponent,
   ],
   templateUrl: './role-form.component.html',
@@ -55,6 +63,9 @@ export class RoleFormComponent implements OnInit, OnDestroy {
   private readonly ADD_LABEL = 'Add Role';
   private readonly EDIT_LABEL = 'Edit Role';
 
+  entityOptions: DropdownOptionDto[] = [];
+  categoryOptions: DropdownOptionDto[] = [];
+
   constructor(
     private fb: FormBuilder,
     private roleService: RoleService,
@@ -63,7 +74,7 @@ export class RoleFormComponent implements OnInit, OnDestroy {
     private router: Router,
     private activetRoute: ActivatedRoute,
     private authService: AuthService,
-    private customConfirmService: CustomConfirmDialogService
+    private customConfirmService: CustomConfirmDialogService,
   ) {
     this.initializeForm();
     this.roleId = Number(this.activetRoute.snapshot.params['roleID'] ?? 0);
@@ -107,21 +118,32 @@ export class RoleFormComponent implements OnInit, OnDestroy {
       rolePermissions: this.fb.group({
         selectedPermissions: [[]],
       }),
+      roleDimensions: this.fb.group({
+        selectedAccountDimensions: [[]],
+      }),
       userRoles: this.fb.group({
         selectedUsers: [[]],
       }),
     });
   }
 
+  //#region role management form methods
   private loadRole(id: number): void {
     this.roleService
       .getRolesByID(id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (results: ResponseResult<RoleDto>) => {
-          if (results.isSuccess && results.responseData) {
-            this.patchFormValues(results.responseData);
+          if (!results.isSuccess || !results.responseData) {
+            return;
           }
+
+          const role = results.responseData;
+
+          this.entityOptions = role.entityOptions ?? [];
+          this.categoryOptions = role.categoryOptions ?? [];
+
+          this.patchFormValues(role);
         },
         error: (error) => this.onError(error),
       });
@@ -140,15 +162,35 @@ export class RoleFormComponent implements OnInit, OnDestroy {
         selectedRoleId: data.roleID,
         canBeAddedToInvoice: data.canBeAddedToInvoice,
       },
-      reminderNotification: data.reminderNotification,
+
+      reminderNotification: {
+        invoiceDueDateNotification:
+          data.reminderNotification?.invoiceDueDateNotification,
+        invoiceEscalateToLevel1ManagerNotification:
+          data.reminderNotification
+            ?.invoiceEscalateToLevel1ManagerNotification,
+        forwardToLevel1Manager:
+          data.reminderNotification?.forwardToLevel1Manager,
+        forwardToLevel2Manager:
+          data.reminderNotification?.forwardToLevel2Manager,
+        isNewInvoiceReceiveNotification:
+          data.reminderNotification?.isNewInvoiceReceiveNotification ?? false,
+      },
+
       roleEntities: {
-        selectedEntities: data.roleEntities || [],
+        selectedEntities: data.roleEntities ?? [],
       },
+
       rolePermissions: {
-        selectedPermissions: data.rolePermissions || [],
+        selectedPermissions: data.rolePermissions ?? [],
       },
+
       userRoles: {
-        selectedUsers: data.roleUsers || [],
+        selectedUsers: data.roleUsers ?? [],
+      },
+
+      roleDimensions: {
+        selectedAccountDimensions: data.roleDimensions ?? [],
       },
     });
   }
@@ -163,15 +205,18 @@ export class RoleFormComponent implements OnInit, OnDestroy {
       roleManager2: formValue.basicInfo.roleManager2,
       canBeAddedToInvoice: formValue.basicInfo.canBeAddedToInvoice,
       roleEntities: formValue.roleEntities.selectedEntities.map(
-        (e: any) => e.entityProfileID
+        (e: any) => e.entityProfileID,
       ),
       rolePermissionGroups: formValue.rolePermissions.selectedPermissions.map(
-        (p: any) => p.permissionID
+        (p: any) => p.permissionID,
       ),
       userRoles: formValue.userRoles.selectedUsers.map(
-        (u: any) => u.userAccountID
+        (u: any) => u.userAccountID,
       ),
       reminderNotification: formValue.reminderNotification,
+      roleDimensions: formValue.roleDimensions.selectedAccountDimensions.map(
+        (d: any) => d.dimensionID,
+      ),
     };
   }
 
@@ -188,13 +233,16 @@ export class RoleFormComponent implements OnInit, OnDestroy {
       canBeAddedToInvoice: formValue.basicInfo.canBeAddedToInvoice,
       reminderNotification: formValue.reminderNotification,
       roleEntities: formValue.roleEntities.selectedEntities.map(
-        (e: any) => e.entityProfileID
+        (e: any) => e.entityProfileID,
       ),
       rolePermissionGroups: formValue.rolePermissions.selectedPermissions.map(
-        (p: any) => p.permissionID
+        (p: any) => p.permissionID,
       ),
       userRoles: formValue.userRoles.selectedUsers.map(
-        (u: any) => u.userAccountID
+        (u: any) => u.userAccountID,
+      ),
+      roleDimensions: formValue.roleDimensions.selectedAccountDimensions.map(
+        (d: any) => d.dimensionID,
       ),
     };
   }
@@ -212,7 +260,7 @@ export class RoleFormComponent implements OnInit, OnDestroy {
               MessageSeverity.success.toString(),
               'Role Created',
               'Role has been successfully created.',
-              2000
+              2000,
             );
           }
         },
@@ -221,7 +269,7 @@ export class RoleFormComponent implements OnInit, OnDestroy {
             MessageSeverity.error.toString(),
             'Error on Role Creation',
             error.messages?.[0],
-            2000
+            2000,
           );
         },
         complete: () => {
@@ -240,7 +288,7 @@ export class RoleFormComponent implements OnInit, OnDestroy {
           this.message.showToast(
             MessageSeverity.success.toString(),
             'Role Updated',
-            'Role has been successfully updated.'
+            'Role has been successfully updated.',
           );
         }
       },
@@ -249,7 +297,7 @@ export class RoleFormComponent implements OnInit, OnDestroy {
           MessageSeverity.error.toString(),
           'Error on Role update',
           error.messages?.[0],
-          2000
+          2000,
         );
       },
       complete: () => {
@@ -264,51 +312,43 @@ export class RoleFormComponent implements OnInit, OnDestroy {
   }
 
   confirmDelete(): void {
-
-     this.confirmationService.confirm({
-      message:
-        'Are you sure you want to delete role : ' +
-        this.roleId +
-        '?',
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete role : ' + this.roleId + '?',
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.deleteRole();
-
       },
-    });       
+    });
   }
 
-
   private deleteRole() {
-    this.roleService
-      .deleteRole(this.roleId)
-      .subscribe({
+    this.roleService.deleteRole(this.roleId).subscribe({
       next: (response) => {
         if (response.isSuccess) {
           this.message.showToast(
             MessageSeverity.success.toString(),
             'Role Deletion',
             'Role has been successfully deleted',
-            2000
+            2000,
           );
         }
       },
-      error: (error: ResponseResult<boolean>) => {  
+      error: (error: ResponseResult<boolean>) => {
         console.log(error);
         this.message.showToast(
           MessageSeverity.error.toString(),
           'Error on Entity Deletion',
           error.messages?.[0],
-          2000
+          2000,
         );
       },
       complete: () => {
-          this.router.navigate(['role-management']);
-      }
+        this.router.navigate(['role-management']);
+      },
     });
   }
-  
+
   cancel() {
     if (this.roleDetailForm.touched || this.roleDetailForm.dirty) {
       this.customConfirmService.confirmUnsavedChanges(
@@ -317,7 +357,7 @@ export class RoleFormComponent implements OnInit, OnDestroy {
         },
         () => {
           // Stay on current page/dialog
-        }
+        },
       );
     } else {
       this.closeDialog();
@@ -327,6 +367,8 @@ export class RoleFormComponent implements OnInit, OnDestroy {
   closeDialog() {
     this.router.navigate(['/role-management']);
   }
+
+  //#endregion
 
   get basicInfoGroup(): FormGroup {
     return this.roleDetailForm.get('basicInfo') as FormGroup;
@@ -348,7 +390,11 @@ export class RoleFormComponent implements OnInit, OnDestroy {
     return this.roleDetailForm.get('userRoles') as FormGroup;
   }
 
-  hasManagePermission():boolean{
+  get roleDimensionsGroup(): FormGroup {
+    return this.roleDetailForm.get('roleDimensions') as FormGroup;
+  }
+
+  hasManagePermission(): boolean {
     return this.authService.userHasPermission(Permission.CanManageRole);
-  }   
+  }
 }

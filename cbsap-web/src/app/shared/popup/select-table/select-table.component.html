@@ -157,6 +157,15 @@
               {{ rowData[col.field] ? (rowData[col.field] | date:'dd/MM/yyyy') : '' }}
            </ng-container>
  
+           <!-- Checkbox -->
+            <ng-container *ngSwitchCase="'checkbox'">
+              <p-checkbox
+                [binary]="true"
+                [ngModel]="rowData[col.field]"
+                [disabled]="false">
+              </p-checkbox>
+            </ng-container>
+
             <!-- Default -->
             <ng-container *ngSwitchDefault>
               {{ rowData[col.field] }}

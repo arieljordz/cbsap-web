@@ -14,6 +14,9 @@ export * from './role-management/role-management.constants';
 
 export * from './permission-managment/permission.constants';
 
+export * from './account-dimension-permission/account.dimension.constants';
+
+
 //Common Function 
 export * from './common/statusFilterOptions';
 

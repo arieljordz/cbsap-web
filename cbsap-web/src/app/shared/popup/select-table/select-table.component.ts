@@ -96,7 +96,7 @@ export class SelectTableComponent implements OnInit, OnDestroy {
     } else {
       this.data = d.data || []; // fallback to static data
     }
-    console.log(this.filters);
+    console.log("Filters:", this.filters);
   }
 
 

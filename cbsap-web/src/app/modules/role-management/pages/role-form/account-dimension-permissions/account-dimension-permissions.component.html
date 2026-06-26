@@ -1,0 +1,73 @@
+<div [formGroup]="formGroup" class="grid grid-cols-1 gap-6 pt-4">
+  <div class="flex items-center pt-2 gap-3">
+    <span class="font-bold">Coding Permissions</span>
+
+    <p-button
+      type="button"
+      icon="pi pi-plus"
+      [rounded]="true"
+      class="rounded-full p-button-outlined p-button-sm"
+      pTooltip="Assign Coding Permission"
+      (click)="assignAccountDimension()">
+    </p-button>
+  </div>
+
+  <p-table
+    [value]="selectedAccountDimensions"
+    styleClass="p-datatable-sm p-datatable-striped">
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width:40%">Entity</th>
+        <th style="width:30%">Category</th>
+        <th style="width:30%">Assigned</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-rowData>
+      <tr>
+
+        <td>
+          <p-dropdown
+              [options]="entityOptions"
+              optionLabel="label"
+              optionValue="value"
+              [(ngModel)]="rowData.entityProfileID"
+              [ngModelOptions]="{ standalone: true }"
+              appendTo="body"
+              placeholder="Select Entity"
+              styleClass="w-full">
+          </p-dropdown>
+        </td>
+
+        <td>
+          <p-dropdown
+            [options]="categoryOptions"
+            optionLabel="label"
+            optionValue="value"
+            [(ngModel)]="rowData.dimensionID"
+            appendTo="body"
+            placeholder="Select Category"
+            styleClass="w-full">
+          </p-dropdown>
+        </td>
+
+        <td>
+          {{ rowData.assigned }}
+        </td>
+
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="3">
+          <div class="h-24 flex justify-center items-center font-semibold">
+            No coding permissions assigned.
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+</div>
