@@ -30,7 +30,8 @@
         <p-tab value="1"> <i class="pi pi-bell"></i> Reminder Notification</p-tab>
         <p-tab value="2"> <i class="pi pi-users"></i> Role Entity</p-tab>
         <p-tab value="3"><i class="pi pi-lock"></i>Role Permissions</p-tab>
-        <p-tab value="4"><i class="pi pi-user"></i>Users</p-tab>
+        <p-tab value="4"><i class="pi pi-lock"></i>Account & Dimension Permissions</p-tab>
+        <p-tab value="5"><i class="pi pi-user"></i>Users</p-tab>
       </p-tablist>
 
       <p-tabpanels class="p-4 bg-white">
@@ -47,6 +48,14 @@
           <app-role-permissions [formGroup]="rolePermissionsGroup"></app-role-permissions>
         </p-tabpanel>
         <p-tabpanel value="4">
+          <app-account-dimension-permissions
+              [formGroup]="roleDimensionsGroup"
+              [roleId]="roleId"
+              [entityOptions]="entityOptions"
+              [categoryOptions]="categoryOptions">
+          </app-account-dimension-permissions>
+        </p-tabpanel>
+        <p-tabpanel value="5">
           <app-role-users [formGroup]="userRolesGroup"></app-role-users>
         </p-tabpanel>
       </p-tabpanels>
